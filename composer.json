@@ -6,8 +6,8 @@
 	"homepage": "https://extension-builder.dev",
 	"authors": [{
 		"name": "Stephan Sellner",
-		"email": "contact@extsension-builder.dev",
-		"homepage": "https://extsension-builder.dev/",
+		"email": "stephan@sellner.de",
+		"homepage": "https://sellner.de/",
 		"role": "Developer"
 	}],
 	"require": {
