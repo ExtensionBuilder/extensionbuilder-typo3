@@ -6,7 +6,9 @@
 	"homepage": "https://extension-builder.dev",
 	"authors": [{
 		"name": "Stephan Sellner",
-		"email": "contact@extsension-builder.dev"
+		"email": "contact@extsension-builder.dev",
+		"homepage": "https://extsension-builder.dev/",
+        "role": "Developer"
 	}],
 	"require": {
 		"typo3/cms-core": "^12.4"
