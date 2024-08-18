@@ -8,7 +8,7 @@
 		"name": "Stephan Sellner",
 		"email": "contact@extsension-builder.dev",
 		"homepage": "https://extsension-builder.dev/",
-        "role": "Developer"
+		"role": "Developer"
 	}],
 	"require": {
 		"typo3/cms-core": "^12.4"
