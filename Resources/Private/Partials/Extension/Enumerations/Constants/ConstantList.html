@@ -1,0 +1,168 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+{namespace m=ExtensionBuilderCom\ExtensionbuilderTypo3\ViewHelpers}
+
+<f:comment>
+	<p><f:debug inline="1">{_all}</f:debug></p>
+</f:comment>
+
+
+    <div class="tx_scheduler_module_table">
+        <div class="panel panel-default overflow-visible" data-multi-record-selection-identifier="task-group-{vendorGroupId}">
+            <div class="panel-heading multi-record-selection-panel" data-task-group-id="{vendorGroupId}">
+                <button type="button"
+                    title="{f:translate(key: 'LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:label.group')}"
+                    class="btn btn-link fw-bold pt-1 p-0"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#scheduler-task-group-{vendorGroupId}"
+                    aria-expanded="{f:if(condition: vendorGroup.backendGroupCollapsed, then: 'false', else: 'true')}"
+                >
+
+                     <span>Constants</span> (<span class="t3js-table-total-items" title="{f:translate(key: 'LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:label.group.taskCount')}"><m:arraycount myvar='{enumerationData}'/></span>)
+                 </button>
+
+                 <button type="button"
+                     class="btn btn-default btn-sm float-end t3js-toggle-table"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#scheduler-task-group-{vendorGroupId}"
+                     aria-expanded="{f:if(condition: vendorGroup.backendGroupCollapsed, then: 'false', else: 'true')}"
+                 >
+                     <span class="collapseIcon">
+                         <core:icon identifier="{f:if(condition: vendorGroup.backendGroupCollapsed, then: 'actions-view-list-expand', else: 'actions-view-list-collapse')}" size="small" />
+                     </span>
+                 </button>
+
+            </div>
+
+
+			
+            <div
+                class="panel-collapse collapse {f:if(condition: '{enumerationGroupCollapsed}', then: 'show')}"
+                id="scheduler-task-group-{vendorGroupId}"
+                data-table="task-group-{vendorGroupId}">
+				
+                    <div class="table-fit mb-0">
+                        <table class="table table-striped table-hover Group-table">
+                            <thead>
+                                <tr class="taskGroup_{vendorGroupId}">
+									
+                                    <th>
+                                        <f:translate
+                                            key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:label.table"
+                                        />
+                                    </th>
+                                    <th>
+                                        <f:translate
+                                            key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:label.columns"
+                                        />
+                                    </th>
+                                    <th>
+                                        <f:translate
+                                            key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:label.lastExecution"
+                                        />
+                                    </th>
+                                    <th data-sort-method="none"></th>
+                                </tr>
+                            </thead>
+							
+							
+                            <tbody>
+								
+                                <f:for each="{enumerationData}" as="constantArray" key="constantName">
+
+<f:if condition="<m:isarray myvar='{constantArray}'/>==1">
+    <f:then>
+
+
+                                    <tr>
+
+                                        <f:comment>Edit</f:comment>										
+                                        <td class="nowrap-disabled">
+                                            <div class="name">
+                                                <f:be.link route="extensionbuilder_typo3.extension.enumeration.constant.edit"
+                                                    parameters="{
+                                                        'vendorName': vendorName,
+                                                        'extensionName': extensionName,
+                                                        'enumerationName': '{enumerationName}',
+                                                        'constantName': '{constantName}'
+                                                    }"
+                                                >
+                                                <strong>{constantName}													
+                                                <f:if condition="{constantArray.description} != ''">
+                                                ({constantArray.description})
+                                                </f:if>
+                                                </strong>
+
+                                                </f:be.link>
+                                            </div>
+                                        </td>
+
+                                        <f:comment>Value</f:comment>
+                                        <td>
+                                            {constantArray.enum}
+                                        </td>
+
+                                        <f:comment>ToDo</f:comment>
+                                        <td>
+											{constantArray.language.en}
+                                        </td>
+
+                                        <td class="nowrap">
+                                            <div class="btn-group" role="group">
+												
+                                                <f:comment>Edit</f:comment>
+                                                <f:be.link route="extensionbuilder_typo3.extension.enumeration.constant.edit"
+                                                    parameters="{
+                                                        'vendorName': vendorName,
+                                                        'extensionName': extensionName,
+                                                        'enumerationName': '{enumerationName}',
+                                                        'constantName': '{constantName}'
+                                                    }"
+                                                    class="btn btn-default"
+                                                    data="{bs-toggle: 'tooltip'}"
+                                                    title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
+                                                >
+
+                                                    <core:icon identifier="actions-open"/>
+                                                </f:be.link>
+												
+                                                <f:comment>Delete</f:comment>
+                                                <f:be.link route="extensionbuilder_typo3.extension.enumeration.constant.delete"
+                                                    parameters="{
+                                                        'vendorName': vendorName,
+                                                        'extensionName': extensionName,
+                                                        'enumerationName': '{enumerationName}',
+                                                        'constantName': '{constantName}'
+                                                    }"
+                                                    class="btn btn-default t3js-modal-trigger"
+                                                    data="{bs-toggle: 'tooltip',
+                                                    severity: 'warning',
+                                                    button-close-text: '{f:translate(key: \'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel\')}',
+                                                    bs-content='{f:translate(key: \'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/Language/locallang.xlf:msg.delete\')}'
+                                                    }"
+                                                    title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
+                                                >
+                                                    <core:icon identifier="actions-edit-delete"/>
+                                                </f:be.link>
+                                            </div>
+
+                                        </td>
+									
+                                </tr>
+
+    </f:then>
+</f:if>
+		
+                            </f:for>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</html>

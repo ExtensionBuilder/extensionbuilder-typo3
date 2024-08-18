@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:scheduler/Resources/Private/Language/locallang.getstarted.xlf" date="2024-01-21T20:00:00Z" product-name="extensionbuilder_typo3">
+		<header/>
+		<body>
+			<trans-unit id="h1" resname="h1">
+				<source>Welcome to the Extension Builde</source>
+			</trans-unit>
+			<trans-unit id="h2" resname="h2">
+				<source>Maintenance, extensions or changes can be implemented easily and quickly</source>
+			</trans-unit>
+			<trans-unit id="h3" resname="h3">
+				<source>Configuring instead of programming</source>
+			</trans-unit>
+			
+			<trans-unit id="content1" resname="content1">
+				<source>
+When developing TYPO3 extensions, you always come across repetitive programming and functions.
+				</source>
+			</trans-unit>
+			<trans-unit id="content2" resname="content2">
+				<source>
+My Extension Builder takes a different approach: configuring instead of programming.
+				</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
+

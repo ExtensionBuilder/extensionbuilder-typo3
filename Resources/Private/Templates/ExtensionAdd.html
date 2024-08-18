@@ -1,0 +1,43 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:layout name="Module" />
+
+    <f:section name="Content">
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@typo3/backend/modal.js'
+            }"
+        />
+
+<button
+    type="button"
+    class="btn btn-default"
+    data-import="@extensionbuilder/extensionbuilder_typo3/module/extesion/configuration/extconf.js"
+>
+Choose Preset…
+</button>
+
+
+        <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
+		
+            <h1><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.extension.add.h1" /></h1>
+    		<h2><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.extension.add.h2" /></h2>
+    		<p><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.extension.add.content" /></p>
+		
+            <div class="tx_extensionbuilder_typo3_module">
+
+    			<f:render partial="Extension/VendorGroupField" arguments="{extensionData: extensionData, registeredVendorGroups: registeredVendorGroups}" />
+
+                <f:render partial="Extension/ExtensionNameField" arguments="{extensionData: extensionData}" />
+                <f:render partial="Extension/TitleField" arguments="{extensionData: extensionData}" />
+	    		<f:render partial="Extension/DescriptionField" arguments="{extensionData: extensionData}" />
+
+            </div>
+
+        </form>
+
+    </f:section>
+</html>

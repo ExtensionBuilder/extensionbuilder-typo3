@@ -1,0 +1,31 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+<f:comment>
+<f:debug>{_all}</f:debug>
+</f:comment>
+
+        <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
+            <div class="tx_extensionbuilder_typo3_module">
+
+                <h1>
+                <f:if condition="{configuration.proVersion}">
+                    <f:then>
+                        <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:configuration.proVersion" />
+                    </f:then>
+                    <f:else>
+                        <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:configuration.communityVersion" />
+                    </f:else>
+                </f:if>
+                </h1>
+
+                <f:render partial="Configutation/ConfigutationFields"  arguments="{configurationData: configurationData}" />
+            </div>
+        </form>
+
+    </f:section>
+</html>

@@ -1,0 +1,62 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+    <div class="tx_extensionbuilder_typo3_module_table">
+
+        <div class="panel panel-default overflow-visible">
+
+            <div class="panel-heading">
+
+                <button type="button"
+                    class="btn btn-link fw-bold pt-1 p-0"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#extension-builder-group-vendordata"
+                    aria-expanded="{f:if(condition: vendordataCollapsed, then: 'false', else: 'true')}"
+                >
+                    <span>
+                        {f:translate(key: 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:label.vendor.vendordata')}
+                    </span>
+                </button>
+
+                <button type="button"
+                    class="btn btn-default btn-sm float-end t3js-toggle-table"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#extension-builder-group-vendordata"
+                    aria-expanded="{f:if(condition: tablesGroupCollapsed, then: 'false', else: 'true')}"
+                >
+                    <span class="collapseIcon">
+                        <core:icon identifier="{f:if(condition: vendordataCollapsed, then: 'actions-view-list-expand', else: 'actions-view-list-collapse')}" size="small" />
+                    </span>
+                </button>
+
+            </div>
+
+
+            <div
+                class="panel-collapse collapse {f:if(condition: '{vendordataCollapsed}', then: 'show')}"
+                id="extension-builder-group-vendordata"
+            >
+				
+                <div class="table-fit mb-0">
+
+                    <div class="form-section">
+                            <f:render partial="Vendor/VendorDataFields/AddressField"     arguments="{vendorData: vendorData}" />
+                            <f:render partial="Vendor/VendorDataFields/ZipField"         arguments="{vendorData: vendorData}" />
+                            <f:render partial="Vendor/VendorDataFields/CityField"        arguments="{vendorData: vendorData}" />
+                            <f:render partial="Vendor/VendorDataFields/CountryField"     arguments="{vendorData: vendorData}" />
+                            <f:render partial="Vendor/VendorDataFields/HomepageField"    arguments="{vendorData: vendorData}" />
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</html>

@@ -1,0 +1,54 @@
+a<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<f:layout name="Module" />
+<f:section name="Content">
+
+    <f:be.pageRenderer
+        includeJavaScriptModules="{
+            0: '@typo3/backend/modal.js'
+        }"
+    />
+
+<f:comment>
+	<p><f:debug inline="1">{_all}</f:debug></p>
+</f:comment>
+
+    <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
+        <input type="hidden" name="vendorName"    value="{vendorName}" />
+        <input type="hidden" name="extensionName" value="{extensionName}" />
+        <input type="hidden" name="enumerationNameOrg" value="{enumerationName}" />
+
+        <h1>
+            <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.tables.xlf:edit.h1" />
+        </h1>
+<f:comment>
+		<h2><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.tables.xlf:edit.h2" /></h2>
+		<p><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.tables.xlf:edit.content" /></p>
+</f:comment>
+
+        <div class="tx_extensionbuilder_typo3_module">
+            <div>
+                <f:render partial="Extension/Enumerations/EnumerationNameField" arguments="{enumerationName: enumerationName}"/>
+                <f:render partial="Extension/Enumerations/EnumerationDescriptionField" arguments="{enumerationData: enumerationData}"/>
+           </div>
+        </div>
+		
+            <f:render
+                partial="Extension/Enumerations/AddProperties"
+                arguments="{
+                    vendorName: '{vendorName}',
+			        extensionName: '{extensionName}',
+    			    tableName: '{tableName}'
+                }"
+            />
+<f:comment>
+</f:comment>
+<f:render partial="Extension/Enumerations/Constants/ConstantList" arguments="{_all}" />
+
+    </form>
+
+</f:section>
+</html>

@@ -1,0 +1,44 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  ExtensionBuilder\ExtensionbuilderTypo3\:
+    resource: '../Classes/*'
+    exclude: ['../Classes/ExtensionBuilder/*','../Classes/Enumeration/*', '../Classes/Utility/*']
+
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\ExtensionModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\ExtensionTableModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\ExtensionEnumerationModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\ExtensionEnumerationConstantModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\ExtensionLanguageModuleController:
+    tags: ['backend.controller']
+
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\ProjectModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\VendorModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\DeveloperModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\ConfigurationModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\GetstartedModuleController:
+    tags: ['backend.controller']
+
+  ExtensionBuilder\ExtensionbuilderTypo3\Controller\InfoModuleController:
+    tags: ['backend.controller']

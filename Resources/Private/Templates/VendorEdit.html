@@ -1,0 +1,72 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+<f:comment>
+<f:debug inline="1">{_all}</f:debug>
+</f:comment>
+
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@typo3/backend/modal.js'
+            }"
+        />
+
+    <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
+        <input type="hidden" name="vendorName" value="{vendorName}" />
+        <input type="hidden" name="vendorNameOrg" value="{vendorName}" />
+
+        <h1><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.vendor.edit.h" arguments="{0: vendorData.vendorName}" /></h1>
+		<p><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.vendor.edit.content" /></p>
+
+
+.
+        <div class="tx_extensionbuilder_typo3_module">
+
+            <div class="form-section">
+                <f:render partial="Vendor/VendorFields/VendorNameField"  arguments="{vendorData: vendorData}" />
+                <f:render partial="Vendor/VendorFields/VendorIdField"    arguments="{vendorData: vendorData}" />
+<f:comment>
+                <f:render partial="Vendor/VendorFields/CompanyField"     arguments="{vendorData: vendorData}" />
+</f:comment>
+            </div>
+
+            <f:render
+                partial="Vendor/VendorData"
+                arguments="{
+			        extensionName: '{extensionName}',
+    			    vendorName: '{vendorName}',						   
+                    extensionData: extensionData,
+                    registeredVendorGroups: registeredVendorGroups
+                }"
+            />
+
+            <f:render
+                partial="Vendor/VendorPreferredExtensions"
+                arguments="{
+			        extensionName: '{extensionName}',
+    			    vendorName: '{vendorName}',						   
+                    extensionData: extensionData,
+                    registeredVendorGroups: registeredVendorGroups
+                }"
+            />
+<f:comment>
+            <div class="form-section">
+                <f:render partial="Vendor/DescriptionField" arguments="{vendorData: vendorData}" />
+                <f:render partial="Vendor/AddressField"     arguments="{vendorData: vendorData}" />
+                <f:render partial="Vendor/ZipField"         arguments="{vendorData: vendorData}" />
+                <f:render partial="Vendor/CityField"        arguments="{vendorData: vendorData}" />
+                <f:render partial="Vendor/CountryField"     arguments="{vendorData: vendorData}" />
+                <f:render partial="Vendor/HomepageField"    arguments="{vendorData: vendorData}" />
+            </div>
+</f:comment>
+        </div>
+
+    </form>
+
+</f:section>
+</html>

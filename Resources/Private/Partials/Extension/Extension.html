@@ -1,0 +1,72 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+	
+    <div class="tx_extensionbuilder_mod1_extension">
+        <div class="panel panel-default overflow-visible">
+
+            <div class="panel-heading" data-extension-group-id="{vendorGroupId}">
+                <button type="button"
+                    title="{f:translate(key: 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extensions.xlf:label.extensionconfiguration')}"
+                    class="btn btn-link fw-bold pt-1 p-0"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#extensionbuilder-extension-group"
+                    aria-expanded="{f:if(condition: extensionGroup.backendGroupCollapsed, then: 'false', else: 'true')}"
+                >
+                    <span>
+                    <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extensions.xlf:label.extensionconfiguration"/>
+					</span>
+                 </button>
+
+                 <button type="button"
+                     class="btn btn-default btn-sm float-end t3js-toggle-table"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#extensionbuilder-extension-group"
+                     aria-expanded="{f:if(condition: extensionGroup.backendGroupCollapsed, then: 'false', else: 'true')}"
+                 >
+                     <span class="collapseIcon">
+                         <core:icon identifier="{f:if(condition: extensionGroup.backendGroupCollapsed, then: 'actions-view-list-expand', else: 'actions-view-list-collapse')}" size="small" />
+                     </span>
+                 </button>
+            </div>
+			
+            <div
+                class="panel-collapse collapse {f:if(condition: '{extensionGroup.backendGroupCollapsed}', then: 'show')}"
+                id="extensionbuilder-extension-group" data-table="extensionbuilder-extension-group"
+            >
+
+                <div class="form-section">
+                    <f:render partial="Extension/VendorGroupField" arguments="{
+                        extensionData: extensionData,
+                        registeredVendorGroups: registeredVendorGroups
+                    }"/>
+                </div>
+
+
+                <div class="form-section">
+                    <div id="extensionbuilder-extension-name">
+                        <f:render partial="Extension/ExtensionNameField" arguments="{extensionData: extensionData}"/>
+                        <f:render partial="Extension/ExtensionNamePrefixField" arguments="{extensionData: extensionData}"/>
+                    </div>
+
+                    <div id="extensionbuilder-extension-name">
+                        <f:render partial="Extension/ExtensionComposerNameField" arguments="{extensionData: extensionData}"/>
+                        <f:render partial="Extension/ExtensionTerNameField" arguments="{extensionData: extensionData}"/>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <f:render partial="Extension/TitleField"         arguments="{extensionData: extensionData}"/>
+                    <f:render partial="Extension/DescriptionField"   arguments="{extensionData: extensionData}"/>
+                </div>
+
+                <div class="form-section">
+                    <f:render partial="Extension/VersionFields"    arguments="{extensionData: extensionData}"/>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</html>

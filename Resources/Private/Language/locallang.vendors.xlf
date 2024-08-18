@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf" date="2024-01-21T20:00:00Z" product-name="extensionbuilder_typo3" >
+		<header/>
+		<body>
+
+			<trans-unit id="vendor.start.h" resname="vendor.start.h" xml:space="preserve" approved="yes">
+				<source>To create your first extension, you must first create a vendor.</source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>

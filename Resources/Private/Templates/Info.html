@@ -1,0 +1,39 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+        <div>
+            <h1><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf:info.h" /></h1>
+
+            <div style="width: 301px; top left repeat-y;">
+                <div style="float: left;  width: 100px;">Version</div>
+                <div style="float: right; width: 200px;">{ebConfig.version}</div>
+                <br /><br />
+                <div style="float: left;  width: 100px;">Author</div>
+                <div style="float: right; width: 200px;">Stephan Franz Sellner</div>
+                <div style="float: left;  width: 100px;">Support</div>
+                <div style="float: right; width: 200px;"><f:link.email email="contact@extension-builder.dev" target="_blank" /></div>
+                <div style="float: left;  width: 100px;">Homepage</div>
+                <div style="float: right; width: 200px;"><f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external></div>
+                <br /><br /><br /><br />
+                <div style="float: left;  width: 100px;">Develpers</div>
+                <div style="float: right; width: 200px;">{ebConfig.developerCounter}</div>
+                <br />
+                <div style="float: left;  width: 100px;">Vendors</div>
+                <div style="float: right; width: 200px;">{ebConfig.vendorCounter}</div>
+                <br />
+                <div style="float: left;  width: 100px;">Extensions</div>
+                <div style="float: right; width: 200px;">{ebConfig.extensionCounter}</div>
+
+
+
+
+            </div>
+
+        </div>
+
+    </f:section>
+</html>

@@ -1,0 +1,76 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+
+    <f:section name="Content">
+
+
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@typo3/backend/modal.js'
+            }"
+        />
+
+
+<f:comment>
+<f:debug inline="1">{_all}</f:debug>
+</f:comment>
+
+        <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
+            <input type="hidden" name="vendorName" value="{vendorName}" />
+            <input type="hidden" name="extensionName" value="{extensionName}" />
+
+            <div>
+
+                <f:render
+                    partial="Extension/Extension"
+                    arguments="{
+	    		        extensionName: '{extensionName}',
+    	    		    vendorName: '{vendorName}',						   
+                        extensionData: extensionData,
+                        registeredVendorGroups: registeredVendorGroups
+                    }"
+                />
+
+                <f:render
+                    partial="Extension/AddProperties"
+                    arguments="{
+		    	        extensionName: '{extensionName}',
+    		    	    vendorName: '{vendorName}'
+                    }"
+                />
+
+	    		<f:if condition="{extensionData.tables -> f:count()} > 0">
+                    <f:render
+                        partial="Extension/Tables/TablesList"
+                        arguments="{
+		        	        extensionName: '{extensionName}',
+            			    vendorName: '{vendorName}',						   
+        			        extensionData: extensionData
+                        }"
+                    />
+			    </f:if>
+
+<f:comment>
+			    <f:if condition="{extensionData.enumerations -> f:count()} > 0">
+                    <f:render
+                        partial="Extension/Enumerations/EnumerationsList"
+                        arguments="{
+			                extensionName: '{extensionName}',
+            			    vendorName: '{vendorName}',						   
+        			        extensionData: extensionData
+                        }"
+                    />
+                </f:if>
+</f:comment>
+
+            </div>
+
+        </form>
+
+    </f:section>
+
+</html>

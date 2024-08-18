@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:scheduler/Resources/Private/Language/locallang.configuration.xlf" date="2024-01-21T20:00:00Z" product-name="extensionbuilder_typo3">
+		<header/>
+		<body>
+
+			<trans-unit id="configuration.communityVersion" resname="configuration.communityVersion">
+				<source>You use the community version of Extension Builder</source>
+			</trans-unit>
+			<trans-unit id="configuration.proVersion" resname="configuration.proVersion">
+				<source>You use the pro version of Extension Builder</source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>
+

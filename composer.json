@@ -1,0 +1,24 @@
+{
+	"name": "extensionbuilder/extensionbuilder-typo3",
+	"description": " - ",
+	"license": "GPL-3.0-or-later",
+	"type": "typo3-cms-extension",
+	"homepage": "https://extension-builder.dev",
+	"authors": [{
+		"name": "Stephan Sellner",
+		"email": "contact@extsension-builder.dev"
+	}],
+	"require": {
+		"typo3/cms-core": "^12.4"
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "extensionbuilder_typo3"
+		}
+	},
+    "autoload": {
+        "classmap": [
+            "*"
+        ]
+    }
+}

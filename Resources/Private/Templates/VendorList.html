@@ -1,0 +1,29 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+<f:comment>
+<f:debug inline="1">{_all}</f:debug>
+</f:comment>
+
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@typo3/backend/modal.js',
+                1: '@typo3/backend/tooltip.js'
+            }"
+        />
+
+    	<f:if condition="{vendorList -> f:count()} == 0">
+        	<f:then>
+                <h2><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendors.xlf:vendor.start.h" /></h2>
+        	</f:then>
+        	<f:else>
+    			<f:render partial="VendorList" arguments="{_all}" />
+        	</f:else>
+    	</f:if>	
+
+    </f:section>
+</html>

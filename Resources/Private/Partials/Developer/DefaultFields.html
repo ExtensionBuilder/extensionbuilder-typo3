@@ -1,0 +1,53 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:debug>{_all}</f:debug>
+
+<div class="form-section" id="extension_name_row">
+
+    <div class="form-group">
+        <label for="developerData.default.project">
+            <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:developer.default.project"/>
+        </label>
+        <div class="form-control-wrap">
+            <input type="hidden" name="developerData[default][project]" value="{developerData.default.project}" />
+
+            <select class="form-select">
+            <f:for each="{projects}" key="projectKey" as="projectName">
+                <option
+                    value="{projectKey}"
+                    title="{projectName}"
+                    {f:if(condition:'{projectKey} == {developerData.default.project} ',then:'selected="selected"')}
+                >
+                    {projectKey} - {projectName}
+                </option>
+            </f:for>
+            </select>
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="developerData.default.vendor">
+            <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:developer.default.vendor"/>
+        </label>
+        <div class="form-control-wrap">
+
+            <input type="hidden" name="developerData[default][vendor]" value="{developerData.default.vendor}" />
+            <select class="form-select">
+            <f:for each="{vendors}" key="vendorKey" as="vendorName">
+                <option
+                    value="{vendorKey}"
+                    title="{vendorName}"
+                    {f:if(condition:'{vendorKey} == {developerData.default.vendor} ',then:'selected="selected"')}
+                >
+                    {vendorName}
+                </option>
+            </f:for>
+            </select>
+
+
+        </div>
+    </div>
+
+</div>
+</html>

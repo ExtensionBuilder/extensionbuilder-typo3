@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extensions.xlf" date="2024-01-21T20:00:00Z" product-name="extensionbuilder_typo3">
+		<header/>
+		<body>
+
+			<trans-unit id="extension.start.h" resname="extension.start.h" xml:space="preserve" approved="yes">
+                <source>Create your serious extension now.</source>
+				<target>Erstelle jetzt deine ernst Extension.</target>
+			</trans-unit>
+			<trans-unit id="extension.start.p" resname="extension.start.p" xml:space="preserve" approved="yes">
+                <source>Click "Add Vendor" and enter the data and information.</source>
+                <target>
+                    <![CDATA[Klicke "Add Extension" an und gebe die Daten und Informationen ein.<br />
+                             After that you can build.]]>
+                </target>
+			</trans-unit>
+
+			
+		</body>
+	</file>
+</xliff>

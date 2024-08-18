@@ -1,0 +1,85 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+    <div class="tx_extensionbuilder_typo3_module_vendor">
+        <div class="panel panel-default overflow-visible">
+
+            <div class="panel-heading multi-record-selection-panel" data-task-group-id="{vendorGroupId}">
+                <span>{f:translate(key: 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:label.vendoroverview')}</span> (<span class="t3js-table-total-items" title="{f:translate(key: 'LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:label.noGroup.taskCount')}">{vendorList -> f:count()}</span>)
+            </div>
+
+            <div class="panel-collapse collapse {f:if(condition: '!{vendorGroup.backendVendorGroupCollapsed}', then: 'show')}" id="scheduler-task-group-0" data-table="task-group-0">
+                <div class="table-fit mb-0">
+                    <table class="table table-striped table-hover Group-table">
+                        <thead>
+                            <tr class="vendorGroup">
+                                <th>
+                                    <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:label.vendor"/>
+                                </th>
+                                <th data-sort-method="none"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{vendorList}" as="vendor">
+                                <tr class="{vendor.vendorName}" data-task-id="{vendor.vendorName}">
+
+                                    <td class="nowrap-disabled">
+                                        <div class="name">
+                                            <f:be.link
+                                                route="extensionbuilder_typo3.vendor.edit"
+                                                parameters="{'vendorName': vendor.vendorName}">
+                                                <strong>
+                                                    {vendor.vendorName} 
+													<f:if condition="{vendor.company} != ''">
+                                                    ({vendor.company})
+                                                    </f:if>
+                                                </strong>
+                                            </f:be.link>
+                                        </div>
+                                       <f:if condition="{vendor.description} != ''">
+                                           <div class="text-muted" style="margin-top: 0.5em;">
+                                               <f:format.nl2br>{vendor.description}</f:format.nl2br>
+                                           </div>
+                                        </f:if>
+                                    </td>
+
+                                    <td class="nowrap">
+                                        <div class="btn-group" role="group">
+
+                                            <f:be.link route="extensionbuilder_typo3.vendor.edit"
+                                                parameters="{'vendorName': vendor.vendorName}"
+                                                class="btn btn-default"
+                                                data="{bs-toggle: 'tooltip'}"
+                                                title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:edit')}"
+                                            >
+                                                <core:icon identifier="actions-open"/>
+                                            </f:be.link>
+
+                                            <f:be.link route="extensionbuilder_typo3.vendor.delete"
+                                                parameters="{'vendorName': vendor.vendorName}"
+                                                class="btn btn-default t3js-modal-trigger"
+                                                data="{bs-toggle: 'tooltip',
+                                                    severity: 'warning',
+                                                    button-close-text: '{f:translate(key: \'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel\')}',
+                                                    bs-content='{f:translate(key: \'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/Language/locallang.xlf:msg.delete\')}'
+                                                }"
+                                                title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
+                                            >
+                                                <core:icon identifier="actions-edit-delete"/>
+                                            </f:be.link>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

@@ -1,0 +1,48 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+<f:comment>
+<f:debug inline="1">{_all}</f:debug>
+</f:comment>
+
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@typo3/backend/modal.js'
+            }"
+        />
+
+        <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
+		
+            <h1><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.vendor.add.h" /></h1>
+            <p><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.vendor.add.content" /></p>
+
+            <div class="tx_extensionbuilder_typo3_module">
+
+                <div class="form-section">
+                    <f:render partial="Vendor/VendorFields/VendorNameField"  arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/VendorDataFields/CompanyField"     arguments="{vendorData: vendorData}" />
+                </div>
+                <div class="form-section">
+                    <f:render partial="Vendor/VendorFields/DescriptionField" arguments="{vendorData: vendorData}" />
+                </div>
+                <div class="form-section">
+                    <f:render partial="Vendor/VendorDataFields/AddressField"     arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/VendorDataFields/ZipField"         arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/VendorDataFields/CityField"        arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/VendorDataFields/CountryField"     arguments="{vendorData: vendorData}" />
+                </div>
+                <div class="form-section">
+                    <f:render partial="Vendor/VendorDataFields/HomepageField"    arguments="{vendorData: vendorData}" />
+                </div>
+
+            </div>
+		
+        </form>
+
+    </f:section>
+</html>

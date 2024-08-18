@@ -1,0 +1,42 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+    <div class="tx_extensionbuilder_mod1_configuration">
+        <div class="panel panel-default overflow-visible">
+
+            <div class="btn-toolbar panel-heading">
+                <f:alias
+                    map="{add: {
+                        table: 'Table',
+                        enumeration: 'Enumeration'
+                    }}"
+                >
+<f:comment>
+
+scheduler: 'Scheduler',
+events: 'Events',
+viewHelpers: 'ViewHelpers',
+backend: 'Backend'
+</f:comment>
+                    <f:for each="{add}" as="wert" key="key">
+                        <f:be.link
+                            route="extensionbuilder_typo3.extension.{key}.add"
+                            parameters="{
+                                'vendorName': '{vendorName}',
+                                'extensionName': '{extensionName}'
+                            }"
+                            class="btn btn-default"
+                            title="{wert}"
+                        >
+                        {wert}
+                        </f:be.link>
+                    </f:for>
+                </f:alias>
+            </div>
+			
+        </div>
+    </div>
+</html>

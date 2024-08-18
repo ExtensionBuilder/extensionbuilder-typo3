@@ -1,0 +1,21 @@
+<div class="form-group">
+    <label for="task_group">
+        <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extensions.xlf:label.vendorname" />
+    </label>
+    <div class="form-control-wrap">
+        <div class="input-group">
+            <select name="extensionData[extension][vendorName]" id="extensionData.extension.vendorName" class="form-select">
+                <option value="0" title="" {f:if(condition:'{extnsenionData.extension.vendorName} == 0',then:'selected="selected"')} ></option>
+                <f:for each="{registeredVendorGroups}" as="registeredVendorGroup">
+                    <option
+                        value="{registeredVendorGroup}"
+                        title="{registeredVendorGroup}"
+                        {f:if(condition:'{extensionData.extension.vendorName} == {registeredVendorGroup}',then:'selected="selected"')}
+                    >
+                        {registeredVendorGroup}
+                    </option>
+                </f:for>
+            </select>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+<f:comment>
+<f:debug inline="1">{_all}</f:debug>
+</f:comment>
+
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@typo3/backend/modal.js'
+            }"
+        />
+
+        <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
+		
+            <h1><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.project.add.h1" /></h1>
+    		<h2><f:translate key="LLL:EXT:extensionbuilder_typo3r/Resources/Private/Language/locallang.xlf:function.project.add.h2" /></h2>
+    		<p><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.project.add.content" /></p>
+		
+            <div class="tx_extensionbuilder_typo3_module">
+                <f:render partial="Project/NameField" arguments="{project: project}" />
+    			<f:render partial="Project/DescriptionField" arguments="{project: project}" />
+            </div>
+
+        </form>
+
+    </f:section>
+</html>

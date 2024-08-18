@@ -1,0 +1,24 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+<f:comment>
+<f:debug inline="1">{_all}</f:debug>
+</f:comment>
+
+<f:debug inline="1">{_all}</f:debug>
+
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@typo3/backend/modal.js',
+                1: '@typo3/backend/tooltip.js'
+            }"
+        />
+
+    	<f:render partial="ProjectList" arguments="{_all}" />
+
+    </f:section>
+</html>
