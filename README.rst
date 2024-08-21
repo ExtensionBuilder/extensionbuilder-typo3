@@ -3,6 +3,7 @@
 TYPO3 extension ``extensionbuilder_typo3``
 ==========================================
 
+Status: Test version without function
 
 Compatibility
 =============
