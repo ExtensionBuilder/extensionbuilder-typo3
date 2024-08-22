@@ -24,9 +24,9 @@
 			"extension-key": "extensionbuilder_typo3"
 		}
 	},
-    "autoload": {
-        "classmap": [
-            "*"
-        ]
-    }
+	"autoload": {
+		"classmap": [
+			"*"
+		]
+	}
 }
