@@ -3,6 +3,10 @@ declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
+/**
+ * Version 1.0.0 - RC1
+ */
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -32,10 +36,12 @@ class InfoModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\Build
         parent::__construct();
     }
 
+    /**
+     * Module controller
+     */
     final function info(
         ServerRequestInterface $request,
-    ): ResponseInterface
-    {
+    ): ResponseInterface {
         $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
 
 		$view = $this->moduleTemplateFactory->create($request);

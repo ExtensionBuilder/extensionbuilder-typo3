@@ -35,7 +35,9 @@ use ExtensionBuilder\ExtensionbuilderTypo3\Enumeration\Action;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 use ExtensionBuilder\ExtensionbuilderTypo3\Utility\ModuleController;
 use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
+
 use TYPO3\CMS\Core\Page\PageRenderer;
+
 
 use ExtensionBuilder\ExtensionbuilderTypo3\Utility\Github;
 

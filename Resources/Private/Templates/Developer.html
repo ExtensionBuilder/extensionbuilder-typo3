@@ -11,13 +11,11 @@
 
         <form name="tx_extensionbuilder_typo3_form" id="tx_extensionbuilder_typo3_form" method="post">
             <div class="tx_extensionbuilder_typo3_module">
-
                 <h1><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:h1" /></h1>
-<f:comment>
-                <f:render partial="Developer/DeveloperFields" arguments="{developerData: developerData}"/>
-</f:comment>
-                <f:render partial="Developer/DefaultFields" arguments="{developerData: developerData, projects: projects, vendors: vendors}"/>
 
+                <f:render partial="Developer/DeveloperFields" arguments="{developerData: developerData}"/>
+
+                <f:render partial="Developer/DefaultFields" arguments="{developerData: developerData, projects: projects, vendors: vendors}"/>
             </div>
         </form>
 

@@ -79,20 +79,6 @@ abstract class  BuildExtensionAbstract
     /**
      *
      */
-    final function writeConfiguration(): void
-    {
-        $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder().
-            'TYPO3' . DIRECTORY_SEPARATOR . 'configuration.json';
-        $configuration = [];
-        $configuration['configuration'] = $this->configuration;
-        Tools\Json::write($fileName,$configuration);
-	}
-
-
-    /**
-     *
-     */
     final function readDeveloper(): void
     {
         $fileName = 
@@ -109,23 +95,6 @@ abstract class  BuildExtensionAbstract
             $this->developer['author_company'] = $GLOBALS['BE_USER']->user['company'] ?? '';
 		}
 
-	}
-
-
-    /**
-     *
-     */
-    final function writeDeveloper(): void
-    {
-
-debug($this->developer,'BuildExtensionAbstract.php - writeDeveloper');
-
-        $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()
-            . $GLOBALS['BE_USER']->user['username'] . '.json';
-        $developer = [];
-        $developer['developer'] = $this->developer;
-//        Tools\Json::write($fileName, $developer);
 	}
 
 
@@ -186,21 +155,6 @@ debug($this->developer,'BuildExtensionAbstract.php - writeDeveloper');
 	}
 
 
-    /**
-     *
-     */
-    final function writeVendors(): void
-    {
-// ToDO
-        $path = Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder();
-
-        $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()
-            . 'TYPO3' . DIRECTORY_SEPARATOR
-            . $vendorName.DIRECTORY_SEPARATOR
-            . 'vendor.json';
-//        Tools\Json::write($fileName, $developer);
-	}
 
 
     /**

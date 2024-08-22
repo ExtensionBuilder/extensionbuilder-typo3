@@ -11,20 +11,21 @@
         <div class="form-control-wrap">
             <input type="hidden" name="developerData[default][project]" value="{developerData.default.project}" />
 
-            <select class="form-select">
+            <select class="form-select" name="developerData[default][project]">
             <f:for each="{projects}" key="projectKey" as="projectName">
                 <option
                     value="{projectKey}"
                     title="{projectName}"
                     {f:if(condition:'{projectKey} == {developerData.default.project} ',then:'selected="selected"')}
                 >
-                    {projectKey} - {projectName}
+                    {projectName}
                 </option>
             </f:for>
             </select>
 
         </div>
     </div>
+
 
     <div class="form-group">
         <label for="developerData.default.vendor">
@@ -33,7 +34,9 @@
         <div class="form-control-wrap">
 
             <input type="hidden" name="developerData[default][vendor]" value="{developerData.default.vendor}" />
-            <select class="form-select">
+
+            <select class="form-select" name="developerData[default][vendor]">
+
             <f:for each="{vendors}" key="vendorKey" as="vendorName">
                 <option
                     value="{vendorKey}"

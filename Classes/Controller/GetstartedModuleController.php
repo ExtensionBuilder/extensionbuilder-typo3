@@ -1,6 +1,10 @@
 <?php
 declare(strict_types = 1);
 
+/**
+ * Version 1.0.0 - RC1
+ */
+
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
 use Psr\Http\Message\ResponseInterface;
@@ -28,6 +32,9 @@ final class GetstartedModuleController extends \ExtensionBuilder\Extensionbuilde
         parent::__construct();
     }
 
+    /**
+     * Module controller
+     */
     final function getstarted(
         ServerRequestInterface $request,
     ): ResponseInterface {

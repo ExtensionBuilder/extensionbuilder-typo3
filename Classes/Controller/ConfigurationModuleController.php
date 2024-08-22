@@ -3,6 +3,10 @@ declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
+/**
+ * Version 1.0.0 - RC1
+ */
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -13,6 +17,8 @@ use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Context\Context;
+
+use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract
 {
@@ -28,6 +34,10 @@ class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTy
         parent::__construct();
     }
 
+
+    /**
+     * Module controller
+     */
     final function configuration(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -38,7 +48,7 @@ class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTy
 		if ( in_array( $bodyParams['CMD'] ?? [], ['save',], true ) ) {
             $this->configuration = $bodyParams['configurationData'];
             $this->writeConfiguration();
-            $this->flashMessage('', 'Saving configuration');
+            $this->flashMessage('', 'Saving configuration'); // ToDo LLL
 		}
 
         $view->assignMultiple([
@@ -60,5 +70,21 @@ class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTy
 
     	return $view->renderResponse('Configuration');
     }
+
+
+    /**
+     * Saving the configuration settings
+     */
+    final function writeConfiguration(): void
+    {
+        $fileName =
+            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder().
+            'TYPO3' . DIRECTORY_SEPARATOR . 'configuration.json';
+
+        $configuration = [];
+        $configuration['configuration'] = $this->configuration;
+
+        Tools\Json::write($fileName,$configuration);
+	}
 
 }

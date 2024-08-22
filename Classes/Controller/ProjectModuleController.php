@@ -15,6 +15,8 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Context\Context;
 
+use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
 class ProjectModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract
 {
 
@@ -112,7 +114,6 @@ class ProjectModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\Bu
     }
 
 
-
     final function edit(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -177,4 +178,5 @@ if ($this->projects[$projectName] ?? false) {
         ]);
         return $view->renderResponse('ProjectList');
     }
+
 }

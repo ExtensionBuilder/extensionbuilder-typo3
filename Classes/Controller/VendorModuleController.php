@@ -294,7 +294,24 @@ debug($bodyParams);
 
     // ------------------------------------------------------------------
 
-    private function saveVendor(
+    /**
+     *
+     */
+    final function writeVendors(): void
+    {
+// ToDO
+        $path = Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder();
+
+        $fileName =
+            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()
+            . 'TYPO3' . DIRECTORY_SEPARATOR
+            . $vendorName.DIRECTORY_SEPARATOR
+            . 'vendor.json';
+//        Tools\Json::write($fileName, $developer);
+	}
+
+
+    private function saveVendorXXX(
         string $vendorName,
     ): void {
 
@@ -313,7 +330,7 @@ debug($bodyParams);
         $this->flashMessage('', 'Saving vendor: ' . $vendorName);
     }
 
-    private function deleteVendor(
+    private function deleteVendorXXX(
         string $vendorName,
     ): void {
         //
@@ -323,7 +340,7 @@ debug($bodyParams);
 	}
 
 
-    private function copyVendor(
+    private function copyVendorXXX(
         string $vendorName,
         string $vendorNameNew,
     ): void {
