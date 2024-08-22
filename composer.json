@@ -10,12 +10,12 @@
 		"homepage": "https://sellner.de/",
 		"role": "Developer"
 	}],
-    "support": {
-        "source": "https://github.com/ExtensionBuilder/extensionbuilder-typo3",
-        "issues": "https://github.com/ExtensionBuilder/extensionbuilder-typo3/issues",
-        "wiki": "https://extension-builder.dev/ebtypo3/wiki",
-        "docs": "https://extension-builder.dev/ebtypo3/documentation"
-    },
+	"support": {
+		"source": "https://github.com/ExtensionBuilder/extensionbuilder-typo3",
+		"issues": "https://github.com/ExtensionBuilder/extensionbuilder-typo3/issues",
+		"wiki": "https://extension-builder.dev/ebtypo3/wiki",
+		"docs": "https://extension-builder.dev/ebtypo3/documentation"
+	},
 	"require": {
 		"typo3/cms-core": "^12.4"
 	},
