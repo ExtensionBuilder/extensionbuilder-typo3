@@ -1,6 +1,7 @@
-.. image:: https://poser.pugx.org/bk2k/bootstrap-package/v/stable
-   :alt: Latest Stable Version
-   :target: https://extensions.typo3.org/extension/bootstrap_package/
+
+.. image:: https://img.shields.io/badge/TYPO3-14-orange.svg
+   :alt: TYPO3 14
+   :target: https://get.typo3.org/version/14
 
 .. image:: https://img.shields.io/badge/TYPO3-13-orange.svg
    :alt: TYPO3 13
