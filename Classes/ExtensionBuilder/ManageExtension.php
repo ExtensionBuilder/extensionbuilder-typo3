@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3;
@@ -10,37 +11,27 @@ use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 use ExtensionBuilder\ExtensionbuilderTypo3Core\BuildExtensionCore;
 
-// ToDo
-//
-// public function getForeignExtensionList(): array
-
 class ManageExtension
 {
 
-    public array $config = [];
-    public array $userConfig = [];
-    public array $projects = [];
-    public array $currentProjects = [];
     public array $vendorsAndExtensions = [];
     public array $vendorList = [];
     public array $extensionsList = [];
     public array $foreignExtensionsList = [];
 
+    public array $config = [];
+    public array $userConfig = [];
+    public array $projects = [];
+
     public function __construct()
     {
-
-        $this->vendorsAndExtensions = self::read();
-
-        $this->currentProjects = self::getCurrentProjects(); // ToDo remove
-
+        $this->vendorsAndExtensions = self::readExtensions();
         $this->vendorList = self::getVendorList();
         $this->extensionsList = self::getExtensionList();
-
         $this->foreignExtensionsList = self::getForeignExtensionList();
-
     }
 
-    public function read(): array
+    public function readExtensions(): array
     {
         $extensionsFolder = Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder();
 
@@ -59,10 +50,17 @@ class ManageExtension
         foreach ($vendorList ?? [] as $vendorKey => $vendorName) {
 
             // Read Vendordata
-            $vendorJsonList = Tools\Folder::scanFolderForFile($extensionsFolder . DIRECTORY_SEPARATOR . $vendorName, 'json');
+            $vendorJsonList = Tools\Folder::scanFolderForFile(
+                $extensionsFolder . DIRECTORY_SEPARATOR
+                . $vendorName, 'json'
+            );
             foreach ($vendorJsonList ?? [] as $json) {
 
-                $jsonData = Tools\Json::read($extensionsFolder . DIRECTORY_SEPARATOR . $vendorName . DIRECTORY_SEPARATOR . $json);
+                $jsonData = Tools\Json::read(
+                    $extensionsFolder . DIRECTORY_SEPARATOR
+                    . $vendorName . DIRECTORY_SEPARATOR
+                    . $json
+                );
                 if ($jsonData ?? false) {
                     if ($jsonData['vendor'] ?? false) {
 
@@ -83,11 +81,11 @@ class ManageExtension
                         }
                         $tmpVendorsAndExtensions[$vendorName] = $jsonData['vendor'];
 
-                        // Extension Liste erstellen
+                        // Create extension list
                         $extensionList = Tools\Folder::scanFolderForDirectory($extensionsFolder . DIRECTORY_SEPARATOR . $vendorName);
                         foreach ($extensionList ?? [] as $extensionKey => $extensionName) {
 
-                            // Extesion einlesen
+                            // Read Extension
                             if (!($tmpVendorsAndExtensions[$vendorName]['extensions'] ?? false)) {
                                 $tmpVendorsAndExtensions[$vendorName]['extensions'] = [];
                             }
@@ -102,19 +100,18 @@ class ManageExtension
                             $tmpVendorsAndExtensions[$vendorName]['extensions'][$extensionName] =
                                 Tools\ExtensionConfiguration::read($extensionPath);
 
+                            if (!($tmpVendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension']['type'] ?? false)) {
+                                $tmpVendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension']['type'] = "extension";
+                            }
 
-                            foreach ($tmpVendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension']['depends'] ?? [] as $dependsName => $dependsData) {
-
+//                            foreach ($tmpVendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension']['depends'] ?? [] as $dependsName => $dependsData) {
+// ToDo
 //echo "depend: ".$dependsName."<br />";
 
 //                                $tmpDepends =
 //                                    Tools\ExtensionConfiguration::read($extensionsPath.$dependsName, 'extensionbuilderexport.json');
 
 //if ($extension === "extensionbuilder_core") {
-//debug($extensionsPath.$dependsName,"extensionbuilder_core");
-//debug($tmpDepends,"extensionbuilder_core 1");	
-//debug($tmpVendorsAndExtensions[$vendor]['extensions'][$extension]['extension'],"extensionbuilder_core");		
-//debug($tmpDepends,"extensionbuilder_core");	
 //}
 
 //if (!($tmpVendorsAndExtensions[$vendor]['extensions'][$extension]['dependsExtensions'] ?? false)) {
@@ -127,13 +124,12 @@ class ManageExtension
 //                                );
 
 //if ($extension === "extensionbuilder_core") {
-//debug($tmpVendorsAndExtensions[$vendor]['extensions'][$extension]['dependsExtensions'],"extensionbuilder_core 2");
 //}
 
 
 //                                $tmpVendorsAndExtensions[$vendor]['extensions'][$extension]['dependsExtensions'] = 
 //                                    Tools\ExtensionConfiguration::read($extensionsPath.$dependsName, 'extensionbuilder.json');
-                            }
+//                            }
 
                         }
 
@@ -148,9 +144,8 @@ class ManageExtension
         }        
         return $tmpVendorsAndExtensions;
     }
-
 	
-    public function write(
+    public function writeExtension(
         string $vendorName = '',
         string $extensionName = '',
     ): void {
@@ -169,7 +164,7 @@ class ManageExtension
             Tools\ExtensionConfiguration::write(
                 $vendorPath,
                 'vendor.json',
-                $vendorDataForJson,
+                $vendorDataForJson
             );
 			
     		if ($extensionName) {
@@ -177,16 +172,98 @@ class ManageExtension
 
                 $extensionPath = $vendorPath . DIRECTORY_SEPARATOR . $extensionName;
                 GeneralUtility::mkdir_deep($extensionPath);
-				
-                // .json Dateien löschen, um dupllten zu verhinden
+
+                $devArray = [];
+
+                $devCode = $extensionPath . DIRECTORY_SEPARATOR . 'DeveloperCode';
+                $devArray[] = $devCode;
+
+                $devCodeClasses = $devCode . DIRECTORY_SEPARATOR . 'Classes';
+                $devArray[] = $devCodeClasses;
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Authentication';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Controller';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Domain';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Finishers';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Model';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Renderer';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Domain' . DIRECTORY_SEPARATOR . 'Repository';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'EventListener';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Hooks';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Middleware';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Property';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Report';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Status';
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'Utility';
+
+                $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'ViewHelpers';
+
+                $devCodeConfiguration = $devCode . DIRECTORY_SEPARATOR . 'Configuration';
+                $devArray[] = $devCodeConfiguration;
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Backend';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Extbase';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Extbase' . DIRECTORY_SEPARATOR . 'Persistence';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Flexforms';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Form';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR . 'Elements';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR . 'Finishers';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR . 'Validators';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Form' . DIRECTORY_SEPARATOR . 'Variants';
+
+                $devCodeConfigurationSets = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Sets';
+                $devArray[] = $devCodeConfigurationSets;
+                $devArray[] = $devCodeConfigurationSets . DIRECTORY_SEPARATOR . 'SitePackage';
+                $devArray[] = $devCodeConfigurationSets . DIRECTORY_SEPARATOR . 'SitePackage' . DIRECTORY_SEPARATOR . 'PageTsConfig';
+                $devArray[] = $devCodeConfigurationSets . DIRECTORY_SEPARATOR . 'SitePackage' . DIRECTORY_SEPARATOR . 'TypoScript';
+
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'RTE';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TCA';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TCA' . DIRECTORY_SEPARATOR . 'Overrides';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TsConfig';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TsConfig' . DIRECTORY_SEPARATOR . 'Page';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TypoScript';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TypoScript' . DIRECTORY_SEPARATOR . 'ContentElement';
+                $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . '';
+
+                $devArray[] = $devCode . DIRECTORY_SEPARATOR . 'Documentation';
+
+                $devCodeResources = $devCode . DIRECTORY_SEPARATOR . 'Resources';
+                $devArray[] = $devCodeResources;
+
+                $devCodeResourcesPrivate = $devCodeResources . DIRECTORY_SEPARATOR . 'Private';
+                $devArray[] = $devCodeResourcesPrivate;
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Language';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Layouts';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . 'ContentElements';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . 'Page';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Partials';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Partials' . DIRECTORY_SEPARATOR . 'ContentElements';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Partials' . DIRECTORY_SEPARATOR . 'Page';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Templates';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'ContentElements';
+                $devArray[] = $devCodeResourcesPrivate . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'Page';
+
+                $devCodeResourcesPublic = $devCodeResources . DIRECTORY_SEPARATOR . 'Public';
+                $devArray[] = $devCodeResourcesPublic;
+                $devArray[] = $devCodeResourcesPublic . DIRECTORY_SEPARATOR . 'Css';
+                $devArray[] = $devCodeResourcesPublic . DIRECTORY_SEPARATOR . 'Fonts';
+                $devArray[] = $devCodeResourcesPublic . DIRECTORY_SEPARATOR . 'Icons';
+                $devArray[] = $devCodeResourcesPublic . DIRECTORY_SEPARATOR . 'Images';
+                $devArray[] = $devCodeResourcesPublic . DIRECTORY_SEPARATOR . 'JavaScript';
+                $devArray[] = $devCodeResourcesPublic . DIRECTORY_SEPARATOR . 'Scss';
+                $devArray[] = $devCodeResourcesPublic . DIRECTORY_SEPARATOR . 'Scss' . DIRECTORY_SEPARATOR . 'Theme';
+
+
+                foreach ($devArray ?? [] as $devArrayaKey => $devArrayData) {
+                    GeneralUtility::mkdir_deep($devArrayData);
+                }
+
+                // .json Delete files to prevent duplicates
                 Tools\Folder::deleteFolderForFile($extensionPath, '.json');
 				
-//ToDo Backup vorm löschen der Daten
-
                 if (!($extension['extensionBuild'] ?? false)) { $extension['extensionBuild'] = []; }
 
                 $extension['extensionBuild']['editorVersion'] =
-                    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion(Setup\GlobalConfig::EXT_NAME);
+                    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3');
 
                 foreach ($extension ?? [] as $extensionDataName => $extensionData) {
                     if (is_array($extensionData)) {
@@ -229,8 +306,9 @@ class ManageExtension
                                         Tools\ExtensionConfiguration::writeSub(
                                             'tables',
                                             $extensionPath,
-                                            'table.'.$tableName.'.4.tabs.json',
-                                            $extensionDataForJson );
+                                            'table.' . $tableName . '.4.tabs.json',
+                                            $extensionDataForJson
+                                        );
                                         unset($table['tabs']);
 									}
 
@@ -243,7 +321,8 @@ class ManageExtension
                                             'tables',
                                             $extensionPath,
                                             'table.' . $tableName . '.5.palettes.json',
-                                            $extensionDataForJson );
+                                            $extensionDataForJson
+                                        );
                                         unset($table['palettes']);
 									}
 
@@ -253,7 +332,7 @@ class ManageExtension
                                         'tables',
                                         $extensionPath,
                                         'table.' . $tableName . '.1.json',
-                                        $extensionDataForJson,
+                                        $extensionDataForJson
                                     );
                                 }
                                 break;
@@ -266,7 +345,7 @@ class ManageExtension
                                         'enumerations',
                                         $extensionPath,
                                         'enumeration.' . $enumerationName . '.json',
-                                        $extensionDataForJson,
+                                        $extensionDataForJson
                                     );
                                 }
                                 break;
@@ -277,7 +356,7 @@ class ManageExtension
                                 Tools\ExtensionConfiguration::write(
                                     $extensionPath,
                                     $extensionDataName . '.json',
-                                    $extensionDataForJson,
+                                    $extensionDataForJson
                                 );
 						}
                     } 
@@ -285,28 +364,23 @@ class ManageExtension
 		    }
 		}
     }
-
 	
-    public function delete(
-        string $vendorName = '',
-        string $extensionName = '',
+    public function deleteExtension(
+        string $vendorName,
+        string $extensionName,
     ): void {
-// ToDo Logging
+
 		if (($this->vendorsAndExtensions[$vendorName] ?? false)) {
             $vendorFolder = Tools\ExtensionbuilderFolder::GetVendorsAndExtensionsBaseFolder() . DIRECTORY_SEPARATOR . $vendorName;
 		    if ($extensionName) {
-		        if (($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] ?? [])) {
+		        if ($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] ?? []) {
                     $extensionsFolder = $vendorFolder . DIRECTORY_SEPARATOR . $extensionName;
                     unset($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName]);
-                    Tools\Folder::deleteFolder($extensionsFolder);				
+                    Tools\Folder::deleteFolder($extensionsFolder);
     			}
-		    } else {
-                unset($this->vendorsAndExtensions[$vendorName]);
-                Tools\Folder::deleteFolder($vendorFolder);
-	    	}
+		    }
         }
 	}	
-
 
     public function renameVendor(
         string $vendorName = '',
@@ -323,7 +397,6 @@ class ManageExtension
         }
 	}
 
-
     public function renameExtension(
         string $vendorName = '',
         string $extensionName = '',
@@ -339,6 +412,20 @@ echo 'rename: '.$extensionNameNew.'<br />';
 		}		
 	}
 
+    public function copyExtension(
+        string $vendorName = '',
+        string $extensionName = '',
+        string $extensionNameNew = '',
+    ): void {
+//ToDo
+echo 'rename: '.$vendorName.'<br />';
+echo 'rename: '.$extensionName.'<br />';
+echo 'rename: '.$extensionNameNew.'<br />';
+
+        if ($this->vendorsAndExtensions[$vendorName] ?? false) {
+
+		}		
+	}
 
     // private function
 
@@ -368,25 +455,6 @@ echo 'rename: '.$extensionNameNew.'<br />';
         $returnArray = [];
         $returnArray = Tools\Json::read($configPath . 'projects.json');
         $returnArray = $returnArray['projects'] ?? [];
-        return $returnArray;
-    }
-
-    public function getCurrentProjects(): array
-    {
-        $returnArray = [];
-// ToDo
-        $returnArray['extensions'] = []; 
-        foreach ($this->vendorsAndExtensions ?? [] as $vendorName => $vendorData) {
-            foreach ($vendorData['extensions'] ?? [] as $extensionName => $extensionData) {
-				if (!is_array($extensionData['extensionBuild'] ?? '')) { continue; }
-                if ($extensionData['extensionBuild']['currentProject'] ?? false) {
-//                if (array_key_exists('currentProject', $extensionData['extensionBuild'] ?? [])) {
-                    if ($extensionData['extensionBuild']['currentProject'] ?? false) {
-                        $returnArray['extensions'][$extensionName] = $extensionData;
-                    }
-                }
-            }
-        }
         return $returnArray;
     }
 
@@ -423,15 +491,15 @@ echo 'rename: '.$extensionNameNew.'<br />';
         $returnArray = [];
 
         $extensionsPath =
-            Environment::getProjectPath() . DIRECTORY_SEPARATOR .
-            'typo3conf' . DIRECTORY_SEPARATOR .
-            'ext' . DIRECTORY_SEPARATOR;
+            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+            . 'typo3conf' . DIRECTORY_SEPARATOR
+            . 'ext' . DIRECTORY_SEPARATOR;
 
         foreach ($this->extensionsList ?? [] as $extensionsName => $extensionsData) {
             $tmpFile =
-                $extensionsPath . DIRECTORY_SEPARATOR .
-                $extensionsName . DIRECTORY_SEPARATOR .
-                'extension_builder_export.json';
+                $extensionsPath . DIRECTORY_SEPARATOR
+                . $extensionsName . DIRECTORY_SEPARATOR
+                . 'extension_builder_export.json';
             if (file_exists($tmpFile)) {
                 $jsonData = Tools\Json::read($tmpFile);
                 if (($jsonData ?? false)) {

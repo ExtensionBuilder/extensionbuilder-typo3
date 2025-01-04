@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file
+        source-language="en"
+        datatype="plaintext"
+        original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extensions.xlf"
+        date="2024-10-14T20:00:00Z"
+        product-name="extensionbuilder_typo3"
+    >
+        <header />
+        <body>
+
+            <trans-unit id="overviewOfProjectExtensions" resname="overviewOfProjectExtensions">
+                <source>Overview of project Extensions</source>
+            </trans-unit>
+
+            <trans-unit id="overviewOfVendorsExtensions" resname="overviewOfVendorsExtensions">
+                <source>Overview of vendors extensions</source>
+            </trans-unit>
+
+
+            <trans-unit id="createExtension" resname="createExtension">
+                <source>Create a new extension</source>
+            </trans-unit>
+
+            <trans-unit id="editExtension" resname="editExtension">
+                <source>Edit extension</source>
+            </trans-unit>
+
+
+
+			<trans-unit id="add" resname="add">
+				<source>Add Extension</source>
+			</trans-unit>
+
+
+
+			<trans-unit id="extension" resname="extension">
+				<source>Extension</source>
+			</trans-unit>
+
+			<trans-unit id="info" resname="info">
+				<source>Info</source>
+			</trans-unit>
+
+			<trans-unit id="lastBuild" resname="lastBuild">
+				<source>Last build</source>
+			</trans-unit>
+
+			<trans-unit id="lastUpload" resname="lastUpload">
+				<source>Last upload</source>
+			</trans-unit>
+
+
+
+            <trans-unit id="extension.start.h" resname="extension.start.h" xml:space="preserve" approved="yes">
+                <source>Create your serious extension now.</source>
+            </trans-unit>
+
+            <trans-unit id="extension.start.p" resname="extension.start.p" xml:space="preserve" approved="yes">
+                <source>Click "Add Vendor" and enter the data and information.</source>
+                <target>
+                    <![CDATA[Klicke "Add Extension" an und gebe die Daten und Informationen ein.<br />
+                             After that you can build.]]>
+                </target>
+            </trans-unit>
+
+            <trans-unit id="label.extensionconfiguration" resname="label.extensionconfiguration">
+                <source>Extension configuration</source>
+            </trans-unit>
+
+			<trans-unit id="typeSitepackage" resname="typeSitepackage">
+				<source>Extension is a Site Package</source>
+			</trans-unit>
+
+            <trans-unit id="label.extensionType" resname="label.extensionType">
+                <source>Extension type</source>
+            </trans-unit>
+
+            <trans-unit id="label.vendorname" resname="label.vendorname">
+                <source>Vendor</source>
+            </trans-unit>
+
+            <trans-unit id="label.project" resname="label.project">
+                <source>Project</source>
+            </trans-unit>
+
+            <trans-unit id="label.extensionname" resname="label.extensionname">
+                <source>Name</source>
+            </trans-unit>
+
+            <trans-unit id="label.title" resname="label.title">
+                <source>Title</source>
+            </trans-unit>
+			
+            <trans-unit id="label.description" resname="label.description">
+                <source>Description</source>
+            </trans-unit>
+
+            <trans-unit id="label.version" resname="label.version">
+                <source>Version</source>
+            </trans-unit>
+
+            <trans-unit id="label.version.major" resname="label.version.major">
+                <source>Major</source>
+            </trans-unit>
+
+            <trans-unit id="label.version.minor" resname="label.version.minor">
+                <source>Minor</source>
+            </trans-unit>
+
+            <trans-unit id="label.version.revision" resname="label.version.revision">
+                <source>Revision</source>
+            </trans-unit>
+
+            <trans-unit id="label.tablesconfiguration" resname="label.tablesconfiguration">
+                <source>Tables configuration</source>
+            </trans-unit>
+
+            <trans-unit id="label.enumerationsconfiguration" resname="label.enumerationsconfiguration">
+                <source>Enumerations configuration</source>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

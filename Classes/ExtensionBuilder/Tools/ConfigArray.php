@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
@@ -11,8 +12,8 @@ class ConfigArray
         string $search,
         string $replace,
     ): void {
-
         if (!is_array($tmpConfigArray)) { return; }
+
         foreach ($tmpConfigArray ?? [] as $configArrayName => $configArray) {
             if (is_array($configArray)) {
 				self::searchAndReplace($tmpConfigArray[$configArrayName], $search, $replace);
@@ -48,6 +49,7 @@ class ConfigArray
         array &$array,
     ):array {
         $return = [];
+
         foreach ($array ?? [] as $key => $value) {
             if (is_array($value)) {
                $return[$key] = self::removeUsage($value);
@@ -60,6 +62,7 @@ class ConfigArray
                }
             }
         }
+
         return $return;
     }
 

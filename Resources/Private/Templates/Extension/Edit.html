@@ -1,0 +1,124 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+
+    <f:section name="Content">
+
+        <f:comment>DevelopmentCodeStart</f:comment>
+        <f:if condition="{configuration.developmentServer}">
+            <f:if condition="{configuration.debug.extension.edit.fluid}">
+                <f:debug inline="1">{_all}</f:debug>
+            </f:if>
+        </f:if>
+        <f:comment>DevelopmentCodeEnd</f:comment>
+
+        <h1>
+            <f:translate
+                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:editEextension"
+            />
+        </h1>
+
+        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
+            <div>
+                <f:if condition="{extensionData.extension.type} == 'sitepackage'">
+
+<h2>
+                    <f:translate
+                        key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:typeSitepackage"
+                    />
+</h2>
+<br />
+                </f:if>
+
+                <f:render
+                    partial="Extension/Extension"
+                    arguments="{
+	    		        extensionName: extensionName,
+    	    		    vendorName: vendorName,				   
+                        extensionData: extensionData,
+                        registeredVendorGroups: registeredVendorGroups
+                    }"
+                />
+
+                <f:if condition="{extensionData.extension.type} == 'sitepackage'">
+                    <f:then>
+						SitePackage
+                        <f:render
+                            partial="SitePackage/Edit"
+                            arguments="{
+	    		                extensionName: extensionName,
+            	    		    vendorName: vendorName,
+                                extensionData: extensionData,
+                                registeredVendorGroups: registeredVendorGroups
+                            }"
+                        />
+                    </f:then>
+                    <f:else>
+
+                        <f:comment>Add Tables </f:comment>
+                        <f:render
+                            partial="Extension/AddProperties"
+                            arguments="{
+        		    	        extensionName: extensionName,
+    	        	    	    vendorName: vendorName
+                            }"
+                        />
+
+        	    		<f:if condition="{extensionData.tables -> f:count()} > 0">
+                            <f:render
+                                partial="Table/List"
+                                arguments="{
+    		            	        extensionName: extensionName,
+                    			    vendorName: vendorName,
+        	        		        tableData: extensionData.tables
+                                }"
+                            />
+		        	    </f:if>
+
+
+        	    		<f:if condition="{extensionData.backend.module -> f:count()} > 0">
+                            <f:render
+                                partial="Backend/Module/List"
+                                arguments="{
+    		            	        extensionName: extensionName,
+                    			    vendorName: vendorName,
+        	        		        tableData: extensionData.tables
+                                }"
+                            />
+		        	    </f:if>
+
+        	    		<f:if condition="{extensionData.backend.routesX -> f:count()} > 0">
+                            <f:render
+                                partial="Backend/Routes/List"
+                                arguments="{
+    		            	        extensionName: extensionName,
+                    			    vendorName: vendorName,
+        	        		        tableData: extensionData.tables
+                                }"
+                            />
+		        	    </f:if>
+
+<f:comment>
+			    <f:if condition="{extensionData.enumerations -> f:count()} > 0">
+                    <f:render
+                        partial="Extension/Enumerations/EnumerationsList"
+                        arguments="{
+			                extensionName: extensionName,
+            			    vendorName: vendorName,						   
+        			        extensionData: extensionData
+                        }"
+                    />
+                </f:if>
+</f:comment>
+
+                    </f:else>
+                </f:if>
+
+            </div>
+        </form>
+
+    </f:section>
+</html>

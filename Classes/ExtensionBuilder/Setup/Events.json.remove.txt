@@ -1,0 +1,15 @@
+{
+    "events": {
+        "backend": {
+            "TYPO3\\CMS\\Backend\\Controller\\Event\\AfterBackendPageRenderEvent": ""
+        },
+        "core": {
+            "": {
+            }
+        },
+        "extbase": {
+            "": {
+            }
+        }
+    }
+}

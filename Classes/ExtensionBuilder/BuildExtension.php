@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 
 // ToDO Tools\RestApiClient::github($extension);
@@ -33,25 +34,30 @@ class BuildExtension extends ManageExtension
     private bool $buildLogToDo = false;
     private bool $buildLogError = false;
 
+    private string $vendorName = '';
+    private string $extensionName = '';
+
     public function build(
         string $vendorName,
         string $extensionName,
 		string $builderUri,
         bool $copyInExtension = true,
-        bool $clearCache = false,
-        bool $dumpAutoload = false,
+        bool $flushT3andPhpCache = false,
+        bool $analyzeDatabaseStructure = false,
+        bool $rebuildPhpAutoload = false,
     ): void {
 
-        $clearCache = true;
-        $dumpAutoload = true;
+        $this->vendorName = $vendorName;
+        $this->extensionName = $extensionName;		
 
 		$buildOk = false;
+
 		if ($_SERVER['SERVER_NAME'] === 'development.extension-builder.dev') {
-            $buildOk = self::buildLocal($vendorName, $extensionName);
-//            $buildOk = self::buildRemote($vendorName, $extensionName, 'https://development.extension-builder.dev/');
-//            $buildOk = self::buildRemote($vendorName, $extensionName, 'https://typo3.extension-builder.dev/');
+            $buildOk = self::buildLocal();
+//            $buildOk = self::buildRemote($builderUri);
+//            $buildOk = self::buildRemote('https://development.extension-builder.dev/');
         } else {
-            $buildOk = self::buildRemote($vendorName, $extensionName, $builderUri);
+            $buildOk = self::buildRemote($builderUri);
         }
 
 
@@ -61,16 +67,16 @@ class BuildExtension extends ManageExtension
 
                 $buildPath =
                     Environment::getVarPath() . DIRECTORY_SEPARATOR
-                    . Setup\GlobalConfig::VAR_EB
-                    . $vendorName . DIRECTORY_SEPARATOR
-                    . $extensionName . DIRECTORY_SEPARATOR
+                    . Setup\Config::VAR_EB
+                    . $this->vendorName . DIRECTORY_SEPARATOR
+                    . $this->extensionName . DIRECTORY_SEPARATOR
                     . 'build' . DIRECTORY_SEPARATOR;
 
                 $extPath =
                     Environment::getPublicPath() . DIRECTORY_SEPARATOR
                     . 'typo3conf' . DIRECTORY_SEPARATOR
                     . 'ext' . DIRECTORY_SEPARATOR
-                    . $extensionName . DIRECTORY_SEPARATOR;
+                    . $this->extensionName . DIRECTORY_SEPARATOR;
 
                 GeneralUtility::rmdir($extPath, true);
                 GeneralUtility::mkdir_deep($extPath);
@@ -92,6 +98,14 @@ class BuildExtension extends ManageExtension
 
 			}
 		}
+
+// ToDo
+//        bool $flushT3andPhpCache = false,
+//        bool $analyzeDatabaseStructure = false,
+//        bool $rebuildPhpAutoload = false,
+
+        $clearCache = true;
+        $dumpAutoload = true;
 
         if ($clearCache) {
             $clearCacheService = GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Service\\ClearCacheService');
@@ -127,29 +141,27 @@ class BuildExtension extends ManageExtension
 
 	}
 
+//8888
+    private function buildLocal(): bool
+    {
 
-    private function buildLocal(
-        string $vendorName,
-        string $extensionName,
-    ): bool {
+// ToDo Zeitmesseung
+
         $tmpReturn = true;
 
-        $multipar = self::buildRequest($vendorName, $extensionName);
+        $multipar = self::buildRequest();
+
+        $buildCore = new BuildExtensionCore($this->vendorName, $this->extensionName);
 
         $sourcePath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . Setup\GlobalConfig::VAR_EB
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR
+            . Setup\Config::VAR_EB
+            . $this->vendorName . DIRECTORY_SEPARATOR
+            . $this->extensionName . DIRECTORY_SEPARATOR
             . 'source' . DIRECTORY_SEPARATOR;
 
-        $sourcePathCore =
-            Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . Setup\GlobalConfig::VAR_EB_CORE
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR
-            . 'source' . DIRECTORY_SEPARATOR;
-
+        $sourcePathCore = $buildCore->pathes['source'];
+		
         GeneralUtility::rmdir($sourcePathCore, true);
         GeneralUtility::mkdir_deep($sourcePathCore);
         GeneralUtility::copyDirectory($sourcePath, $sourcePathCore);
@@ -157,41 +169,37 @@ class BuildExtension extends ManageExtension
 		$extConf = Tools\ExtensionConfiguration::read($sourcePathCore);
 
         // Erzeuge Extesnsion
-// ToDo Zeitmesseung
-        $buildCore = new BuildExtensionCore($extConf);
-        $buildCore->build();
-		
-        $buildPathCore =
-            Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . Setup\GlobalConfig::VAR_EB_CORE
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR
-            . 'build' . DIRECTORY_SEPARATOR;
+        $buildStart = microtime(true);
+        $buildCore->build($extConf);
+        $buildDuration = microtime(true) - $buildStart;
 
+        $buildPathCore = $buildCore->pathes['build'];
+		
         $buildPath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . Setup\GlobalConfig::VAR_EB
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR
+            . Setup\Config::VAR_EB
+            . $this->vendorName . DIRECTORY_SEPARATOR
+            . $this->extensionName . DIRECTORY_SEPARATOR
             . 'build' . DIRECTORY_SEPARATOR;
 
         GeneralUtility::copyDirectory($buildPathCore, $buildPath);
 
         $debugPath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . Setup\GlobalConfig::VAR_EB
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR
+            . Setup\Config::VAR_EB
+            . $this->vendorName . DIRECTORY_SEPARATOR
+            . $this->extensionName . DIRECTORY_SEPARATOR
             . 'debug' . DIRECTORY_SEPARATOR;
 
         // Log in Json-Date schreiben
 		GeneralUtility::mkdir_deep($debugPath);
         file_put_contents(
-            $debugPath.'bildLog.json',
+            $debugPath . 'bildLog.json',
             json_encode(($buildCore->extConf['buildLog'] ?? []), JSON_PRETTY_PRINT),
         );
 
         if (($buildCore->buildLog['Usage'] ?? false) && $this->buildLogUsage0) {
+// ToDo
             debug(
                 $usageX = \ExtensionBuilder\ExtensionbuilderTypo3\Tools\ConfigArray::removeUsage($buildCore->buildLog['Usage']),
                 'Build no usage'
@@ -199,6 +207,7 @@ class BuildExtension extends ManageExtension
         }
 
         if (($buildCore->buildLog['Usage'] ?? false) && $this->buildLogUsage) {
+// ToDo
             debug($buildCore->buildLog['Usage'], 'Build usage');
         }
         if (($buildCore->buildLog['Info'] ?? false) && $this->buildLogInfo) {
@@ -218,7 +227,7 @@ class BuildExtension extends ManageExtension
         $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
         $flashMessage = GeneralUtility::makeInstance(
             FlashMessage::class,
-            'Extension: '.$extensionName,
+            'Extension: ' . $this->extensionName,
             'Extension is build (local).',
             ContextualFeedbackSeverity::OK,
         );
@@ -227,46 +236,46 @@ class BuildExtension extends ManageExtension
         return $tmpReturn;
 	}
 
+
     private function buildRemote(
-        string $vendorName,
-        string $extensionName,
         string $builderUri,
     ): bool {
         $return = false;
 
-        $multipart = self::buildRequest($vendorName, $extensionName);
+        $multipart = self::buildRequest();
 
-        // Extenssion Daten zum erstellen an den Web-Service senden		
         $resultCode = Tools\RestApiClient::build(
            $builderUri,
            $multipart,
         );
 
         if ($resultCode ?? false) {
+
             $debugPath =
                 Environment::getVarPath() . DIRECTORY_SEPARATOR
-                . Setup\GlobalConfig::VAR_EB
-                . $vendorName . DIRECTORY_SEPARATOR
-                . $extensionName . DIRECTORY_SEPARATOR
+                . Setup\Config::VAR_EB
+                . $this->vendorName . DIRECTORY_SEPARATOR
+                . $this->extensionName . DIRECTORY_SEPARATOR
                 . 'debug' . DIRECTORY_SEPARATOR;
             file_put_contents(
-                $debugPath.'response.json',
+                $debugPath . 'response.json',
                 json_encode($resultCode, JSON_PRETTY_PRINT)
             );
             $importPath =
                 Environment::getVarPath() . DIRECTORY_SEPARATOR
-                . Setup\GlobalConfig::VAR_EB
-                . $vendorName . DIRECTORY_SEPARATOR
-                . $extensionName . DIRECTORY_SEPARATOR
+                . Setup\Config::VAR_EB
+                . $this->vendorName . DIRECTORY_SEPARATOR
+                . $this->extensionName . DIRECTORY_SEPARATOR
                 . 'import' . DIRECTORY_SEPARATOR;
             $buildPath =
                 Environment::getVarPath() . DIRECTORY_SEPARATOR
-                . Setup\GlobalConfig::VAR_EB
-                . $vendorName . DIRECTORY_SEPARATOR
-                . $extensionName . DIRECTORY_SEPARATOR
+                . Setup\Config::VAR_EB
+                . $this->vendorName . DIRECTORY_SEPARATOR
+                . $this->extensionName . DIRECTORY_SEPARATOR
                 . 'build'.DIRECTORY_SEPARATOR;
+
             $extension = $resultCode['extension'];
-            $zipName = $resultCode['zipName'] ?? $extension.'.zip';
+            $zipName = $resultCode['zipName'] ?? $extension . '.zip';
             $base64Zip = $resultCode['base64Zip'];
             $base64Zip = str_replace('data:image/zip;base64,', '', $base64Zip);
             $base64Zip = str_replace(' ', '+', $base64Zip);
@@ -282,7 +291,7 @@ class BuildExtension extends ManageExtension
             $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
             $flashMessage = GeneralUtility::makeInstance(
                 FlashMessage::class,
-                'Extension: ' . $extensionName,
+                'Extension: ' . $this->extensionName,
                 'Extension is build (remote).',
                 ContextualFeedbackSeverity::OK,
             );
@@ -293,23 +302,28 @@ class BuildExtension extends ManageExtension
         return $return;
 	}
 
-    private function buildRequest(
-        string $vendorName,
-        string $extensionName,
-    ): array {
-        $extensionPath = self::buildSetup($vendorName, $extensionName);
+
+    private function buildRequest(): array
+    {
+        $extensionPath = self::buildSetup();
 		$extensionSourcePath = $extensionPath . 'source' . DIRECTORY_SEPARATOR;
 		$extensionDebugPath = $extensionPath . 'debug' . DIRECTORY_SEPARATOR;
 
-        $tmpVersion = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion(Setup\GlobalConfig::EXT_NAME);
+        $version = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3');
 
         $multipart = [];
 		$multipart['multipart'] = [];
-        $multipart['multipart'][] = ['name' => 'version', 'contents' => $tmpVersion ?? '0.0.0'];
+        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'build'];
+        $multipart['multipart'][] = ['name' => 'version', 'contents' => $version ?? '0.0.0'];
+
+        $multipart['multipart'][] = ['name' => 'systemId', 'contents' => 'community'];
+        $multipart['multipart'][] = ['name' => 'systemIp', 'contents' => 'community'];
+        $multipart['multipart'][] = ['name' => 'systemMac', 'contents' => 'community'];
         $multipart['multipart'][] = ['name' => 'apikey', 'contents' => 'community'];
+
         $multipart['multipart'][] = ['name' => 'vendorhash', 'contents' => ''];
-        $multipart['multipart'][] = ['name' => 'vendor', 'contents' => $vendorName];
-        $multipart['multipart'][] = ['name' => 'extension',  'contents' => $extensionName];
+        $multipart['multipart'][] = ['name' => 'vendor', 'contents' => $this->vendorName];
+        $multipart['multipart'][] = ['name' => 'extension',  'contents' => $this->extensionName];
 
         $dependentExtensionsList['dependenciesExport'] = $this->foreignExtensionsList;
         Tools\Json::write(
@@ -355,13 +369,12 @@ class BuildExtension extends ManageExtension
         return $multipart;
 	}
 
-    private function buildSetup(
-        string $vendorName,
-        string $extensionName,
-    ): string {
-        $buildPath = Environment::getVarPath().DIRECTORY_SEPARATOR . Setup\GlobalConfig::VAR_EB;
-        $vendorPath = $buildPath . $vendorName . DIRECTORY_SEPARATOR;
-        $extensionPath = $vendorPath . $extensionName . DIRECTORY_SEPARATOR;
+
+    private function buildSetup(): string
+    {
+        $buildPath = Environment::getVarPath().DIRECTORY_SEPARATOR . Setup\Config::VAR_EB;
+        $vendorPath = $buildPath . $this->vendorName . DIRECTORY_SEPARATOR;
+        $extensionPath = $vendorPath . $this->extensionName . DIRECTORY_SEPARATOR;
 
         // Clean up
         GeneralUtility::rmdir($extensionPath, true);
@@ -384,8 +397,8 @@ class BuildExtension extends ManageExtension
 
         $extensionDevSourcePath =
             $extensionbuilderDevPath
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR;
+            . $this->vendorName . DIRECTORY_SEPARATOR
+            . $this->extensionName . DIRECTORY_SEPARATOR;
 	
         GeneralUtility::copyDirectory($extensionDevSourcePath, $extensionSourcePath);
         GeneralUtility::rmdir($extensionSourcePath . 'build', true);

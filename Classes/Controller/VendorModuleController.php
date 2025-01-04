@@ -1,10 +1,15 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
+use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
 
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
@@ -17,12 +22,11 @@ use TYPO3\CMS\Core\Context\Context;
 
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 
-// FlashMessage
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Core\Environment;
 
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
-class VendorModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract
+final class VendorModuleController extends BuildExtensionAbstract
 {
 
     public function __construct(
@@ -41,135 +45,118 @@ class VendorModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\Bui
         ServerRequestInterface $request,
     ): ResponseInterface
     {
-//        ModuleController::debugRequest($request, 'Extension - List');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-
+        $bodyParams = array_merge(($request->getParsedBody() ?? []), $request->getQueryParams() ?? []);
 		$view = $this->moduleTemplateFactory->create($request);
 
-        $view->setTitle(
-            $GLOBALS['LANG']->sL(
-                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab' ),
-            $GLOBALS['LANG']->sL(
-                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.extension' ),
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'vendorList' => $this->vendors,
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'vendor',
         );
-
-        if (!$this->developer) {
-            $view->assignMultiple([
-                'developer' => $this->developer,
-            ]);
-
-            $this->addDocHeaderModuleDropDown(
-                $view,
-                $this->uriBuilder,
-                'developer',
-            );
-            $this->addDocHeaderCloseAndSaveButtons(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'extension',
-            );
-
-            return $view->renderResponse('Developer');
-        } else {
-            $view->assignMultiple([
-                'vendorList' => $this->vendors,
-            ]);
-
-            $this->addDocHeaderModuleDropDown(
-                $view,
-                $this->uriBuilder,
-                'vendor'
-            );
+        if (($this->vendors ?? false) && !($this->extensionbuilderObject->vendorsAndExtensions ?? false)) {
             $this->addDocHeaderCloseButtons(
                 $view,
                 $this->iconFactory,
                 $this->uriBuilder,
                 'extension',
             );
-            $this->addDocHeaderAddButton(
+        }
+        $this->addDocHeaderAddButton(
+            $view,
+            $this->iconFactory,
+            $this->uriBuilder,
+            'locallang.vendor.xlf:add',
+            'vendor.add',
+        );
+
+        if (!($this->vendors['ExampleVendor'] ?? false)) { // ToDo ein und ausschalten über config
+            $this->addDocHeaderImportExampleVendor(
                 $view,
                 $this->iconFactory,
                 $this->uriBuilder,
-                'locallang.xlf:function.vendor.add.h',
-	    		'vendor.add',
+                'locallang.vendor.xlf:importExampleVendor',
+                'vendor.importExampleVendor',
             );
-
-    	    return $view->renderResponse('VendorList');
 		}
+
+        return $view->renderResponse('Vendor/List');
     }
 
 
     final function add(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Add');
-
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-debug($bodyParams);
-
-        $vendorName = $bodyParams['vendorName'] ?? '';
-        $vendorData = $bodyParams['vendorData'] ?? [];
-
-
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
 		$view = $this->moduleTemplateFactory->create($request);
 
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
 
-//        $view->setTitle(
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab'),
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.add')
-//        );
+                $vendorName = $bodyParams['vendorData']['vendorName'] ?? '';
+                $vendorData = $bodyParams['vendorData'];
 
-        if (in_array($bodyParams['CMD'] ?? [], ['save',], true)) {
+                if ($vendorName) {
+                    if (!($this->vendors[$vendorName] ?? false)) {
 
-            Tools\ConfigArray::arrayMerge($vendorData, $bodyParams['vendorData']);
+                        $this->vendors[$vendorName] = $vendorData;
+                        $this->noVendors = false;
 
-            self::saveVendor($vendorName);
+                        $this->writeVendor($vendorName);
+                        $this->flashMessage(
+                            '',
+                            $this->getTranslatedLabel(
+                                $request,
+                                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:savingVendor'
+                            ) . $vendorName,
+                        );
 
-            $view->assignMultiple([
-                'vendorList' => $this->vendors,
-            ]);
+                        $view->assignMultiple([
+                            'configuration' => $this->configuration,
+                            'vendorList' => $this->vendors,
+                        ]);
 
-            $this->addDocHeaderModuleDropDown(
-                $view,
-                $this->uriBuilder,
-                'vendor',
-            );
-            $this->addDocHeaderCloseButtons(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'extension',
-            );
-            $this->addDocHeaderAddButton(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'locallang.xlf:function.vendor.add.h',
-			    'vendor.add',
-            );
+                        $this->addDocHeaderModuleDropDown(
+                            $view,
+                            $this->uriBuilder,
+                            'vendor',
+                        );
+                        $this->addDocHeaderCloseButtons(
+                            $view,
+                            $this->iconFactory,
+                            $this->uriBuilder,
+                            'extension',
+                        );
+                        $this->addDocHeaderAddButton(
+                            $view,
+                            $this->iconFactory,
+                            $this->uriBuilder,
+                            'locallang.vendor.xlf:add',
+	    		            'vendor.add',
+                        );
 
-            return $view->renderResponse('VendorList');
-        }
+                        return $view->renderResponse('Vendor/List');
 
-        $vendorData = [
-            'vendorName' => '',
-            'company' => '',
-            'address' => '',
-            'zip' => '',
-            'city' => '',
-            'country' =>  '',
-            'salsConatct' => '',
-            'salsConatctEmail' => '',
-            'salsConatctPhone' => '',
-            'supportConatct' => '',
-            'supportConatctEmail' => '',
-            'supportConatctPhone' => '',
-            'homepage' => '',
-            'description' => '',
-        ];
+                    } else {
+                        $this->flashMessage('', 'vendor name exists please change'); // ToDo LLL
+                    }
+                } else {
+                    $this->flashMessage('', 'Please specify vendor name'); // ToDo LLL
+			    }
+
+                break;
+		}
+
+        if (!($vendorData ?? false)) {
+            $vendorData = [];
+		}
 
         $view->assignMultiple([
+            'configuration' => $this->configuration,
             'vendorData' => $vendorData,
         ]);
 
@@ -185,87 +172,50 @@ debug($bodyParams);
             'vendor',
         );
 
-        return $view->renderResponse('VendorAdd');
+        return $view->renderResponse('Vendor/Add');
     }
 
 
-    final function edit(
+    final function importExampleVendor(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Edit');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
 
-        $vendorName = $bodyParams['vendorName'] ?? '';
-
-        $vendorData = $this->vendors[$vendorName];
-
-        $view = $this->moduleTemplateFactory->create($request);
-
-        if (in_array($parsedBody['CMD'] ?? [], ['save',], true)) {
-
-            Tools\ConfigArray::arrayMerge($vendorData, $parsedBody['vendorData']);
-
-            self::saveVendor($parsedBody['vendorName'] ?? '');
-
-            $view->assignMultiple([
-                'vendorList' => $this->vendors,
-            ]);
-
-            $this->addDocHeaderModuleDropDown(
-                $view,
-                $this->uriBuilder,
-                'vendor',
-            );
-            $this->addDocHeaderCloseButtons(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'extension',
-            );
-            $this->addDocHeaderAddButton(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'locallang.xlf:function.vendor.add.h',
-			    'vendor.add',
-            );
-
-            return $view->renderResponse('VendorList');
-        }
-
-        $view->assignMultiple([
-            'vendorData' => $vendorData,
-        ]);
-
-        $this->addDocHeaderModuleDropDown(
-            $view,
-            $this->uriBuilder,
-            'vendor',
-        );   
-        $this->addDocHeaderCloseAndSaveButtons(
-            $view,
-            $this->iconFactory,
-            $this->uriBuilder,
-            'vendor',
+        Tools\ZipArchive::unzip(
+            Environment::getPublicPath() . DIRECTORY_SEPARATOR
+            . 'typo3conf' . DIRECTORY_SEPARATOR
+            . 'ext' . DIRECTORY_SEPARATOR
+            . 'extensionbuilder_typo3' . DIRECTORY_SEPARATOR
+            .'ExampleVendor.zip',
+            Environment::getPublicPath() . DIRECTORY_SEPARATOR
+            . 'fileadmin' . DIRECTORY_SEPARATOR
+            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
+            . 'TYPO3' . DIRECTORY_SEPARATOR,
         );
 
-    	return $view->renderResponse('VendorEdit');
-    }
+        $this->readVendor();
+        $this->readVendorsAndExtensions();
 
+        // Add ExampleVendor project entry
+        $projectKey = uniqid();
+        if (!($this->projects[$projectKey] ?? false)) {
+            $project = [];
+            $project['name'] = 'Example Vendor';
+            $project['description'] = 'Test';
+            $project['extensions'] = [];
+            foreach($this->vendorsAndExtensions['ExampleVendor']['extensions'] ?? [] as $extensionName => $extensionData) {
+                $project['extensions'][$extensionName] = $extensionData;
+                $project['extensions'][$extensionName]['extensionOnOff'] = true;
+            }
+            $this->projects[$projectKey] = $project;
+            $this->writeProject();
+		}
 
-    final function delete(
-        ServerRequestInterface $request,
-    ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Delete');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-
-        $vendorName = $bodyParams['vendorName'] ?? '';
-
+// ToDo reditect
+        $bodyParams = array_merge(($request->getParsedBody() ?? []), $request->getQueryParams() ?? []);
 		$view = $this->moduleTemplateFactory->create($request);
 
-        self::deleteVendor($parsedBody['vendorName'] ?? '');
-
         $view->assignMultiple([
+            'configuration' => $this->configuration,
             'vendorList' => $this->vendors,
         ]);
 
@@ -284,70 +234,305 @@ debug($bodyParams);
             $view,
             $this->iconFactory,
             $this->uriBuilder,
-            'locallang.xlf:function.vendor.add.h',
-		    'vendor.add',
+            'locallang.vendor.xlf:add',
+            'vendor.add',
         );
 
-    	return $view->renderResponse('VendorList');
+//debug($request);
+
+// ForwardResponse->withControllerName(string $controllerName): self
+
+
+        return $view->renderResponse('Vendor/List');
+
+	}
+
+
+    final function edit(
+        ServerRequestInterface $request,
+    ): ResponseInterface {
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
+		$view = $this->moduleTemplateFactory->create($request);
+
+        $vendorName = $bodyParams['vendorName'] ?? '';
+        $vendorData = $this->vendors[$vendorName];
+
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
+
+                Tools\ConfigArray::arrayMerge($vendorData, $bodyParams['vendorData']);
+
+                $this->vendors[$vendorName] = $vendorData;
+
+                $this->writeVendor($vendorName);
+
+                $this->flashMessage(
+                    '',
+                    $this->getTranslatedLabel(
+                        $request,
+                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:savingVendor'
+                    ) . $vendorName,
+                );
+
+                $view->assignMultiple([
+                    'configuration' => $this->configuration,
+                    'vendorList' => $this->vendors,
+                ]);
+
+                $this->addDocHeaderModuleDropDown(
+                    $view,
+                    $this->uriBuilder,
+                    'vendor',
+                );
+                $this->addDocHeaderCloseButtons(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'extension',
+                );
+                $this->addDocHeaderAddButton(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'locallang.vendor.xlf:add',
+                    'vendor.add',
+                );
+
+                return $view->renderResponse('Vendor/List');
+                break;
+		}
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'vendorData' => $vendorData,
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'vendor',
+        );   
+        $this->addDocHeaderCloseAndSaveButtons(
+            $view,
+            $this->iconFactory,
+            $this->uriBuilder,
+            'vendor',
+        );
+
+    	return $view->renderResponse('Vendor/Edit');
     }
 
 
-    // ------------------------------------------------------------------
+    final function duplicate(
+        ServerRequestInterface $request,
+    ): ResponseInterface {
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
+		$view = $this->moduleTemplateFactory->create($request);
 
-    /**
-     *
-     */
-    final function writeVendors(): void
-    {
-// ToDO
-        $path = Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder();
+        $vendorNameOrg = $bodyParams['vendorName'];
+        $vendorData = $this->vendors[$vendorNameOrg];
 
-        $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()
-            . 'TYPO3' . DIRECTORY_SEPARATOR
-            . $vendorName.DIRECTORY_SEPARATOR
-            . 'vendor.json';
-//        Tools\Json::write($fileName, $developer);
-	}
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
+                $vendorNameNew = $bodyParams['vendorData']['vendorName'];
 
+                $this->vendors[$vendorNameNew] = $this->vendors[$vendorNameOrg];
+                $this->vendors[$vendorNameNew]['vendorName'] = $vendorNameNew;
 
-    private function saveVendorXXX(
-        string $vendorName,
-    ): void {
+                $this->writeVendor($vendorNameNew);
 
-        $vendorData = $this->vendors[$vendorName] ?? [];
-        $vendorData['vendorName'] = $vendorName;
+                $this->flashMessage(
+                    '',
+                    $this->getTranslatedLabel(
+                        $request,
+                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:duplicateVendor'
+                    ) . $bodyParams['vendorData']['vendorName'],
+                );
 
-        // Einmal trimmen bitte
-	    foreach ($vendorData ?? [] as $vendorField) {
-	        if (is_string($vendorField)) {
-	            $vendorField = trim($vendorField);
-	        }
-	    }
+                $view->assignMultiple([
+                    'configuration' => $this->configuration,
+                    'vendorList' => $this->vendors,
+                ]);
 
-        $this->writeVendors(); // 1234
+                $this->addDocHeaderModuleDropDown(
+                    $view,
+                    $this->uriBuilder,
+                    'vendor',
+                );
+                $this->addDocHeaderCloseButtons(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'extension',
+                );
+                $this->addDocHeaderAddButton(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'locallang.vendor.xlf:add',
+                    'vendor.add',
+                );
 
-        $this->flashMessage('', 'Saving vendor: ' . $vendorName);
+                return $view->renderResponse('Vendor/List');
+                break;
+		}
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'vendorData' => $vendorData,
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'vendor',
+        );   
+        $this->addDocHeaderCloseAndSaveButtons(
+            $view,
+            $this->iconFactory,
+            $this->uriBuilder,
+            'vendor',
+        );
+
+    	return $view->renderResponse('Vendor/Duplicate');
     }
 
-    private function deleteVendorXXX(
-        string $vendorName,
-    ): void {
-        //
-        // ToDo - Daten in Backup verschieben
-        //
-        $this->flashMessage('ToDo', 'Delete vendor: ' . $vendorName);
-	}
 
+    final function rename(
+        ServerRequestInterface $request,
+    ): ResponseInterface {
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
+		$view = $this->moduleTemplateFactory->create($request);
 
-    private function copyVendorXXX(
-        string $vendorName,
-        string $vendorNameNew,
-    ): void {
-        //
-        // ToDo - Es müssen auch alle Vendor Eintrage in den Extension geändert werden 
-        //
-        $this->flashMessage('ToDo', 'Copy vendor: ' . $vendorName . ' to ' . $vendorNameNew);
-	}
+        $vendorName = $bodyParams['vendorName'] ?? '';
+
+        $vendorData = $this->vendors[$vendorName];
+
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
+
+//                Tools\ConfigArray::arrayMerge($vendorData, $parsedBody['vendorData']);
+
+//$this->writeVendor($vendorName);
+                $this->flashMessage(
+                    '',
+                    'not yet implemented',
+                );
+
+//                $this->flashMessage(
+//                    '',
+//                    $this->getTranslatedLabel(
+//                        $request,
+//                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:renameVendor'
+//                    ) . $vendorName,
+//                );
+
+                $view->assignMultiple([
+                    'configuration' => $this->configuration,
+                    'vendorList' => $this->vendors,
+                ]);
+
+                $this->addDocHeaderModuleDropDown(
+                    $view,
+                    $this->uriBuilder,
+                    'vendor',
+                );
+                $this->addDocHeaderCloseButtons(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'extension',
+                );
+                $this->addDocHeaderAddButton(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'locallang.vendor.xlf:add',
+                    'vendor.add',
+                );
+
+                return $view->renderResponse('Vendor/List');
+                break;
+		}
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'vendorData' => $vendorData,
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'vendor',
+        );   
+        $this->addDocHeaderCloseAndSaveButtons(
+            $view,
+            $this->iconFactory,
+            $this->uriBuilder,
+            'vendor',
+        );
+
+    	return $view->renderResponse('Vendor/Rename');
+    }
+
+    final function delete(
+        ServerRequestInterface $request,
+    ): ResponseInterface {
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
+		$view = $this->moduleTemplateFactory->create($request);
+
+        $this->deleteVendor($bodyParams['vendorName']);
+        $this->readVendor();
+
+        // Delete ExampleVendor project entry 
+        if ($bodyParams['vendorName'] == 'ExampleVendor') {
+            foreach($this->projects ?? [] as $projectUi => $projectData) {
+                if ($projectData['name'] == 'Example Vendor') {
+                    unset($this->projects[$projectUi]);
+                    $this->writeProject();
+                    break;
+                }
+			}
+        }
+
+        if (!($this->vendors ?? false)) {
+            $this->noVendors = true;
+        }
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'vendorList' => $this->vendors,
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'vendor',
+        );
+        $this->addDocHeaderCloseButtons(
+            $view,
+            $this->iconFactory,
+            $this->uriBuilder,
+            'extension',
+        );
+        $this->addDocHeaderAddButton(
+            $view,
+            $this->iconFactory,
+            $this->uriBuilder,
+            'locallang.vendor.xlf:add',
+		    'vendor.add',
+        );
+        if (!($this->vendors['ExampleVendor'] ?? false)) { // ToDo ein und ausschalten über config
+            $this->addDocHeaderImportExampleVendor(
+                $view,
+                $this->iconFactory,
+                $this->uriBuilder,
+                'locallang.vendor.xlf:importExampleVendor',
+                'vendor.importExampleVendor',
+            );
+		}
+
+    	return $view->renderResponse('Vendor/List');
+    }
 
 }

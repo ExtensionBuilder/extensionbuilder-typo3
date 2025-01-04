@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
@@ -14,7 +15,7 @@ class ExtensionbuilderFolder
 	    return
             Environment::getConfigPath() . DIRECTORY_SEPARATOR
             . 'ext' . DIRECTORY_SEPARATOR
-            . 'extensionbuilder_typo3';
+            . 'extensionbuilder_typo3' . DIRECTORY_SEPARATOR;
 	}
 
     static function getExtensionBuilderFolder(): string
@@ -61,7 +62,8 @@ class ExtensionbuilderFolder
             . $extensionName . DIRECTORY_SEPARATOR;
     }
 
-    static function getPathToVendorsAndExtensionsTarget(
+// ToDo RemoveCode
+    static function getPathToVendorsAndExtensionsTargetRemoveCode(
         string $vendorName,
         string $extensionName,
     ): string {

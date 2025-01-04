@@ -1,4 +1,16 @@
+.. image:: https://poser.pugx.org/bk2k/bootstrap-package/v/stable
+   :alt: Latest Stable Version
+   :target: https://extensions.typo3.org/extension/bootstrap_package/
 
+.. image:: https://img.shields.io/badge/TYPO3-13-orange.svg
+   :alt: TYPO3 13
+   :target: https://get.typo3.org/version/13
+
+.. image:: https://img.shields.io/badge/TYPO3-12-orange.svg
+   :alt: TYPO3 12
+   :target: https://get.typo3.org/version/12
+
+   
 ==========================================
 TYPO3 extension ``extensionbuilder_typo3``
 ==========================================
@@ -6,8 +18,7 @@ TYPO3 extension ``extensionbuilder_typo3``
 Status: Test version without function
 
 :Repository:    https://github.com/ExtensionBuilder/extensionbuilder-typo3
-:Documentation: https://extension-builder.dev/ebtypo3/documentation/
-:Wiki:          https://extension-builder.dev/ebtypo3/wiki
+:Documentation: https://extension-builder.dev/documentation/extensionbuilder-typo3/
 :TER:           https://extensions.typo3.org/extension/extensionbuilder_typo3
 
 
@@ -20,7 +31,8 @@ Compatibility
    * -
      - v13
      - v12
+     - v14
 
-   * - EBT3 0.x
+   * - EB_T3 0.x
      - ✔️
      - ✔️

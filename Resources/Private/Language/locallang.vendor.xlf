@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf"
+		date="2024-10-14T20:00:00Z"
+		product-name="extensionbuilder_typo3"
+	>
+		<header />
+		<body>
+
+			<trans-unit id="startNow" resname="startNow">
+				<source>To create your first extension, you must create a vendor.</source>
+			</trans-unit>
+
+			<trans-unit id="h1" resname="h1">
+				<source>Overview of Vendors</source>
+			</trans-unit>
+
+			<trans-unit id="vendorList" resname="vendorList">
+				<source>Vendors</source>
+			</trans-unit>
+
+
+			<trans-unit id="showAllVendors" resname="showAllVendors">
+				<source>Show all Vendors</source>
+			</trans-unit>
+
+			<trans-unit id="noVendors" resname="noVendors">
+				<source>Show no Vendors</source>
+			</trans-unit>
+
+
+			<trans-unit id="savingVendor" resname="savingVendor">
+				<source>Saving vendor: </source>
+			</trans-unit>
+
+			<trans-unit id="duplicateVendor" resname="duplicateVendor">
+				<source>Duplicated vendor: </source>
+			</trans-unit>
+
+
+
+			<trans-unit id="renameVendor" resname="renameVendor">
+				<source>Renamed vendor: </source>
+			</trans-unit>
+
+
+			<trans-unit id="add" resname="add">
+				<source>Add Vendor</source>
+			</trans-unit>
+
+			<trans-unit id="importExampleVendor" resname="importExampleVendor">
+				<source>Import example vendor</source>
+			</trans-unit>
+
+			<trans-unit id="edit" resname="edit">
+				<source>Edit Vendor "%s"</source>
+			</trans-unit>
+
+			<trans-unit id="duplicate" resname="edit">
+				<source>Duplicate Vendor "%s"</source>
+			</trans-unit>
+
+			<trans-unit id="rename" resname="rename">
+				<source>Rename Vendor "%s"</source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>

@@ -1,11 +1,10 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
-/**
- * Version 1.0.0 - RC1
- */
+use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,9 +17,10 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Context\Context;
 
+use ExtensionBuilder\ExtensionbuilderTypo3\Setup;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
-class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract
+final class ConfigurationModuleController extends BuildExtensionAbstract
 {
 
     public function __construct(
@@ -35,24 +35,52 @@ class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTy
     }
 
 
-    /**
-     * Module controller
-     */
     final function configuration(
         ServerRequestInterface $request,
     ): ResponseInterface {
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
         $view = $this->moduleTemplateFactory->create($request);
 
-		if ( in_array( $bodyParams['CMD'] ?? [], ['save',], true ) ) {
-            $this->configuration = $bodyParams['configurationData'];
-            $this->writeConfiguration();
-            $this->flashMessage('', 'Saving configuration'); // ToDo LLL
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
+                Tools\ConfigArray::arrayMerge($this->configuration, $bodyParams['configuration']);
+
+                $this->writeConfiguration();
+                $this->flashMessage(
+                    '',
+                    $this->getTranslatedLabel(
+                        $request,
+                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:savingConfiguration',
+                    )
+                );
+                break;
+            case 'register':
+                echo "register";
+
+$multipart = [];
+
+//$myuuid = Tools\Uuid::uuid();
+// ['configuration']['systemId']
+
+//        $resultCode = Tools\RestApiClient::check(
+        $resultCode = Tools\RestApiClient::register(
+           'https://development.extension-builder.dev/',
+//           'https://typo3.extension-builder.dev/',
+           $multipart
+        );
+
+
+                break;
 		}
 
+
+// ToDo
+$validProKey = false;
+
         $view->assignMultiple([
-            'configurationData' => $this->configuration,
+            'configuration' => $this->configuration,
+            'validProKey'=> $validProKey,
+            'builderUrl' => $builderUrl = Setup\Config::BUILDERURI,
         ]);
 
         $this->addDocHeaderModuleDropDown(
@@ -60,8 +88,7 @@ class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTy
             $this->uriBuilder,
             'configuration',
         );
-
-        $this->addDocHeaderCloseandSaveButtons(
+        $this->addDocHeaderCloseAndSaveButtons(
             $view,
             $this->iconFactory,
             $this->uriBuilder,
@@ -70,21 +97,5 @@ class ConfigurationModuleController extends \ExtensionBuilder\ExtensionbuilderTy
 
     	return $view->renderResponse('Configuration');
     }
-
-
-    /**
-     * Saving the configuration settings
-     */
-    final function writeConfiguration(): void
-    {
-        $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder().
-            'TYPO3' . DIRECTORY_SEPARATOR . 'configuration.json';
-
-        $configuration = [];
-        $configuration['configuration'] = $this->configuration;
-
-        Tools\Json::write($fileName,$configuration);
-	}
 
 }

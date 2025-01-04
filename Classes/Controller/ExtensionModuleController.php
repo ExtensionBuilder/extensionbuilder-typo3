@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+
+use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,27 +27,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Registry;
 
-
-// Syslog
-//use TYPO3\CMS\Core\SysLog\Action\Database as SystemLogDatabaseAction;
-//use TYPO3\CMS\Core\SysLog\Error as SystemLogErrorClassification;
-//use TYPO3\CMS\Core\SysLog\Type as SystemLogType;
-
-
-use ExtensionBuilder\ExtensionbuilderTypo3\Enumeration\Action;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
-use ExtensionBuilder\ExtensionbuilderTypo3\Utility\ModuleController;
-use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
-
 use TYPO3\CMS\Core\Page\PageRenderer;
 
+use ExtensionBuilder\ExtensionbuilderTypo3\Setup;
+use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
 
-use ExtensionBuilder\ExtensionbuilderTypo3\Utility\Github;
-
-class ExtensionModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract
+final class ExtensionModuleController extends BuildExtensionAbstract
 {
 
-    public \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension $extensionbulderObject;
+    public BuildExtension $extensionbuilderObject;
 
     public function __construct(
         protected readonly LanguageServiceFactory $languageServiceFactory,
@@ -57,68 +49,98 @@ class ExtensionModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\
     ) {
         parent::__construct();
 
-        $this->extensionbulderObject = new \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
+        $this->extensionbuilderObject = new BuildExtension;
     }
 
-    // Default Module
+
     public function list(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - list');
-
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-//debug($bodyParams, "ExtensionModuleController.php");
-
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
 		$view = $this->moduleTemplateFactory->create($request);
 
-		if (in_array($bodyParams['CMD'] ?? [], ['save',], true)) {
-            if ($this->noDeveloper) {
-                $this->writeDeveloper();
-                $this->flashMessage('', 'Saving developer configuration');
-		    }
-        }
+$this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Modal.js');
 
-		$this->pageRenderer->loadJavaScriptModule('@extensionbuilder/test.js');
-
-//        $view->assign(
-//            'dateFormat',
-//            [
-//                'day'  => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'd-m-y',
-//                'time' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']   ?? 'H:i',
-//            ]
-//        );
-
-        $view->setTitle(
-            $GLOBALS['LANG']->sL(
-                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab' ),
-            $GLOBALS['LANG']->sL(
-                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.extension' ),
-        );
-
-        if ($this->noDeveloper) {
-            $view->assignMultiple([
-                'developer' => $this->developer,
-            ]);
-
-            $this->addDocHeaderModuleDropDown(
-                $view,
-                $this->uriBuilder,
-                'developer',
-            );
-            $this->addDocHeaderCloseAndSaveButtons(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'developer',
-            );
-
-            return $view->renderResponse('Developer');
+// ToDo check for change
+        if ($bodyParams['currentProject'] ?? false) {
+            $this->developer['typo3']['project'] = $bodyParams['currentProject'];
+            $this->writeDeveloper();
 		}
 
-        if (!$this->extensionbulderObject->vendorsAndExtensions) {
-            $view->assignMultiple(
-                ['vendorList' => $this->vendorsAndExtensions]
-            );
+// ToDo check for change
+        if ($bodyParams['currentVendor'] ?? false) {
+            $this->developer['typo3']['vendor'] = $bodyParams['currentVendor'];
+            $this->writeDeveloper();
+		}
+
+        if ($this->noDeveloper) {
+            if ($bodyParams['action'] ?? false) {
+                switch ($bodyParams['action'] ?? '') {
+                    case 'save':
+                        Tools\ConfigArray::arrayMerge($this->developer, $bodyParams['developer']);
+                        $this->writeDeveloper();
+                        $this->flashMessage(
+                            '',
+                            $this->getTranslatedLabel(
+                                $request,
+                                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:savingDeveloperSetings',
+                            ),
+                        );
+                        break;
+		        }
+            } else {
+                $projects = [];
+                $projects['no'] = $this->getTranslatedLabel(
+                    $request,
+                    'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:noProject',
+                );
+        	    foreach ($this->projects ?? [] as $projectName => $projectData) {
+                    $projects[$projectName] = $projectData['name'];
+    	        }
+
+                $vendors = [];
+                $vendors['all'] = $this->getTranslatedLabel(
+                    $request,
+                    'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:showAllVendors',
+                );
+                $vendors['no'] = $this->getTranslatedLabel(
+                    $request,
+                   'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:noVendors',
+                );
+
+        	    foreach ($this->vendors ?? [] as $vendorName => $vendorData) {
+                    $vendors[$vendorName] = $vendorData['vendorName'];
+    	        }
+
+                $view->assignMultiple([
+                    'configuration' => $this->configuration,
+                    'developer' => $this->developer,
+                    'projects' => $projects,
+                    'vendors' => $vendors,
+                ]);
+
+                $this->addDocHeaderModuleDropDown(
+                    $view,
+                    $this->uriBuilder,
+                    'developer',
+                );
+                $this->addDocHeaderCloseAndSaveButtons(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'extension',
+                );
+
+                return $view->renderResponse('Developer');
+			}
+        }
+
+        // No Vendor exists
+        if (!($this->vendors)) {
+            $view->assignMultiple([
+                'configuration' => $this->configuration,
+                'vendorList' => $this->vendors,
+            ]);
 
             $this->addDocHeaderModuleDropDown(
                 $view,
@@ -129,107 +151,130 @@ class ExtensionModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\
                 $view,
                 $this->iconFactory,
                 $this->uriBuilder,
-                'locallang.xlf:function.vendor.add.h',
+                'locallang.vendor.xlf:add',
                 'vendor.add',
-                );
+            );
 
-            return $view->renderResponse('VendorList');
+            return $view->renderResponse('Vendor/List');
         }
 
         $view->assignMultiple([
-            'vendors' => $this->extensionbulderObject->vendorsAndExtensions ?? ['No data! - renderExtensionListView'],
-            'currentProjects' => $this->extensionbulderObject->currentProjects ?? ['No data! - renderExtensionListView'],
-            'projects' => $this->extensionbulderObject->projects ?? ['No data! - renderExtensionListView'],
+            'configuration' => $this->configuration,
+            'currentProject' => $this->developer['typo3']['project'] ?? 'no',
+            'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
+            'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
+            'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
         ]);
-
-// Test JS
-//        ModuleController::addDocHeaderAddButton(
-//            $view,
-//            $this->iconFactory,
-//            $this->uriBuilder,
-//            'locallang.xlf:function.extension.add.h',
-//			'extension.test',
-//        );
 
         $this->addDocHeaderModuleDropDown(
             $view,
             $this->uriBuilder,
             'extension',
+            activeProjcet: $this->developer['typo3']['project'] ?? 'no',
+            activeVendor: $this->developer['typo3']['vendor'] ?? 'all',
         );
         $this->addDocHeaderAddButton(
             $view,
             $this->iconFactory,
             $this->uriBuilder,
-            'locallang.xlf:function.extension.add.h',
-			'extension.add',
+            'locallang.extension.xlf:add',
+            'extension.add',
         );
 
-        return $view->renderResponse('ExtensionList');
+        return $view->renderResponse('Extension/List');
     }
+
 
     public function add(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Add');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
 		$view = $this->moduleTemplateFactory->create($request);
 
-//        $view->assign(
-//            'dateFormat',
-//            [
-//                'day'  => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'd-m-y',
-//                'time' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']   ?? 'H:i',
-//            ]
-//        );
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
+                $vendorName = $bodyParams['extensionData']['extension']['vendorName'];
+                $extensionName = $bodyParams['extensionData']['extension']['extensionName'];
+                $extensionData = $bodyParams['extensionData'] ?? [];
+                if ($vendorName && $extensionName) {
+                    if (!($this->localExtensions[$extensionName] ?? false)) {
 
-//        $view->setTitle(
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab'),
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.add')
-//        );
+                        $extensionData['extension']['versionMajor'] = 0;
+                        $extensionData['extension']['versionMinor'] = 1;
+                        $extensionData['extension']['versionRevision'] = 0;
 
-        if (in_array($bodyParams['CMD'] ?? [], ['save',], true)) {
+                        self::save(
+                            $vendorName ?? '',
+                            $extensionName ?? '',
+                            $extensionData,
+                        );
 
-            $vendorName = $bodyParams['extensionData']['extension']['vendorName'];
-            $extensionName = $bodyParams['extensionData']['extension']['extensionName'];
+                        if ($bodyParams['extensionData']['project'] ?? false) {
+                            $projectKey = $bodyParams['extensionData']['project'];
+                            $this->projects[$projectKey]['extensions'][$extensionName] = [];
+                            $this->projects[$projectKey]['extensions'][$extensionName]['extensionOnOff'] = true;
+                            $this->projects[$projectKey]['extensions'][$extensionName]['extension'] = $extensionData['extension'];
+                            $this->writeProject();
+                        }
 
+                        $view->assignMultiple([
+                            'configuration' => $this->configuration,
+                            'currentProject' => $this->developer['typo3']['project'] ?? 'no',
+                            'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
+                            'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
+                            'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
+                        ]);
 
-//                $tmpNode = 'extension';
-//    		    $tmpName = $tableName;
+                        $this->addDocHeaderModuleDropDown(
+                            $view,
+                            $this->uriBuilder,
+                            'extension',
+                            $this->developer['typo3']['project'] ?? 'no',
+                            $this->developer['typo3']['vendor'] ?? 'all',
+                        );
+                        $this->addDocHeaderAddButton(
+                            $view,
+                            $this->iconFactory,
+                            $this->uriBuilder,
+                            'locallang.extension.xlf:add',
+                            'extension.add',
+                        );
 
-//        		$tmpData = [];
-//        		$tmpData[$tmpNode] = [];
-//        		$tmpData[$tmpNode][$tmpName]['makeSql'] = true;
-//        		$tmpData[$tmpNode][$tmpName]['makeModel'] = true;
-//    		    $tmpData[$tmpNode][$tmpName]['makeTca'] = true;
-//    	    	$tmpData[$tmpNode][$tmpName]['makeFluid'] = true;
-//        		$tmpData[$tmpNode][$tmpName]['language'] = [];
-//        		$tmpData[$tmpNode][$tmpName]['language']['en'] = $tableNameUc;
-//                $tmpData[$tmpNode][$tmpName] = $parsedBody['tableData'] ?? [];
+                        return $view->renderResponse('Extension/List');
 
-//Tools\ConfigArray::arrayMerge($extensionData,$tmpData);
-            self::save(
-                $vendorName ?? '',
-                $extensionName ?? '',
-                $bodyParams['extensionData'] ?? [],
-            );
-
-            $this->addDocHeaderAddButton(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'locallang.xlf:function.extension.add.h',
-			    'extension.add',
-            );
-
-            $view->assignMultiple([
-                'vendors' => $this->extensionbulderObject->vendorsAndExtensions ?? ['No data! - renderExtensionListView'],
-                'currentProjects' => $this->extensionbulderObject->currentProjects ?? ['No data! - renderExtensionListView'],
-                'projects' => $this->extensionbulderObject->projects ?? ['No data! - renderExtensionListView'],
-            ]);
-
-            return $view->renderResponse('ExtensionList');
+                    } else {
+debug($this);
+// extensionbuilder_administration
+                        if ($this->isComposerMode) {
+ // ToDo LLL
+                            $this->flashMessage('', 'Extension exists in typo3conf/ext, please change.');
+						} else {
+ // ToDo LLL
+                            $this->flashMessage('', 'Extension exists in typo3conf/ext, please change.');
+						}
+                    }
+                } else {
+                    if ($vendorName) {
+ // ToDo LLL
+                        $this->flashMessage('', 'Please specify Extension name');
+					} else {
+ // ToDo LLL
+                        $this->flashMessage('', 'Please specify Vendor name');
+					}
+			    }
+                break;
+		}
+	
+        if (!($extensionData ?? false)) {
+            $extensionData = [];
         }
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'extensionData' => $extensionData,
+			'registeredVendorGroups' => $this->getRegisteredVendorGroups(),
+            'projects' => $this->projects,
+        ]);
 
         $this->addDocHeaderCloseAndSaveButtons(
             $view,
@@ -238,167 +283,138 @@ class ExtensionModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\
             'extension',
         );
 
-		$extensionData = [];
-		$extensionData['extension'] = [];
-		$extensionData['extension']['vewndorName'] = '';
-		$extensionData['extension']['extensionName'] = '';
-		$extensionData['extension']['description'] = '';
-
-        $view->assignMultiple([
-            'extensionData' => $extensionData,
-			'registeredVendorGroups' => $this->getRegisteredVendorGroups(),
-        ]);
-
-    	return $view->renderResponse('ExtensionAdd');
+    	return $view->renderResponse('Extension/Add');
     }
 
 
     public function edit(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Edit');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-
-debug($bodyParams,"bodyParams");
-
-        $vendorName = $bodyParams['vendorName'] ?? '';
-        $extensionName = $bodyParams['extensionName'] ?? '';
-
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
 		$view = $this->moduleTemplateFactory->create($request);
 
-//        $view->assign(
-//            'dateFormat',
-//            [
-//                'day'  => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'd-m-y',
-//                'time' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']   ?? 'H:i',
-//            ]
-//        );
+        $vendorName = $bodyParams['vendorName'];
+        $extensionName = $bodyParams['extensionName'];
 
-//        $view->setTitle(
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab'),
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.add')
-//        );
+        $extensionData = $this->extensionbuilderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
 
-        $extensionData = $this->extensionbulderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
-
-        if (in_array($bodyParams['CMD'] ?? [], ['save',], true)) {
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
 
 if ($extensionName ===$bodyParams['extensionData']['extension']['extensionName']) {
 } else {
 //echo 'ToDo: change';
 }
 
-            Tools\ConfigArray::arrayMerge($extensionData,$bodyParams['extensionData']);
+                Tools\ConfigArray::arrayMerge($extensionData,$bodyParams['extensionData']);
 
-            self::save(
-                $bodyParams['vendorName'] ?? '',
-                $bodyParams['extensionName'] ?? '',
-                $extensionData ?? [],
-            );
+                self::save(
+                    $bodyParams['vendorName'] ?? '',
+                    $bodyParams['extensionName'] ?? '',
+                    $extensionData ?? [],
+                );
 
-            $this->addDocHeaderAddButton(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'locallang.xlf:function.extension.add.h',
-			    'extension.add',
-            );
+                $view->assignMultiple([
+                    'configuration' => $this->configuration,
+                    'currentProject' => $this->developer['typo3']['project'] ?? 'no',
+                    'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
+                    'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
+                    'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
+                ]);
 
-            $view->assignMultiple([
-                'vendors' => $this->extensionbulderObject->vendorsAndExtensions ?? ['No data! - renderExtensionListView'],
-                'currentProjects' => $this->extensionbulderObject->currentProjects ?? ['No data! - renderExtensionListView'],
-                'projects' => $this->extensionbulderObject->projects ?? ['No data! - renderExtensionListView'],
-            ]);
+                $this->addDocHeaderModuleDropDown(
+                    $view,
+                    $this->uriBuilder,
+                    'extension',
+                    $this->developer['typo3']['project'] ?? 'no',
+                    $this->developer['typo3']['vendor'] ?? 'all',
+                );
+                $this->addDocHeaderAddButton(
+                    $view,
+                    $this->iconFactory,
+                    $this->uriBuilder,
+                    'locallang.extension.xlf:add',
+                    'extension.add',
+                );
 
-            return $view->renderResponse('ExtensionList');
-        } else {
-
-            $view->assignMultiple([
-                'vendorName' => $vendorName,
-    			'extensionName' => $extensionName,
-                'extensionData' => $extensionData,
-		    	"registeredVendorGroups" => $this->getRegisteredVendorGroups(),
-            ]);
-
-            $this->addDocHeaderCloseAndSaveButtons(
-                $view,
-                $this->iconFactory,
-                $this->uriBuilder,
-                'extension',
-            );
-
-    	    return $view->renderResponse('ExtensionEdit');
+                return $view->renderResponse('Extension/List');
+                break;
 		}
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'vendorName' => $vendorName,
+            'extensionName' => $extensionName,
+            'extensionData' => $extensionData,
+            "registeredVendorGroups" => $this->getRegisteredVendorGroups(),
+        ]);
+
+        $this->addDocHeaderCloseAndSaveButtons(
+            $view,
+            $this->iconFactory,
+            $this->uriBuilder,
+           'extension',
+        );
+
+        return $view->renderResponse('Extension/Edit');
     }
 
 
     public function delete(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Delete');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
+		$view = $this->moduleTemplateFactory->create($request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
         $extensionName = $bodyParams['extensionName'] ?? '';
 
-		$view = $this->moduleTemplateFactory->create($request);
+        $this->extensionbuilderObject->deleteExtension($vendorName, $extensionName);
 
-//        $view->assign(
-//            'dateFormat',
-//            [
-//                'day'  => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'd-m-y',
-//                'time' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']   ?? 'H:i',
-//            ]
-//        );
+        if ($this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? false) {
+            unset($this->projects[$this->developer['typo3']['project']]['extensions'][$extensionName]);
+            $this->writeProject();
+            $this->readProject();
+        }
 
-//        $view->setTitle(
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab'),
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.add')
-//        );
-
-        $this->extensionbulderObject->delete($vendorName, $extensionName);
+        $this->flashMessage('', 'Extension: ' . $extensionName . ' is deleted'); // ToDo LLL
 
         $view->assignMultiple([
-            'vendors' => $this->extensionbulderObject->vendorsAndExtensions ?? ['No data! - renderExtensionListView'],
-            'currentProjects' => $this->extensionbulderObject->currentProjects ?? ['No data! - renderExtensionListView'],
-            'projects' => $this->extensionbulderObject->projects ?? ['No data! - renderExtensionListView'],
+            'configuration' => $this->configuration,
+            'currentProject' => $this->developer['typo3']['project'] ?? 'no',
+            'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
+            'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
+            'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
         ]);
 
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'extension',
+            $this->developer['typo3']['project'] ?? 'no',
+            $this->developer['typo3']['vendor'] ?? 'all',
+        );
         $this->addDocHeaderAddButton(
             $view,
             $this->iconFactory,
             $this->uriBuilder,
-            'locallang.xlf:function.extension.add.h',
+            'locallang.extension.xlf:add',
 			'extension.add',
         );
 
-        return $view->renderResponse('ExtensionList');
+        return $view->renderResponse('Extension/List');
     }
 
 
     public function build(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Build');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
+		$view = $this->moduleTemplateFactory->create($request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
         $extensionName = $bodyParams['extensionName'] ?? '';
 
-		$view = $this->moduleTemplateFactory->create($request);
-
-//        $view->assign(
-//            'dateFormat',
-//            [
-//                'day'  => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'd-m-y',
-//                'time' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']   ?? 'H:i',
-//            ]
-//        );
-
-//        $view->setTitle(
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab'),
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.add')
-//        );
 
         $this->addDocHeaderModuleDropDown(
             $view,
@@ -406,64 +422,72 @@ if ($extensionName ===$bodyParams['extensionData']['extension']['extensionName']
             'extension',
         );
 
-        $builderUri = 'https://build.extension-builder.com/';
-        $copyInExtension = true;
-        $clearCache      = false;
-        $dumpAutoload    = false;
+        $builderUri = Setup\Config::BUILDERURI;
 
-        $this->extensionbulderObject->build(
+        $copyInExtension = true;
+
+
+// ToDo
+// flushT3andPhpCache
+// analyzeDatabaseStructure
+// rebuildPhpAutoload
+
+// https://typo3.extension-builder.dev/api/v1/extensionbuildcoretypo3
+// if ($_SERVER['SERVER_NAME'] === 'development.extension-builder.dev') {
+
+
+        $flushT3andPhpCache = $this->developer['typo3']['flushT3andPhpCache'] ?? false;
+        $analyzeDatabaseStructure = $this->developer['typo3']['analyzeDatabaseStructure'] ?? false;
+        $rebuildPhpAutoload = $this->developer['typo3']['rebuildPhpAutoload'] ?? false;
+
+        $this->extensionbuilderObject->build(
             $vendorName,
             $extensionName,
             $builderUri,
             $copyInExtension,
-            $clearCache,
-            $dumpAutoload,
+            $flushT3andPhpCache,
+            $analyzeDatabaseStructure,
+            $rebuildPhpAutoload,
         );
-        $this->extensionbulderObject->vendorsAndExtensions
+        $this->extensionbuilderObject->vendorsAndExtensions
             [$vendorName]['extensions'][$extensionName]['extensionBuild']['lastBuild'] = date('d-m-Y  h:i:m');
-        $this->extensionbulderObject->write($vendorName, $extensionName);
+        $this->extensionbuilderObject->writeExtension($vendorName, $extensionName);
 
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'currentProject' => $this->developer['typo3']['project'] ?? 'no',
+            'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
+            'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
+            'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'extension',
+            $this->developer['typo3']['project'] ?? 'no',
+            $this->developer['typo3']['vendor'] ?? 'all',
+        );
         $this->addDocHeaderAddButton(
             $view,
             $this->iconFactory,
             $this->uriBuilder,
-            'locallang.xlf:function.extension.add.h',
+            'locallang.extension.xlf:add',
 			'extension.add',
         );
 
-        $view->assignMultiple([
-            'vendors' => $this->extensionbulderObject->vendorsAndExtensions ?? ['No data! - renderExtensionListView'],
-            'currentProjects' => $this->extensionbulderObject->currentProjects ?? ['No data! - renderExtensionListView'],
-            'projects' => $this->extensionbulderObject->projects ?? ['No data! - renderExtensionListView'],
-        ]);
-
-        return $view->renderResponse('ExtensionList');
+        return $view->renderResponse('Extension/List');
     }
 
 
     public function upload(
         ServerRequestInterface $request,
     ): ResponseInterface {
-//        ModuleController::debugRequest($request, 'Extension - Upload');
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
+		$view = $this->moduleTemplateFactory->create($request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
         $extensionName = $bodyParams['extensionName'] ?? '';
-
-		$view = $this->moduleTemplateFactory->create($request);
-
-//        $view->assign(
-//            'dateFormat',
-//            [
-//                'day'  => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'd-m-y',
-//                'time' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']   ?? 'H:i',
-//            ]
-//        );
-
-//        $view->setTitle(
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_modules.xlf:mlang_tabs_tab'),
-//            $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.add')
-//        );
 
         $this->addDocHeaderModuleDropDown(
             $view,
@@ -471,48 +495,59 @@ if ($extensionName ===$bodyParams['extensionData']['extension']['extensionName']
             'extension',
         );
 
-        $vendorData = $this->extensionbulderObject->vendorsAndExtensions[$vendorName];
-        $extensionData = $this->extensionbulderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
-
-//echo 'ExtensionModuleController.php - upload<br />';
-
-//debug($vendorData);
-//debug($vendorData['github']);
-//debug($extensionData['gitubCom']);
-//debug($extensionData['extensionBuild']['gitubCom']);
+        $vendorData = $this->extensionbuilderObject->vendorsAndExtensions[$vendorName];
+        $extensionData = $this->extensionbuilderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
 
         // GtiHub
         if ($extensionData['extensionBuild']['gitHubCom'] ?? false) {
-            $tmpGitubCom = true;
-            $gitOrganizations = $extensionData['extensionBuild']['gitHubCom']['vendor'] ?? '';
-            $gitToken = $extensionData['extensionBuild']['gitHubCom']['token'] ?? '';
-            $gitRepos = $extensionName;
-            if (Github\Helpers::findRepos($gitOrganizations, $gitToken, $gitRepos)) {
 
-//echo 'findRepos<br />';
+//debug($extensionData['extensionBuild']['gitHubCom'], $extensionName);
+			
+            $organization = $extensionData['extensionBuild']['gitHubCom']['vendor'] ?? '';
+            $repo = $extensionName;
+            $token = $extensionData['extensionBuild']['gitHubCom']['token'] ?? '';
 
+            if (Tools\Github::checkOrganization($organization)) {
+                if (Tools\Github::findRepo($organization, $repo)) {
+                    $this->flashMessage('', 'Repro found'); // ToDo LLL
+
+// ToDo Upload
+
+                } else {
+                    $this->flashMessage('', 'Repro not found'); // ToDo LLL
+                }
             } else {
-
-//echo 'createRepos<br />';
-                Github\Helpers::createRepos($gitOrganizations, $gitToken, $gitRepos);
+                $this->flashMessage('', 'No Repro '); // ToDo LLL
 			}
-        }
 
+        } else {
+            $this->flashMessage('', 'No Github config'); // ToDo LLL
+		}
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'currentProject' => $this->developer['typo3']['project'] ?? 'no',
+            'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
+            'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
+            'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            $view,
+            $this->uriBuilder,
+            'extension',
+            $this->developer['typo3']['project'] ?? 'no',
+            $this->developer['typo3']['vendor'] ?? 'all',
+        );
         $this->addDocHeaderAddButton(
             $view,
             $this->iconFactory,
             $this->uriBuilder,
-            'locallang.xlf:function.extension.add.h',
+            'locallang.extension.xlf:add',
 			'extension.add',
         );
 
-        $view->assignMultiple([
-            'vendors' => $this->extensionbulderObject->vendorsAndExtensions ?? ['No data! - renderExtensionListView'],
-            'currentProjects' => $this->extensionbulderObject->currentProjects ?? ['No data! - renderExtensionListView'],
-            'projects' => $this->extensionbulderObject->projects ?? ['No data! - renderExtensionListView'],
-        ]);
-
-        return $view->renderResponse('ExtensionList');
+        return $view->renderResponse('Extension/List');
     }
 
 
@@ -531,20 +566,11 @@ if ($extensionName ===$bodyParams['extensionData']['extension']['extensionName']
         $extensionData['extension']['version'] .= '.';
         $extensionData['extension']['version'] .= (string)($extensionData['extension']['versionRevision'] ?? '0');
 
-        $this->extensionbulderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData;
-        $this->extensionbulderObject->write($vendorName, $extensionName);
+        $this->extensionbuilderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData;
 
-        ModuleController::flashMessage('Vendor: '.$vendorName, 'Saving extension: '.$extensionName);
-    }
+        $this->extensionbuilderObject->writeExtension($vendorName, $extensionName);
 
-
-    final function getRegisteredVendorGroups(): array
-    {
-        $tmpArray = [];
-        foreach ($this->extensionbulderObject->vendorsAndExtensions ?? [] as $vendor) {
-            $tmpArray[] = $vendor['vendorName'];
-        }
-        return $tmpArray;
+        $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
     }
 
 }

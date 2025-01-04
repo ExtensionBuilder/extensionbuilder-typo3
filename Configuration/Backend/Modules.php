@@ -1,20 +1,23 @@
 <?php
 
 return [
+    'jsFiles' => [
+        'EXT:extensionbuilder_typo3/Resources/Public/JavaScript/ModalXXX.js',
+    ],
 	'extensionbuilder' => [
 		'position' => ['before' => 'system'],
 		'access' => 'admin',
 		'path' => '/module/extensionbuilder',
 		'iconIdentifier' => 'mimetypes-x-content-form',
-		'labels' => 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_moddules.xlf:mlang_tabs_tab',
+		'labels' => 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:module_tablabel',
 	],
 	'extensionbuilder_typo3_configuration' => [
 		'parent' => 'extensionbuilder',
 		'position' => ['before' => '*'],
 		'access' => 'admin',
-		'path' => '/module/extensionbuilder/typo3/overview',
+		'path' => '/module/extensionbuilder/typo3',
 		'iconIdentifier' => 'module-about',
-		'labels' => 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang_moddules.xlf:mlang_labels_tablabel',
+		'labels' => 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:module_namelabel',
 
 		'extensionName' => 'extensionbuilder_typo3',
 

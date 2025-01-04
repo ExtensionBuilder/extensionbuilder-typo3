@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-use ExtensionBuilder\ExtensionbuilderTypo3\Setup;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 class ExtensionConfiguration
@@ -14,28 +14,31 @@ class ExtensionConfiguration
     public static function read(
         string $pathToConfigurationJson,
     ): array {
-        $returnArray = [];
+        $return = [];
         $extensionJsonList = Tools\Folder::scanFolderForFile($pathToConfigurationJson, 'json');
         foreach ($extensionJsonList ?? [] as $json) {
             $jsonData = Tools\Json::read($pathToConfigurationJson . '/' . $json);
             if (($jsonData ?? false)) {
-				Tools\ConfigArray::arrayMerge($returnArray, $jsonData);
+				Tools\ConfigArray::arrayMerge($return, $jsonData);
             }
         }
-        return $returnArray;
+        return $return;
     }
+
 
     public static function write(
         string $pathToConfigurationJson,
-        string $jsonFileName,
+        string $fileName,
         array $arrayForJson,
     ): void {
         GeneralUtility::mkdir_deep($pathToConfigurationJson);
         Tools\Json::write(
-            $pathToConfigurationJson . DIRECTORY_SEPARATOR . $jsonFileName,
+            $pathToConfigurationJson . DIRECTORY_SEPARATOR
+            . $fileName,
             $arrayForJson,
         );
     }
+
 
     static function writeSub(
         string $sub,
@@ -47,6 +50,7 @@ class ExtensionConfiguration
         $tmpArrayForJson[$sub] = $arrayForJson;
         self::write($pathToConfigurationJson, $jsonFileName, $tmpArrayForJson);
     }
+
 
     static function getExtensionFiles(
         string $pathToConfigurationJson,

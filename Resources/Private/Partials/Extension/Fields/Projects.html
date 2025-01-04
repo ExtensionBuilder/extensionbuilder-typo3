@@ -1,0 +1,30 @@
+<div class="form-group">
+    <div class="form-control-wrap">
+
+        <label>
+            <f:translate
+                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:label.project"
+            />
+        </label>
+
+        <select
+            name="extensionData[project]"
+            id="extensionData.project"
+            class="form-select"
+        >
+            <option
+                value="0"
+                title="No Procet select"
+            >
+            </option>
+            <f:for each="{projects}" as="project" key="projectKey">
+                <option
+                    value="{projectKey}"
+                    title="{project.name}"
+                >
+                    {project.name} ({project.description})
+                </option>
+            </f:for>
+        </select>
+    </div>
+</div>

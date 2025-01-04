@@ -1,0 +1,42 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+
+    <f:section name="Content">
+
+        <f:comment>DevelopmentCodeStart</f:comment>
+        <f:if condition="{configuration.developmentServer}">
+            <f:if condition="{configuration.debug.extension.list.fluid}">
+                <f:debug inline="1">{_all}</f:debug>
+            </f:if>
+        </f:if>
+        <f:comment>DevelopmentCodeEnd</f:comment>
+
+<f:comment> ToOo 
+        <h1>
+            <f:translate
+                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extensions.xlf:overviewOfVendorsExtensions"
+            />
+        </h1>
+</f:comment>
+
+        <f:if condition="{project -> f:count()}">
+            <f:render partial="Extension/ListProject" arguments="{_all}" />
+        </f:if>
+
+        <f:if condition="{currentVendor} == 'all'">
+            <f:then>
+                <f:render partial="Extension/ListShowAllVendor" arguments="{_all}" />
+            </f:then>
+            <f:else>
+                <f:if condition="{currentVendor} != 'no'">
+                    <f:render partial="Extension/ListShowOneVendor" arguments="{_all}" />
+                </f:if>
+            </f:else>
+        </f:if>
+
+    </f:section>
+</html>

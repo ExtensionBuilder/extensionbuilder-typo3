@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
@@ -14,7 +15,7 @@ class DeveloperCode
         string $search,
         string $replace,
     ): void {
-// ToDo
+// ToDo functionality test
         $pathToVendorsAndExtensions =
             $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR
             . 'typo3conf' . DIRECTORY_SEPARATOR

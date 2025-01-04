@@ -1,11 +1,10 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
-/**
- * Version 1.0.0 - RC1
- */
+use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,7 +21,7 @@ use TYPO3\CMS\Core\Utility;
 use ExtensionBuilder\ExtensionbuilderTypo3\Setup;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
-class InfoModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract
+final class InfoModuleController extends BuildExtensionAbstract
 {
 
     public function __construct(
@@ -36,20 +35,25 @@ class InfoModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\Build
         parent::__construct();
     }
 
-    /**
-     * Module controller
-     */
+
     final function info(
         ServerRequestInterface $request,
     ): ResponseInterface {
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-
+        $bodyParams = array_merge(($request->getParsedBody() ?? []), $request->getQueryParams() ?? []);
+        $this->request = $request;
 		$view = $this->moduleTemplateFactory->create($request);
 
-        $this->configuration['version'] = Utility\ExtensionManagementUtility::getExtensionVersion(Setup\GlobalConfig::EXT_NAME);
+        $getStatus = Tools\RestApiClient::getStatus($this->configuration['builderUrl'] ?? 'https://typo3.extension-builder.dev/');
+
+        $announcements = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Announcements.json');
+        $issues = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Issues.json');
+        $todo = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Todo.json');
+        $changeLog = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_ChangeLog.json');
+
+        $this->configuration['version'] = Utility\ExtensionManagementUtility::getExtensionVersion(Setup\Config::EXT_NAME);
 
         $this->configuration['developerCounter'] =
-            count(Tools\Folder::scanFolderForFile(Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()) ?? []);
+            count(Tools\Folder::scanFolderForFile(Tools\ExtensionbuilderFolder::getExtensionBuilderFolder(), filter: 'developer.') ?? []);
 
         $this->configuration['vendorCounter'] = count($this->vendors);
 
@@ -60,8 +64,16 @@ class InfoModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\Build
                 + count($this->vendorsAndExtensions[$vendorName]['extensions'] ?? []);
         }
 
+        $this->configuration['projectCounter'] = count($this->projects ?? []);
+
         $view->assignMultiple([
-              'ebConfig' => $this->configuration,
+              'configuration' => $this->configuration,
+              'developer' => $this->developer,
+              'getStatus' => $getStatus,
+              'announcements' => $announcements,
+              'issues' => $issues,
+              'todo' => $todo,
+              'changeLog' => $changeLog,
         ]);
 
         $this->addDocHeaderModuleDropDown(
@@ -76,7 +88,26 @@ class InfoModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\Build
             'extension',
         );
 
-    	return $view->renderResponse('Info');
+        return $view->renderResponse('Info');
     }
 
+
+    private function getJsonWithcUrl(
+        string $url,
+    ): array {
+        $return = [];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        if ($output) {
+            $return = (array)json_decode($output, true);
+            if (json_last_error() === 0) {
+                $return = array_values($return);
+                $return = $return[0];
+			}
+		}
+        return $return;
+	}
 }

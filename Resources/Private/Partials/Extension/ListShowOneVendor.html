@@ -1,0 +1,14 @@
+<f:for each="{vendors}" as="vendorGroup" key="vendorGroupId">
+    <f:if condition="{currentVendor} == {vendorGroupId}">
+        <f:render
+            partial="Extension/List"
+            arguments="{
+                extensions: vendorGroup.extensions,
+                headline: '', name:
+                vendorGroup.vendorName,
+                groupId: vendorGroup.vendorName,
+                collapsed: false
+            }"
+        />
+    </f:if>
+</f:for>

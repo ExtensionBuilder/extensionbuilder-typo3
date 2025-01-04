@@ -1,20 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-	<file source-language="en" datatype="plaintext" original="EXT:scheduler/Resources/Private/Language/locallang.developer.xlf" date="2024-01-21T20:00:00Z" product-name="extensionbuilder_typo3">
-		<header/>
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:scheduler/Resources/Private/Language/locallang.developer.xlf"
+		date="2024-10-14T20:00:00Z"
+		product-name="extensionbuilder_typo3"
+	>
+		<header />
 		<body>
 
-			<trans-unit id="developer.author" resname="developer.author">
+			<trans-unit id="developerSettings" resname="developerSettings">
+				<source>Developer settings</source>
+			</trans-unit>
+
+
+			<trans-unit id="savingDeveloperSetings" resname="savingDeveloperSetings">
+				<source>Saving developer setings</source>
+			</trans-unit>
+
+
+
+			<trans-unit id="developerId" resname="developerId">
+				<source>Developer ID</source>
+			</trans-unit>
+
+			<trans-unit id="author" resname="author">
 				<source>Author</source>
 			</trans-unit>
-			<trans-unit id="developer.author_email" resname="developer.author_email">
+
+			<trans-unit id="author_email" resname="author_email">
 				<source>E-Mail</source>
 			</trans-unit>
-			<trans-unit id="developer.author_company" resname="developer.author_company">
+
+			<trans-unit id="author_company" resname="author_company">
 				<source>Company</source>
+			</trans-unit>
+
+			<trans-unit id="defaultProject" resname="defaultProject">
+				<source>Default Project</source>
+			</trans-unit>
+
+			<trans-unit id="defaultVendor" resname="defaultVendor">
+				<source>Default Vendor</source>
 			</trans-unit>
 
 		</body>
 	</file>
 </xliff>
-

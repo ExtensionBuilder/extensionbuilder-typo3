@@ -1,0 +1,31 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+        <f:comment>DevelopmentCodeStart</f:comment>
+        <f:if condition="{configuration.developmentServer}">
+            <f:if condition="{configuration.debug.project.duplicate.fluid}">
+                <f:debug inline="1">{_all}</f:debug>
+            </f:if>
+        </f:if>
+        <f:comment>DevelopmentCodeEnd</f:comment>
+
+        <h1>
+            <f:translate
+                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:duplicate"
+                arguments="{0: project.name}"
+            />
+        </h1>
+
+        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
+            <div class="tx_extensionbuilder_module">
+                <f:render partial="Project/Fields/Name" arguments="{_all}" />
+            </div>
+        </form>
+
+    </f:section>
+</html>

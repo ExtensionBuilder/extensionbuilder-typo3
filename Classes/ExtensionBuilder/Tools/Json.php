@@ -30,38 +30,44 @@ class Json
     static function read(
         string $jsonFile,
     ): array {
-        $tmpError = '';
+        $error = '';
+
+// ToDO LLL
 
         if (file_exists($jsonFile)) {
-            $tmpArray = json_decode(file_get_contents($jsonFile), true);
+            $return = json_decode(file_get_contents($jsonFile), true);
             switch (json_last_error()) {
                 case JSON_ERROR_NONE:
                     break;
                 case JSON_ERROR_DEPTH:
-		    		$tmpError = 'Maximale Stacktiefe überschritten';
+		    		$error = 'Maximale Stacktiefe überschritten';
                     break;
                 case JSON_ERROR_STATE_MISMATCH:
-                    $tmpError = 'Unterlauf oder Nichtübereinstimmung der Modi';
+                    $error = 'Unterlauf oder Nichtübereinstimmung der Modi';
                     break;
                 case JSON_ERROR_CTRL_CHAR:
-                    $tmpError = 'Unerwartetes Steuerzeichen gefunden';
+                    $error = 'Unerwartetes Steuerzeichen gefunden';
                     break;
                 case JSON_ERROR_SYNTAX:
-                    $tmpError = 'Syntaxfehler';
+                    $error = 'Syntaxfehler';
                     break;
                 case JSON_ERROR_UTF8:
-                    $tmpError = 'Missgestaltete UTF-8 Zeichen, möglicherweise fehlerhaft kodiert';
+                    $error = 'Missgestaltete UTF-8 Zeichen, möglicherweise fehlerhaft kodiert';
                     break;
                 default:
-                    $tmpError = 'Unbekannter Fehler';
+                    $error = 'Unbekannter Fehler';
                     break;
             }
 		} else {
-            $tmpError = 'File not found';
+            $error = 'File not found';
 		}
 
-        if ($tmpError) {
-            $tmpArray = [];
+        if ($error) {
+// ToDo
+//debug(debug_backtrace()[0],'0');
+//debug(debug_backtrace()[2],'2');
+
+            $return = [];
 
             $jsonFile = substr($jsonFile, strlen(Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder()));
 
@@ -70,13 +76,13 @@ class Json
             $flashMessage = GeneralUtility::makeInstance(
                 FlashMessage::class,
                 $jsonFile,
-                'Tools\Json::read: ' . $tmpError,
+                'Tools\Json::read: ' . $error,
                 ContextualFeedbackSeverity::ERROR,
             );
             $notificationQueue->enqueue($flashMessage);
 		}
 
-        return $tmpArray;
+        return $return;
     }
 
 }

@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-	<file source-language="en" datatype="plaintext" original="EXT:scheduler/Resources/Private/Language/locallang.configuration.xlf" date="2024-01-21T20:00:00Z" product-name="extensionbuilder_typo3">
-		<header/>
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:scheduler/Resources/Private/Language/locallang.configuration.xlf"
+		date="2024-10-14T20:00:00Z"
+		product-name="extensionbuilder_typo3"
+	>
+		<header />
 		<body>
 
-			<trans-unit id="configuration.communityVersion" resname="configuration.communityVersion">
+			<trans-unit id="extensionBuilderSettings" resname="extensionBuilderSettings">
+				<source>Extension Builder settings</source>
+			</trans-unit>
+
+			<trans-unit id="savingConfiguration" resname="savingConfiguration">
+				<source>Saving configuration</source>
+			</trans-unit>
+
+
+			<trans-unit id="communityVersion" resname="communityVersion">
 				<source>You use the community version of Extension Builder</source>
 			</trans-unit>
-			<trans-unit id="configuration.proVersion" resname="configuration.proVersion">
+
+			<trans-unit id="proVersion" resname="proVersion">
 				<source>You use the pro version of Extension Builder</source>
+			</trans-unit>
+
+			<trans-unit id="versionKey" resname="versionKey">
+				<source>versionKey</source>
+			</trans-unit>
+
+			<trans-unit id="versionKey" resname="versionKey">
+				<source>versionKey</source>
+			</trans-unit>
+
+			<trans-unit id="proFeature" resname="proFeature">
+				<source>Overview of Extension Builder Pro features</source>
+			</trans-unit>
+
+			<trans-unit id="proFeatureDevelopmentCode" resname="proFeatureDevelopmentCode">
+				<source>Marking of developer and debug code, this will be removed when the final version is build.</source>
+			</trans-unit>
+
+			<trans-unit id="debug.configuration.fluid" resname="debug.configuration.fluid">
+				<source>debug.configuration.fluid</source>
 			</trans-unit>
 
 		</body>
 	</file>
 </xliff>
-

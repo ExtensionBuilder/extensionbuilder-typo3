@@ -1,0 +1,12 @@
+<f:for each="{vendors}" as="vendorGroup" key="vendorGroupId">
+    <f:render
+        partial="Extension/List"
+        arguments="{
+            extensions: vendorGroup.extensions,
+            headline: '',
+            name: vendorGroup.vendorName,
+            groupId: vendorGroup.vendorName,
+            collapsed: true
+        }"
+    />
+</f:for>

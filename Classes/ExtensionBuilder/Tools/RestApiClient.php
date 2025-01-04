@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
@@ -9,6 +10,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
 
 use ExtensionBuilder\ExtensionbuilderTypo3\Setup;
+use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 class RestApiClient
 {
@@ -19,12 +21,78 @@ class RestApiClient
     ): array {
         return self::post(
             $baseUri,
-            'api/v1/' . Setup\GlobalConfig::REMOTE_API,
+            'api/v1/' . Setup\Config::REMOTE_API,
             $multipart,
         );
 	}
 
-    public static function githubSearch(
+    public static function getStatus(
+        string $baseUri,
+    ): array {
+        $hostStatus = new Tools\Uri($baseUri);
+
+        if (!$hostStatus->isOnline) { return []; }
+		
+        $client = new \GuzzleHttp\Client();
+
+        $multipart = [];
+        $multipart['multipart'] = [];
+        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'getStatus'];
+
+        $response = $client->request(
+            'POST',
+            $baseUri . 'api/v1/' . Setup\Config::REMOTE_API,
+            $multipart,
+        );
+
+        $body = (string)$response->getBody() ?? '';
+
+        return (array)json_decode($body, true);
+	}
+
+    public static function check(
+        string $baseUri,
+        array $multipart,
+    ): array {
+        $client = new \GuzzleHttp\Client();
+
+        $multipart = [];
+        $multipart['multipart'] = [];
+        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'check'];
+
+        $response = $client->request(
+            'POST',
+            $baseUri . 'api/v1/' . 'extensionbuilder',
+            $multipart,
+        );
+
+        $string = (string)$response->getBody();
+
+        return (array)json_decode($string, true);
+	}
+
+    public static function register(
+        string $baseUri,
+        array $multipart,
+    ): array {
+        $client = new \GuzzleHttp\Client();
+
+        $multipart = [];
+        $multipart['multipart'] = [];
+        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'register'];
+
+        $response = $client->request(
+            'POST',
+            $baseUri . 'api/v1/' . 'extensionbuilder',
+            $multipart,
+        );
+
+        $string = (string)$response->getBody();
+
+        return (array)json_decode($string, true);
+	}
+
+    public static function githubSearchRemove(
         array &$extension,
     ): bool {
         $token = $extension['extensionBuild']['gitubCom']['token'] ?? '';
@@ -41,7 +109,7 @@ class RestApiClient
             ],
         ];
 //        $result = self::get('https://api.github.com/', 'search/repositories', $multipart);
-		debug($result, 'github.com search result');
+//		debug($result, 'github.com search result');
 
         if (count($result['items']) > 0) {
             return true;
@@ -50,7 +118,7 @@ class RestApiClient
 		}
 	}
 
-    public static function github(
+    public static function githubRemove(
         array &$extension,
     ): void {
         if (!($extension['extensionBuild']['gitubCom'] ?? false)) { return; }
@@ -82,7 +150,7 @@ class RestApiClient
 
 	}
 
-    public static function packagist(
+    public static function packagistRemove(
         array &$extension,
     ): void {
         // https://packagist.org/apidoc
@@ -119,8 +187,19 @@ class RestApiClient
         }
     }
 
+    private static function checkUrl(
+        string $url,
+        int $port = 443,
+    ): bool|string {
+        $host = Tools\Host::checkUriToHost($url);
 
-    // private static function
+// ToDo LLL
+        if(!Tools\Host::checkHostDns($host)) { return 'No DNS entry available'; }
+        if (!Tools\Host::checkHostPing($host)){ return 'Ping does not respond'; }
+        if (!Tools\Host::checkHostPort($host,$port)){ return 'Serviceport is offline'; }
+
+        return true;
+	}
 
     private static function post(
         string $baseUri,
@@ -155,54 +234,55 @@ class RestApiClient
         array $multipart,
     ): array {
         $client = new \GuzzleHttp\Client();
+
         $response = $client->request(
             $modePostGet,
-            $baseUri.$apiPath,
+            $baseUri . $apiPath,
             $multipart,
         );
 
-        $tmpSting = (string)$response->getBody();
+        $string = (string)$response->getBody();
 		
         file_put_contents(
             Environment::getProjectPath() . DIRECTORY_SEPARATOR
             . 'typo3temp' . DIRECTORY_SEPARATOR
             . 'response.json',
-            $tmpSting
+            $string
         );
 
 //ToDo start postion des JSON daten besser finden 
-        $tmpPos = strpos($tmpSting, "\"version\"");
+        $pos = strpos($string, "\"version\"");
 
-        if ($tmpPos > 0) {
-            $tmpBody = substr($tmpSting, $tmpPos - 6);
-            $tmpInfo = substr($tmpSting, 0, $tmpPos - 1 - 5);
+        if ($pos > 0) {
+            $body = substr($string, $pos - 6);
+            $info = substr($string, 0, $pos - 1 - 5);
         } else {
-            $tmpBody = $tmpSting;
-            $tmpInfo = '';
+            $body = $string;
+            $info = '';
         }
 
-        $tmpReturn = (array)json_decode($tmpBody, true);
+        $return = (array)json_decode($body, true);
 
         $debugPath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . Setup\GlobalConfig::VAR_EB . DIRECTORY_SEPARATOR
-            . $tmpReturn['vendor'] . DIRECTORY_SEPARATOR
-            . $tmpReturn['extension'] . DIRECTORY_SEPARATOR
+            . Setup\Config::VAR_EB . DIRECTORY_SEPARATOR
+            . $return['vendor'] . DIRECTORY_SEPARATOR
+            . $return['extension'] . DIRECTORY_SEPARATOR
             . 'debug' . DIRECTORY_SEPARATOR;
 
         file_put_contents(
             $debugPath . 'response.json',
-            $tmpBody,
+            $body,
         );
 
-        if ($tmpInfo) {
+        if ($info) {
            file_put_contents(
                $debugPath . 'info.html',
-               $tmpInfo,
+               $info,
            );
         }
 
-        return $tmpReturn;
+        return $return;
 	}
 
 }

@@ -1,39 +1,120 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
     <f:section name="Content">
-
-        <div>
-            <h1><f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf:info.h" /></h1>
-
-            <div style="width: 301px; top left repeat-y;">
-                <div style="float: left;  width: 100px;">Version</div>
-                <div style="float: right; width: 200px;">{ebConfig.version}</div>
-                <br /><br />
-                <div style="float: left;  width: 100px;">Author</div>
-                <div style="float: right; width: 200px;">Stephan Franz Sellner</div>
-                <div style="float: left;  width: 100px;">Support</div>
-                <div style="float: right; width: 200px;"><f:link.email email="contact@extension-builder.dev" target="_blank" /></div>
-                <div style="float: left;  width: 100px;">Homepage</div>
-                <div style="float: right; width: 200px;"><f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external></div>
-                <br /><br /><br /><br />
-                <div style="float: left;  width: 100px;">Develpers</div>
-                <div style="float: right; width: 200px;">{ebConfig.developerCounter}</div>
-                <br />
-                <div style="float: left;  width: 100px;">Vendors</div>
-                <div style="float: right; width: 200px;">{ebConfig.vendorCounter}</div>
-                <br />
-                <div style="float: left;  width: 100px;">Extensions</div>
-                <div style="float: right; width: 200px;">{ebConfig.extensionCounter}</div>
-
-
-
-
+        <f:comment>DevelopmentCodeStart</f:comment>
+        <f:if condition="{configuration.developmentServer}">
+            <f:if condition="{configuration.debug.info.fluid}">
+                <f:debug inline="1">{_all}</f:debug>
+            </f:if>
+        </f:if>
+        <f:comment>DevelopmentCodeStartEnd</f:comment>
+        <h1>
+            <f:translate
+                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf:extensionBuilderTypo3"
+            />
+            <f:if condition="{configuration.proVersion}">
+                <f:then>
+                    - Pro Version -
+                </f:then>
+                <f:else>
+                    - Community Version -
+                </f:else>
+            </f:if>
+        </h1>
+        <div style="width: 501px; top left repeat-y;">
+            <div style="float: left;  width: 100px;">Version</div>
+            <div style="float: right; width: 400px;">{configuration.version}</div>
+            <div style="float: width: 500px;">&nbsp;</div>
+            <div style="float: left;  width: 100px;">Author</div>
+            <div style="float: right; width: 400px;">Stephan Franz Sellner</div>
+            <div style="float: left;  width: 100px;">Support</div>
+            <div style="float: right; width: 400px;"><f:link.email email="contact@extension-builder.dev" target="_blank" /></div>
+            <div style="float: left;  width: 100px;">Homepage</div>
+            <div style="float: right; width: 400px;">
+                <f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external>
             </div>
-
         </div>
-
+        <br />
+        <f:if condition="{getStatus}">
+            <br />
+            <h1>
+                <f:translate
+                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf:extensionBuilderTypo3Core"
+                />
+            </h1>
+            <div style="width: 501px; top left repeat-y;">
+                <div style="float: left;  width: 100px;">Version</div>
+                <div style="float: right; width: 400px;">{getStatus.version}</div>
+                <div style="float: left;  width: 100px;">Status</div>
+                <div style="float: right; width: 400px;">{getStatus.status}</div>
+                <div style="float: left;  width: 100px;">Server URL</div>
+                <div style="float: right; width: 400px;">{getStatus.serverUrl}</div>
+            </div>
+            <br />
+        </f:if>
+        <br />
+        <h2>ID´s</h2>
+        <div style="width: 501px; top left repeat-y;">
+            <div style="float: left;  width: 100px;">System ID </div>
+            <div style="float: right; width: 400px;">{configuration.systemId}</div>
+            <br />
+            <div style="float: left;  width: 100px;">Developer ID </div>
+            <div style="float: right; width: 400px;">{developer.developerId}</div>
+        </div>
+        <br />
+        <h2>Info</h2>
+        <div style="width: 501px; top left repeat-y;">
+            <div style="float: left;  width: 100px;">Develpers</div>
+            <div style="float: right; width: 400px;">{configuration.developerCounter}</div>
+            <br />
+            <div style="float: left;  width: 100px;">Vendors</div>
+            <div style="float: right; width: 400px;">{configuration.vendorCounter}</div>
+            <br />
+            <div style="float: left;  width: 100px;">Extensions</div>
+            <div style="float: right; width: 400px;">{configuration.extensionCounter}</div>
+            <br />
+            <div style="float: left;  width: 100px;">Projects</div>
+            <div style="float: right; width: 400px;">{configuration.projectCounter}</div>
+        </div>
+        <f:if condition="{announcements}">
+            <f:render
+                partial="Info/Fields/Info"
+                arguments="{
+                    infoFields: announcements,
+                    infoTranslate: 'announcements'
+                }"
+            />
+        </f:if>
+        <f:if condition="{issues}">
+            <f:render
+                partial="Info/Fields/Info"
+                arguments="{
+                    infoFields: issues,
+                    infoTranslate: 'issues'
+                }"
+            />
+        </f:if>
+        <f:if condition="{todo}">
+            <f:render
+                partial="Info/Fields/Info"
+                arguments="{
+                    infoFields: todo,
+                    infoTranslate: 'todo'
+                }"
+            />
+        </f:if>
+        <f:if condition="{changeLog}">
+            <f:render
+                partial="Info/Fields/Info"
+                arguments="{
+                    infoFields: changeLog,
+                    infoTranslate: 'changeLog'
+                }"
+            />
+        </f:if>
     </f:section>
 </html>

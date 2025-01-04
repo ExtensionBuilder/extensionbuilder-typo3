@@ -1,11 +1,10 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
-/**
- * Version 1.0.0 - RC1
- */
+use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,10 +19,13 @@ use TYPO3\CMS\Core\Context\Context;
 
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
-
-
-class DeveloperModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtensionAbstract
+final class DeveloperModuleController extends BuildExtensionAbstract
 {
+
+// ToDo
+// Flush TYPO3 and PHP Cache
+// Analyze Database Structure
+// Rebuild PHP Autoload Information
 
     public function __construct(
         protected readonly LanguageServiceFactory $languageServiceFactory,
@@ -37,48 +39,65 @@ class DeveloperModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\
     }
 
 
-    /**
-     * Module controller
-     */
     final function developer(
         ServerRequestInterface $request,
-    ): ResponseInterface
-    {
-        $bodyParams = array_merge($request->getParsedBody() ?? [],$request->getQueryParams() ?? []);
-
+    ): ResponseInterface {
+        $bodyParams = array_merge($request->getParsedBody() ?? [], $request->getQueryParams() ?? []);
         $view = $this->moduleTemplateFactory->create($request);
 
-		if (in_array($bodyParams['CMD'] ?? [], ['save',], true)) {
-            $this->developer = $bodyParams['developerData'];
-            $this->writeDeveloper();
-            $this->flashMessage('', 'Saving developer setings'); // ToDo LLL
-        }
+        switch ($bodyParams['action'] ?? '') {
+            case 'save':
+                Tools\ConfigArray::arrayMerge($this->developer, $bodyParams['developer']);
+
+                $this->writeDeveloper();
+
+                $this->flashMessage(
+                    '',
+                    $this->getTranslatedLabel(
+                        $request,
+                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:savingDeveloperSetings',
+                    )
+                );
+                break;
+		}
 
         $projects = [];
-        $projects['no'] = 'No';
+        $projects['no'] = $this->getTranslatedLabel(
+            $request,
+            'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:noProject',
+        );
+
 	    foreach ($this->projects ?? [] as $projectName => $projectData) {
-            $projects[$projectName] = $projectData['projectName'];
+            $projects[$projectName] = $projectData['name'];
 	    }
 
         $vendors = [];
-        $vendors['all'] = 'All';
+        $vendors['all'] = $this->getTranslatedLabel(
+            $request,
+            'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:showAllVendors',
+        );
+        $vendors['no'] = $this->getTranslatedLabel(
+            $request,
+            'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:noVendors',
+        );
+
 	    foreach ($this->vendors ?? [] as $vendorName => $vendorData) {
             $vendors[$vendorName] = $vendorData['vendorName'];
 	    }
 
         $view->assignMultiple([
-            'developerData' => $this->developer,
-            'projects' => $projects,
+            'configuration' => $this->configuration,
+            'developer' => $this->developer,
             'vendors' => $vendors,
+            'projects' => $projects,
         ]);
 
         $this->addDocHeaderModuleDropDown(
             $view,
             $this->uriBuilder,
-            'developer'
+            'developer',
         );
-
-        $this->addDocHeaderCloseandSaveButtons(
+        $this->addDocHeaderCloseAndSaveButtons(
             $view,
             $this->iconFactory,
             $this->uriBuilder,
@@ -87,21 +106,5 @@ class DeveloperModuleController extends \ExtensionBuilder\ExtensionbuilderTypo3\
 
     	return $view->renderResponse('Developer');
     }
-
-
-    /**
-     * Saving the developer settings
-     */
-    final function writeDeveloper(): void
-    {
-        $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()
-            . $GLOBALS['BE_USER']->user['username'] . '.json';
-
-        $developer = [];
-        $developer['developer'] = $this->developer;
-
-        Tools\Json::write($fileName, $developer);
-	}
 
 }
