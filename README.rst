@@ -30,3 +30,20 @@ Status: Beta
 :TER:           https://extensions.typo3.org/extension/extensionbuilder_typo3
 
 
+<<<<<<< HEAD
+=======
+Compatibility
+=============
+
+.. list-table::
+   :header-rows: 1
+
+   * -
+     - v13
+     - v12
+     - v14
+
+   * - EB_T3 0.x
+     - ✔️
+     - ✔️
+>>>>>>> 0301ac898adae5f1102740bb302bf6d4fe4de294
