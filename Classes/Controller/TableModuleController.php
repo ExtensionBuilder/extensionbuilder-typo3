@@ -97,14 +97,12 @@ final class TableModuleController extends \ExtensionBuilder\ExtensionbuilderTypo
                 break;
 		}
 
-
         $tableData = [];
         $tableData['makeSql'] = true;
         $tableData['makeModel'] = true;
         $tableData['makeTca'] = true;
         $tableData['makeFluid'] = true;
         $tableData['pagination'] = false;
-
 
         $view->assignMultiple([
             'configuration' => $this->configuration,
@@ -125,12 +123,12 @@ final class TableModuleController extends \ExtensionBuilder\ExtensionbuilderTypo
         return $view->renderResponse('Table/Add');
     }
 
-
     public function edit(
         ServerRequestInterface $request,
     ): ResponseInterface {
         $bodyParams = array_merge(($request->getParsedBody() ?? []), $request->getQueryParams() ?? []);
         $this->request = $request;
+
 		$view = $this->moduleTemplateFactory->create($request);
 
         $vendorName = $bodyParams['vendorName'];
@@ -179,7 +177,6 @@ final class TableModuleController extends \ExtensionBuilder\ExtensionbuilderTypo
                 break;
 		}
 
-
         $tableData = $extensionData['tables'][$tableName];
 
         $view->assignMultiple([
@@ -201,7 +198,6 @@ final class TableModuleController extends \ExtensionBuilder\ExtensionbuilderTypo
 
         return $view->renderResponse('Table/Edit');
     }
-
 
     public function delete(
         ServerRequestInterface $request,
@@ -246,9 +242,7 @@ final class TableModuleController extends \ExtensionBuilder\ExtensionbuilderTypo
         return $view->renderResponse('Extension/Edit');
     }
 
-
     // ------------------------------------------------------------------
-
 
     protected function save(
         string $vendorName,

@@ -197,6 +197,8 @@ class ManageExtension
 
                 $devArray[] = $devCodeClasses . DIRECTORY_SEPARATOR . 'ViewHelpers';
 
+                $devCodeConfiguration = $devCode . DIRECTORY_SEPARATOR . 'Contribution';
+
                 $devCodeConfiguration = $devCode . DIRECTORY_SEPARATOR . 'Configuration';
                 $devArray[] = $devCodeConfiguration;
                 $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'Backend';
@@ -223,6 +225,8 @@ class ManageExtension
                 $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TypoScript';
                 $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . 'TypoScript' . DIRECTORY_SEPARATOR . 'ContentElement';
                 $devArray[] = $devCodeConfiguration . DIRECTORY_SEPARATOR . '';
+
+                $devCodeClasses = $devCode . DIRECTORY_SEPARATOR . 'Contribution';
 
                 $devArray[] = $devCode . DIRECTORY_SEPARATOR . 'Documentation';
 

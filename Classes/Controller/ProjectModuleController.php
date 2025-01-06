@@ -34,7 +34,6 @@ final class ProjectModuleController extends BuildExtensionAbstract
         parent::__construct();
     }
 
-
     public function list(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -67,7 +66,6 @@ final class ProjectModuleController extends BuildExtensionAbstract
 
         return $view->renderResponse('Project/List');
     }
-	
 
     final function add(
         ServerRequestInterface $request,
@@ -154,7 +152,6 @@ final class ProjectModuleController extends BuildExtensionAbstract
 
         return $view->renderResponse('Project/Add');
     }
-
 
     final function edit(
         ServerRequestInterface $request,
@@ -245,7 +242,6 @@ final class ProjectModuleController extends BuildExtensionAbstract
     	return $view->renderResponse('Project/Edit');
     }
 
-
     final function duplicate(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -320,7 +316,6 @@ final class ProjectModuleController extends BuildExtensionAbstract
         return $view->renderResponse('Project/Duplicate');
     }
 
-
     final function delete(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -362,7 +357,6 @@ final class ProjectModuleController extends BuildExtensionAbstract
 
         return $view->renderResponse('Project/List');
     }
-
 
     final function addExtension(
         ServerRequestInterface $request,
@@ -442,7 +436,6 @@ final class ProjectModuleController extends BuildExtensionAbstract
 
         return $view->renderResponse('Project/AddExtesion');
     }
-
 
     final function deleteExtension(
         ServerRequestInterface $request,

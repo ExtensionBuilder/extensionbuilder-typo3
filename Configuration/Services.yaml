@@ -12,12 +12,13 @@ services:
   extension.remote.myremote:
     class: 'TYPO3\CMS\Extensionmanager\Remote\TerExtensionRemote'
     arguments:
-      $identifier: 'myremote'
+      $identifier: 'extension-builder'
       $options:
-         remoteBase: 'https://https://development.extension-builder.dev//'
+         remoteBase: 'https://typo3.extension-builder.dev//'
     tags:
       - name: 'extension.remote'
         default: true
+
 
 
   ExtensionBuilder\ExtensionbuilderTypo3\Controller\ExtensionModuleController:
@@ -25,6 +26,7 @@ services:
 
   ExtensionBuilder\ExtensionbuilderTypo3\Controller\TableModuleController:
     tags: ['backend.controller']
+
 
   ExtensionBuilder\ExtensionbuilderTypo3\Controller\EnumerationModuleController:
     tags: ['backend.controller']
@@ -34,6 +36,7 @@ services:
 
   ExtensionBuilder\ExtensionbuilderTypo3\Controller\LanguageModuleController:
     tags: ['backend.controller']
+
 
 
   ExtensionBuilder\ExtensionbuilderTypo3\Controller\ProjectModuleController:

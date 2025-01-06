@@ -74,18 +74,6 @@
                     <tbody data-multi-record-selection-row-selection="true">
                         <f:for each="{extensions}" as="extensionData">
 
-<f:comment>{extensionData.extension.extensionOnOff} != ''</f:comment>
-
-<f:comment>
-!{extensionOnOff} ||
-<f:debug inline="1">{_all}</f:debug>
-
-condition="!{extensionOnOff} && {extensionData.extensionOnOff}"
-<f:if condition="!{extensionOnOff}">
-</f:comment>
-	
-
-
                             <tr class="{f:if(condition:'{extension.configuration.extensionBuild}', then: 'disabled')} group_{groupId}">
                                 <td class="nowrap-disabled">
                                     <div class="name">
@@ -265,12 +253,9 @@ additionalAttributes="{'disabled': 'disabled'}"
                                     </f:if>
 
                                 </td>
-
                             </tr>
-<f:comment>
-                            </f:if>
-</f:comment>
                         </f:for>
+
                     </tbody>
                 </table>
 

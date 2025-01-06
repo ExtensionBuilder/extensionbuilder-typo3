@@ -38,8 +38,6 @@ final class EnumerationModuleController extends BuildExtensionAbstract
         $this->extensionbulderObject = new \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
     }
 
-
-
     public function add(
         ServerRequestInterface $request
     ): ResponseInterface {
@@ -122,7 +120,6 @@ final class EnumerationModuleController extends BuildExtensionAbstract
         }
     }
 
-
     public function edit(
         ServerRequestInterface $request
     ): ResponseInterface {
@@ -199,7 +196,6 @@ final class EnumerationModuleController extends BuildExtensionAbstract
 		}
     }
 
-
     public function delete(
         ServerRequestInterface $request
     ): ResponseInterface {
@@ -249,9 +245,7 @@ final class EnumerationModuleController extends BuildExtensionAbstract
         return $view->renderResponse('ExtensionEdit');
     }
 
-
     // ------------------------------------------------------------------
-
 
     protected function save(
         string $vendorName,
@@ -269,6 +263,5 @@ final class EnumerationModuleController extends BuildExtensionAbstract
         $this->extensionbulderObject->write( $vendorName, $extensionName );
         ModuleController::flashMessage('Vendor: '.$vendorName, 'Saving extension: '.$extensionName);
     }
-
 
 }

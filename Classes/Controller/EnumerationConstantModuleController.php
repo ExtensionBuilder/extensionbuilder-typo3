@@ -58,13 +58,10 @@ final class EnumerationConstantModuleController extends BuildExtensionAbstract
     ) {
         parent::__construct();
 
-
         $this->extensionbulderObject = new \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
 
 
     }
-
-
 
     public function add(
         ServerRequestInterface $request,
@@ -147,7 +144,6 @@ final class EnumerationConstantModuleController extends BuildExtensionAbstract
         }
     }
 
-
     public function edit(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -160,8 +156,6 @@ final class EnumerationConstantModuleController extends BuildExtensionAbstract
         $extensionName = $queryParams['extensionName'] ?? $parsedBody['extensionName'] ?? '';
 
 		$view = $this->moduleTemplateFactory->create($request);
-
-		
 
 //        ModuleController::addDocHeaderModuleDropDown(
 //            $view,
@@ -216,7 +210,6 @@ final class EnumerationConstantModuleController extends BuildExtensionAbstract
 		}
     }
 
-
     public function delete(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -231,7 +224,6 @@ final class EnumerationConstantModuleController extends BuildExtensionAbstract
         $constantName = $queryParams['constantName'] ?? '';
 
 		$view = $this->moduleTemplateFactory->create($request);
-
 
 //        ModuleController::addDocHeaderModuleDropDown(
 //            $view,
@@ -266,9 +258,7 @@ final class EnumerationConstantModuleController extends BuildExtensionAbstract
         return $view->renderResponse('ExtensionEnumerationEdit');
     }
 
-
     // ------------------------------------------------------------------
-
 
     protected function save(
         string $vendorName,
@@ -286,7 +276,5 @@ final class EnumerationConstantModuleController extends BuildExtensionAbstract
         $this->extensionbulderObject->write($vendorName, $extensionName);
         ModuleController::flashMessage('Vendor: '.$vendorName, 'Saving extension: ' . $extensionName);
     }
-
-
 
 }

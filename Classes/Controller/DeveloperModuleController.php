@@ -38,7 +38,6 @@ final class DeveloperModuleController extends BuildExtensionAbstract
         parent::__construct();
     }
 
-
     final function developer(
         ServerRequestInterface $request,
     ): ResponseInterface {

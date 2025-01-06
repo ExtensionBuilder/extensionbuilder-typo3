@@ -40,7 +40,6 @@ final class VendorModuleController extends BuildExtensionAbstract
         parent::__construct();
     }
 
-
     final function list(
         ServerRequestInterface $request,
     ): ResponseInterface
@@ -86,7 +85,6 @@ final class VendorModuleController extends BuildExtensionAbstract
 
         return $view->renderResponse('Vendor/List');
     }
-
 
     final function add(
         ServerRequestInterface $request,
@@ -175,7 +173,6 @@ final class VendorModuleController extends BuildExtensionAbstract
         return $view->renderResponse('Vendor/Add');
     }
 
-
     final function importExampleVendor(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -244,9 +241,7 @@ final class VendorModuleController extends BuildExtensionAbstract
 
 
         return $view->renderResponse('Vendor/List');
-
 	}
-
 
     final function edit(
         ServerRequestInterface $request,
@@ -322,7 +317,6 @@ final class VendorModuleController extends BuildExtensionAbstract
     	return $view->renderResponse('Vendor/Edit');
     }
 
-
     final function duplicate(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -396,7 +390,6 @@ final class VendorModuleController extends BuildExtensionAbstract
 
     	return $view->renderResponse('Vendor/Duplicate');
     }
-
 
     final function rename(
         ServerRequestInterface $request,

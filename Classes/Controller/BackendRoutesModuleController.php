@@ -53,7 +53,6 @@ final class BackendRoutesModuleController extends \ExtensionBuilder\Extensionbui
         $this->extensionbuilderObject = new \ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
     }
 
-
     public function add(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -101,14 +100,12 @@ final class BackendRoutesModuleController extends \ExtensionBuilder\Extensionbui
                 break;
 		}
 
-
         $tableData = [];
         $tableData['makeSql'] = true;
         $tableData['makeModel'] = true;
         $tableData['makeTca'] = true;
         $tableData['makeFluid'] = true;
         $tableData['pagination'] = false;
-
 
         $view->assignMultiple([
             'configuration' => $this->configuration,
@@ -128,7 +125,6 @@ final class BackendRoutesModuleController extends \ExtensionBuilder\Extensionbui
 
         return $view->renderResponse('Table/Add');
     }
-
 
     public function edit(
         ServerRequestInterface $request,
@@ -184,7 +180,6 @@ final class BackendRoutesModuleController extends \ExtensionBuilder\Extensionbui
                 break;
 		}
 
-
         $tableData = $extensionData['tables'][$tableName];
 
         $view->assignMultiple([
@@ -206,7 +201,6 @@ final class BackendRoutesModuleController extends \ExtensionBuilder\Extensionbui
 
         return $view->renderResponse('Table/Edit');
     }
-
 
     public function delete(
         ServerRequestInterface $request,
@@ -251,9 +245,7 @@ final class BackendRoutesModuleController extends \ExtensionBuilder\Extensionbui
         return $view->renderResponse('Extension/Edit');
     }
 
-
     // ------------------------------------------------------------------
-
 
     protected function save(
         string $vendorName,

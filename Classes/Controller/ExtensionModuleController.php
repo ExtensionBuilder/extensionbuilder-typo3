@@ -52,7 +52,6 @@ final class ExtensionModuleController extends BuildExtensionAbstract
         $this->extensionbuilderObject = new BuildExtension;
     }
 
-
     public function list(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -183,7 +182,6 @@ $this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/Java
 
         return $view->renderResponse('Extension/List');
     }
-
 
     public function add(
         ServerRequestInterface $request,
@@ -359,7 +357,6 @@ if ($extensionName ===$bodyParams['extensionData']['extension']['extensionName']
         return $view->renderResponse('Extension/Edit');
     }
 
-
     public function delete(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -404,7 +401,6 @@ if ($extensionName ===$bodyParams['extensionData']['extension']['extensionName']
 
         return $view->renderResponse('Extension/List');
     }
-
 
     public function build(
         ServerRequestInterface $request,
@@ -550,9 +546,7 @@ if ($extensionName ===$bodyParams['extensionData']['extension']['extensionName']
         return $view->renderResponse('Extension/List');
     }
 
-
     // ------------------------------------------------------------------
-
 
     final function save(
         string $vendorName,

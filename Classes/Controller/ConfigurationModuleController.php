@@ -34,7 +34,6 @@ final class ConfigurationModuleController extends BuildExtensionAbstract
         parent::__construct();
     }
 
-
     final function configuration(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -72,7 +71,6 @@ $multipart = [];
 
                 break;
 		}
-
 
 // ToDo
 $validProKey = false;

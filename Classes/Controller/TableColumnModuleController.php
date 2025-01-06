@@ -116,7 +116,6 @@ final class TableColumnModuleController extends \ExtensionBuilder\Extensionbuild
                 break;
 		}
 
-
         $tableData = [];
         $tableData['makeSql'] = true;
         $tableData['makeModel'] = true;
@@ -141,7 +140,6 @@ final class TableColumnModuleController extends \ExtensionBuilder\Extensionbuild
 
         return $view->renderResponse('Table/Add');
     }
-
 
     public function edit(
         ServerRequestInterface $request,
@@ -229,7 +227,6 @@ final class TableColumnModuleController extends \ExtensionBuilder\Extensionbuild
         return $view->renderResponse('Table/Column/Edit');
     }
 
-
 // ToDo
 //  Duplicate
 //  Rename
@@ -289,9 +286,7 @@ final class TableColumnModuleController extends \ExtensionBuilder\Extensionbuild
         return $view->renderResponse('Tabe/Edit');
     }
 
-
     // ------------------------------------------------------------------
-
 
     protected function save(
         string $vendorName,

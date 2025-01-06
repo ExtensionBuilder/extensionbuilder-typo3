@@ -35,7 +35,6 @@ final class InfoModuleController extends BuildExtensionAbstract
         parent::__construct();
     }
 
-
     final function info(
         ServerRequestInterface $request,
     ): ResponseInterface {
@@ -43,14 +42,16 @@ final class InfoModuleController extends BuildExtensionAbstract
         $this->request = $request;
 		$view = $this->moduleTemplateFactory->create($request);
 
+// ToDo
         $getStatus = Tools\RestApiClient::getStatus($this->configuration['builderUrl'] ?? 'https://typo3.extension-builder.dev/');
 
+// ToDo $this->configuration['builderUrl']
         $announcements = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Announcements.json');
         $issues = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Issues.json');
         $todo = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Todo.json');
         $changeLog = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_ChangeLog.json');
 
-        $this->configuration['version'] = Utility\ExtensionManagementUtility::getExtensionVersion(Setup\Config::EXT_NAME);
+        $this->configuration['version'] = Utility\ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3');
 
         $this->configuration['developerCounter'] =
             count(Tools\Folder::scanFolderForFile(Tools\ExtensionbuilderFolder::getExtensionBuilderFolder(), filter: 'developer.') ?? []);
@@ -91,7 +92,6 @@ final class InfoModuleController extends BuildExtensionAbstract
         return $view->renderResponse('Info');
     }
 
-
     private function getJsonWithcUrl(
         string $url,
     ): array {
@@ -110,4 +110,5 @@ final class InfoModuleController extends BuildExtensionAbstract
 		}
         return $return;
 	}
+
 }
