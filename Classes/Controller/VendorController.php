@@ -301,12 +301,21 @@ final class VendorController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+        if (Environment::isComposerMode()) {
+            $sourcePath =
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . 'ExampleVendor.zip';
+        } else {
+            $sourcePath =
+                Environment::getPublicPath() . DIRECTORY_SEPARATOR
+                . 'typo3conf' . DIRECTORY_SEPARATOR
+                . 'ext' . DIRECTORY_SEPARATOR
+                . 'extensionbuilder_typo3' . DIRECTORY_SEPARATOR
+                . 'ExampleVendor.zip';
+        }
+
         Tools\ZipArchive::unzip(
-            Environment::getPublicPath() . DIRECTORY_SEPARATOR
-            . 'typo3conf' . DIRECTORY_SEPARATOR
-            . 'ext' . DIRECTORY_SEPARATOR
-            . 'extensionbuilder_typo3' . DIRECTORY_SEPARATOR
-            .'ExampleVendor.zip',
+            $sourcePath,
             Environment::getPublicPath() . DIRECTORY_SEPARATOR
             . 'fileadmin' . DIRECTORY_SEPARATOR
             . 'ExtensionBuilder' . DIRECTORY_SEPARATOR

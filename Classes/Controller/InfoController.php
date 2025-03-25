@@ -9,6 +9,8 @@ use TYPO3\CMS\Core\Utility;
 use Psr\Http\Message\ResponseInterface;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
+use TYPO3\CMS\Core\Core\Environment;
+
 #[AsController]
 final class InfoController extends ExtensionBuilderController
 {

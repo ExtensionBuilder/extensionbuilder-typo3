@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-              "ExtensionBuilder\\ExtensionbuilderTypo3\\": "Classes/"
+              "ExtensionBuilder\\ExtensionbuilderTypo3\\": "Classes"
         }
     }
 }
