@@ -27,4 +27,4 @@ More at https://extension-builder.dev/
 
 :Repository:    https://github.com/ExtensionBuilder/extensionbuilder-typo3
 :Documentation: https://extension-builder.dev/documentation/extensionbuilder-typo3/
-:TER:           https://extensions.typo3.org/extension/eb_expand_texticon
+:TER:           https://extensions.typo3.org/extension/extensionbuilder-typo3
