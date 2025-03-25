@@ -1,13 +1,13 @@
 {
     "name": "extensionbuilder/extensionbuilder-typo3",
-    "description": " - ",
+    "description": "RC 1 - ",
     "license": "GPL-3.0-or-later",
     "type": "typo3-cms-extension",
     "homepage": "https://extension-builder.dev",
     "authors": [{
         "name": "Stephan Franz Sellner",
         "email": "contact@extension-builder.dev",
-        "homepage": "extension-builder.dev",
+        "homepage": "https://extension-builder.dev",
         "role": "Developer"
     }],
     "support": {
