@@ -13,12 +13,6 @@ use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 final class VendorController extends ExtensionBuilderController
 {
 
-    /*
-     * ToDo
-     *  - Duplicate
-     *  - Rename
-     */
- 
     final function listAction(): ResponseInterface
     {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
@@ -32,12 +26,14 @@ final class VendorController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Vendor',
         );
-        if (($this->vendors ?? false) && !($this->extensionbuilderObject->vendorsAndExtensions ?? false)) {
+
+        if (($this->vendors ?? false) && ($this->vendorsAndExtensions ?? false)) {
             $this->addDocHeaderCloseButtons(
                 'list',
                 'Extension',
             );
         }
+
         $this->addDocHeaderAddButton(
             'add',
             'Vendor',
@@ -304,6 +300,9 @@ final class VendorController extends ExtensionBuilderController
         if (Environment::isComposerMode()) {
             $sourcePath =
                 Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . 'vendor' . DIRECTORY_SEPARATOR
+                . 'extensionbuilder' . DIRECTORY_SEPARATOR
+                . 'extensionbuilder-typo3' . DIRECTORY_SEPARATOR
                 . 'ExampleVendor.zip';
         } else {
             $sourcePath =

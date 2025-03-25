@@ -232,9 +232,6 @@ final class ExtensionController extends ExtensionBuilderController
             [$vendorName]['extensions'][$extensionName]['extensionBuild']['lastBuild'] = date('d-m-Y  h:i:m');
         $this->extensionbuilderObject->writeExtension($vendorName, $extensionName);
 
-// Bei redirect falsh message!
-//        return $this->redirect('list', 'Extension');
-
         $this->moduleTemplate->assignMultiple([
             'configuration' => $this->configuration,
             'currentProject' => $this->developer['typo3']['project'] ?? 'no',

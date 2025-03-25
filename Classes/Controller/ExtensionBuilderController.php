@@ -120,32 +120,20 @@ class ExtensionBuilderController extends ActionController
             $this->configuration['builderApi'],
 	    );
 
-        $this->keyStatus = Tools\RestApiClient::checkKey(
-            $this->configuration['builderUrl'],
-//            $this->configuration['builderApi'],
-'/api/v1/extensionbuilderKey',
-            $this->configuration['systemId'] ?? '',
-            $this->configuration['proVersionKey'] ?? '',
-            $this->developer['developerId'] ?? '',
-            $this->developer['proVersionKey'] ?? '',
-		);
+//        $this->keyStatus = Tools\RestApiClient::checkKey(
+//            $this->configuration['builderUrl'],
+////            $this->configuration['builderApi'],
+//'/api/v1/extensionbuilderKey',
+//            $this->configuration['systemId'] ?? '',
+//            $this->configuration['proVersionKey'] ?? '',
+//            $this->developer['developerId'] ?? '',
+//            $this->developer['proVersionKey'] ?? '',
+//		);
 
         $this->isProKey = $this->keyStatus['proKeyActive'] ?? false;
         $this->configuration['proKey'] = $this->isProKey;
 
         $this->builderLocal = ExtensionManagementUtility::isLoaded('extensionbuilder_typo3_core');
-
-
-//$this->extensionbuilderObject = [];
-
-//        $this->extensionbuilderObject = new BuildExtension(
-//false, // ToDo
-//false, // ToDo
-//false, // ToDo
-//        );
-
-//debug($this->extensionbuilderObject);
-
     }
 
     final function readConfiguration(): void
@@ -590,9 +578,9 @@ class ExtensionBuilderController extends ActionController
 
     final function getForeignExtension(): void
 	{
-        // Duchsucht die Extenions nach eb_ext_export.json und liest disen ein und gibt eine Array zurück.
+        // Searches the extensions for eb_ext export.json and reads it and returns an array.
 
-        // ToDo nur depencs ext laden
+        // ToDo only load dependencies ext
 
         $returnArray = [];
 
@@ -874,11 +862,7 @@ class ExtensionBuilderController extends ActionController
         }
 
         $addButton = $buttonBar->makeLinkButton()
-            ->setTitle(
-// ToDo
-'imp'
-//                $languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/' . $uriRouteTextLLL)
-            )
+            ->setTitle($languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:importExample'))
             ->setShowLabelText(true)
             ->setIcon($icon)
             ->setHref($this->uriBuilder->uriFor($importAction, [], $importController));

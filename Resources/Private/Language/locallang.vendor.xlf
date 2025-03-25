@@ -40,8 +40,8 @@
 				<source>To create your first extension, you must create a vendor.</source>
 			</trans-unit>
 
-			<trans-unit id="importExampleVendor" resname="importExampleVendor">
-				<source>Import example vendor</source>
+			<trans-unit id="importExample" resname="importExample">
+				<source>Import example vendor and extension</source>
 			</trans-unit>
 
 
