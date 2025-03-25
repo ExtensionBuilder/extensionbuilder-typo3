@@ -1,0 +1,22 @@
+<f:if condition="{infoFields}">
+    <h1>
+        <f:translate
+            key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf:{infoTranslate}"
+        />
+    </h1>
+    <table>
+        <f:for each="{infoFields}" as="forData">
+            <tr>
+                <td style="width: 100px;">
+                    {forData.headline}
+                </td>
+                <td style="width: 500px;">
+                    {forData.description}
+                </td>
+                <td style="width: 100px;">
+                    {forData.status}
+                </td>
+            </tr>
+        </f:for>
+    </table>
+</f:if>

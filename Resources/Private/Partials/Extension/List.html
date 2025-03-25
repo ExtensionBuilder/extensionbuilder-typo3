@@ -77,21 +77,18 @@
                             <tr class="{f:if(condition:'{extension.configuration.extensionBuild}', then: 'disabled')} group_{groupId}">
                                 <td class="nowrap-disabled">
                                     <div class="name">
-
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.extension.edit"
-                                            parameters="{
-                                                vendorName: extensionData.extension.vendorName,
-                                                extensionName: extensionData.extension.extensionName
-                                            }"
-                                        >
+                                        <f:link.action
+                                            action="edit"
+                                            controller="Extension"
+                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+				                        >
                                             <strong>
                                                 {extensionData.extension.extensionName} 
                                                 <f:if condition="{extensionData.extension.title} != ''">
                                                     ({extensionData.extension.title})
                                                 </f:if>
                                             </strong>
-                                        </f:be.link>
+                                        </f:link.action>
                                     </div>
 
                                     <f:if condition="{extensionData.extension.description} != ''">
@@ -149,58 +146,48 @@
                                     <div class="btn-group" role="group">
 
                                         <f:comment>Edit</f:comment>
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.extension.edit"
-                                            parameters="{
-                                                vendorName: extensionData.extension.vendorName,
-                                                extensionName: extensionData.extension.extensionName
-                                            }"
+                                        <f:link.action
+                                            action="edit"
+                                            controller="Extension"
+                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
                                         >
                                             <core:icon identifier="actions-open"/>
-                                        </f:be.link>
+                                        </f:link.action>
 
                                         <f:comment>Duplicate</f:comment>
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.extension.duplicate"
-                                            parameters="{
-                                                vendorName: extensionData.extension.vendorName,
-                                                extensionName: extensionData.extension.extensionName
-                                            }"
+                                        <f:link.action
+                                            action="duplicate"
+                                            controller="Extension"
+                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
                                         >
                                             <core:icon identifier="actions-duplicate"/>
-                                        </f:be.link>
+                                        </f:link.action>
 
                                         <f:comment>Rename</f:comment>
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.extension.rename"
-                                            parameters="{
-                                                vendorName: extensionData.extension.vendorName,
-                                                extensionName: extensionData.extension.extensionName
-                                            }"
+                                        <f:link.action
+                                            action="rename"
+                                            controller="Extension"
+                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
                                         >
                                             <core:icon identifier="actions-rename"/>
-                                        </f:be.link>
+                                        </f:link.action>
 
                                         <f:comment>Delete</f:comment>
-<f:comment>
-additionalAttributes="{'disabled': 'disabled'}"
-</f:comment>
                                         <f:if condition="{extensionData.extension.noDelete} != true">
-                                            <f:be.link
-                                                route="extensionbuilder_typo3.extension.delete"
-                                                parameters="{
-                                                    vendorName: extensionData.extension.vendorName,
-                                                    extensionName: extensionData.extension.extensionName
-                                                }"
+                                            <f:link.action
+                                                action="delete"
+                                                controller="Extension"
+                                                arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                                class="btn btn-default"
                                                 additionalAttributes="{disabled:'disabled'}"
                                                 class="btn btn-default t3js-modal-trigger"
                                                 data="{
@@ -212,43 +199,39 @@ additionalAttributes="{'disabled': 'disabled'}"
                                                 title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
                                             >
                                                 <core:icon identifier="actions-edit-delete"/>
-                                            </f:be.link>
+                                            </f:link.action>
                                         </f:if>
                                     </div>
 
                                     <f:comment>Build</f:comment>
                                     <f:if condition="{extensionData.extension.noBuild} != true">
                                         <div class="btn-group" role="group">
-                                            <f:be.link
-                                                route="extensionbuilder_typo3.extension.build"
-                                                parameters="{
-                                                    vendorName: extensionData.extension.vendorName,
-                                                    extensionName: extensionData.extension.extensionName
-                                                }"
+                                            <f:link.action
+                                                action="build"
+                                                controller="Extension"
+                                                arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
                                                 class="btn btn-default"
                                                 data="{bs-toggle: 'tooltip'}"
                                                 title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:build')}"
                                             >
                                                 <core:icon identifier="actions-play"/>
-                                            </f:be.link>
+                                            </f:link.action>
                                         </div>
                                     </f:if>
 
                                     <f:comment>Upload</f:comment>
                                     <f:if condition="{extensionData.extension.noUpload} != true">
                                         <div class="btn-group" role="group">
-                                            <f:be.link
-                                                route="extensionbuilder_typo3.extension.upload"
-                                                parameters="{
-                                                    vendorName: extensionData.extension.vendorName,
-                                                    extensionName: extensionData.extension.extensionName
-                                                }"
+                                            <f:link.action
+                                                action="upload"
+                                                controller="Extension"
+                                                arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
                                                 class="btn btn-default"
                                                 data="{bs-toggle: 'tooltip'}"
                                                 title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:upload')}"
                                             >
                                                 <core:icon identifier="actions-database-import"/>
-                                            </f:be.link>
+                                            </f:link.action>
                                         </div>
                                     </f:if>
 

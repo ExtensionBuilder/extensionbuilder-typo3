@@ -5,40 +5,29 @@
 >
     <f:layout name="Module" />
     <f:section name="Content">
-        <f:comment>DevelopmentCodeStart</f:comment>
-        <f:if condition="{configuration.developmentServer}">
-            <f:if condition="{configuration.debug.configuration.fluid}">
-                <f:debug inline="1">{_all}</f:debug>
-            </f:if>
-        </f:if>
-        <f:comment>DevelopmentCodeEnd</f:comment>
-        <h1>
-            <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:extensionBuilderSettings"
-            />
-        </h1>
-        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
-            <div class="tx_extensionbuilder_module">
-                <f:render partial="Configutation/Fields/Configutation" arguments="{configuration: configuration}" />
-            </div>
-            <div class="tx_extensionbuilder_module">
-test
-            </div>
 
-            <div class="tx_extensionbuilder_typo3_module">
+        <f:comment>
+<f:debug inline="1">{_all}</f:debug>
+        </f:comment>
 
-                <f:comment>DevelopmentCodeStart</f:comment>
-                <f:if condition="{configuration.developmentServer}">
-        			<input
-                        type="hidden"
-                        id="configuration.developmentServer"
-                        name="configuration[developmentServer]"
-                        value="{configuration.developmentServer}"
-                    />
-                    <f:render partial="Configutation/Fields/DevelopmentDebug" arguments="{configuration: configuration}" />
-                </f:if>
-                <f:comment>DevelopmentCodeEnd</f:comment>
-            </div>
-        </form>
+        <f:form
+            action="save"
+            controller="Developer"
+            id="configuration-form"
+        >
+            <h1>
+                <f:translate
+                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:extensionBuilderSettings"
+                />
+            </h1>
+
+<f:comment>
+            <f:render partial="Configutation/FieldsConfigutationVersion" arguments="{configuration: configuration}" />
+</f:comment>
+			
+            <f:render partial="Configutation/FieldsConfigutation" arguments="{configuration: configuration}" />
+            <f:render partial="Configutation/FieldsLocalBuild" arguments="{configuration: configuration}" />
+
+		</f:form>
     </f:section>
 </html>

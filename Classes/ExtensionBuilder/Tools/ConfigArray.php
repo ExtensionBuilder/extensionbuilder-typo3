@@ -66,4 +66,25 @@ class ConfigArray
         return $return;
     }
 
+    static  function changeToBool(
+        array &$array,
+    ): void {
+        foreach ($array as $arrayKey => $arrayValue) {
+            if (is_array($array[$arrayKey])) {
+                self::changeToBool($array[$arrayKey]);
+            } else {
+                if (is_string($arrayKey)) {
+                    if ($arrayValue == 'true') {
+                        unset($array[$arrayKey]);
+                        $array[$arrayKey] = true;
+                    }
+                    if ($arrayValue == 'false') {
+                        unset($array[$arrayKey]);
+                        $array[$arrayKey] = false;
+                    }
+                }
+            }
+        }
+	}
+
 }

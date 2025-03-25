@@ -15,7 +15,7 @@ class ExtensionConfiguration
         string $pathToConfigurationJson,
     ): array {
         $return = [];
-        $extensionJsonList = Tools\Folder::scanFolderForFile($pathToConfigurationJson, 'json');
+        $extensionJsonList = Tools\Folder::scanForFile($pathToConfigurationJson, 'json');
         foreach ($extensionJsonList ?? [] as $json) {
             $jsonData = Tools\Json::read($pathToConfigurationJson . '/' . $json);
             if (($jsonData ?? false)) {
@@ -24,7 +24,6 @@ class ExtensionConfiguration
         }
         return $return;
     }
-
 
     public static function write(
         string $pathToConfigurationJson,
@@ -39,7 +38,6 @@ class ExtensionConfiguration
         );
     }
 
-
     static function writeSub(
         string $sub,
         string $pathToConfigurationJson,
@@ -51,12 +49,11 @@ class ExtensionConfiguration
         self::write($pathToConfigurationJson, $jsonFileName, $tmpArrayForJson);
     }
 
-
     static function getExtensionFiles(
         string $pathToConfigurationJson,
     ): array {		
         $returnArray = [];	
-        $vendorJsonList = Tools\Folder::scanFolderForFile($pathToConfigurationJson, 'json');
+        $vendorJsonList = Tools\Folder::scanForFile($pathToConfigurationJson, 'json');
         foreach ($vendorJsonList ?? [] as $json) {
 			$returnArray[] = $pathToConfigurationJson.$json;
         }

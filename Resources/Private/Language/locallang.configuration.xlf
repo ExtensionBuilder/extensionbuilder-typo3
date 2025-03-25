@@ -4,7 +4,7 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:scheduler/Resources/Private/Language/locallang.configuration.xlf"
-		date="2024-10-14T20:00:00Z"
+		date="2025-02-16T20:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
@@ -42,6 +42,20 @@
 			<trans-unit id="proFeatureDevelopmentCode" resname="proFeatureDevelopmentCode">
 				<source>Marking of developer and debug code, this will be removed when the final version is build.</source>
 			</trans-unit>
+
+
+			<trans-unit id="configuration" resname="configuration">
+				<source>configuration</source>
+			</trans-unit>
+
+			<trans-unit id="builerdUrl" resname="builderUrl">
+				<source>buildUrl</source>
+			</trans-unit>
+
+			<trans-unit id="builderApi" resname="builderApi">
+				<source>buildApi</source>
+			</trans-unit>
+
 
 			<trans-unit id="debug.configuration.fluid" resname="debug.configuration.fluid">
 				<source>debug.configuration.fluid</source>

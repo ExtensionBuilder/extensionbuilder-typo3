@@ -4,31 +4,25 @@
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
-
     <f:section name="Content">
-        <f:comment>DevelopmentCodeStart</f:comment>
-        <f:if condition="{configuration.developmentServer}">
-            <f:if condition="{configuration.debug.extension.add.fluid}">
-                <f:debug inline="1">{_all}</f:debug>
-            </f:if>
-        </f:if>
-        <f:comment>DevelopmentCodeEnd</f:comment>
 
-        <h1>
-            <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:createExtension"
-            />
-        </h1>
+        <f:form
+            action="save"
+            controller="Developer"
+            id="extension-add-form"
+        >
+            <h1>
+                <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:h1.add" />
+            </h1>
 
-        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
             <div class="tx_extensionbuilder_module">
-
                 <f:render partial="Extension/Fields/ExtensionType" arguments="{extensionData: extensionData}" />
 
     			<f:render
                     partial="Extension/Fields/VendorGroup"
                     arguments="{extensionData: extensionData, registeredVendorGroups: registeredVendorGroups}"
                 />
+
                 <f:render partial="Extension/Fields/Name" arguments="{extensionData: extensionData}" />
                 <f:render partial="Extension/Fields/Title" arguments="{extensionData: extensionData}" />
 	    		<f:render partial="Extension/Fields/Description" arguments="{extensionData: extensionData}" />
@@ -39,9 +33,8 @@
                         arguments="{projects: projects}"
                     />
 		        </f:if>
-
             </div>
-        </form>
+        </f:form>
 
     </f:section>
 </html>

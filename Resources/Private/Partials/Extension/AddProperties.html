@@ -5,30 +5,34 @@
 
             <f:alias
                 map="{add: {
-                    table: 'Table',
-                    enumeration: 'Enumeration'
+                    command: 'Command',
                 }}"
             >
 
 <f:comment>
-scheduler: 'Scheduler',
-events: 'Events',
-viewHelpers: 'ViewHelpers',
-backend: 'Backend'
+                    viewHelper: 'ViewHelper',
+                    plugin: 'Plugin',
+                    scheduler: 'Scheduler',
+                    command: 'Command',
+                    eventListener: 'Event listener',
+                    backendModul: 'Backend module',
+                    backendRoute: 'Backend route',
+                    contentElement: 'Content Element',
+                    enumeration: 'Enumeration'
+                    table: 'Table',
 </f:comment>
 
                 <f:for each="{add}" as="wert" key="key">
-                    <f:be.link
-                        route="extensionbuilder_typo3.{key}.add"
-                        parameters="{
-                            vendorName: vendorName,
-                            extensionName: extensionName
-                        }"
+                    <f:link.action
+                        action="add"
+                        controller="{key}"
+                        arguments="{'vendorName': vendorName, 'extensionName': extensionName}"
                         class="btn btn-default"
-                        title="{wert}"
+                        data="{bs-toggle: 'tooltip'}"
+                        title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
                     >
                         {wert}
-                    </f:be.link>
+                    </f:link.action>
                 </f:for>
             </f:alias>
 

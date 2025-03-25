@@ -3,7 +3,6 @@
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
-
 class Github
 {
 
@@ -146,13 +145,6 @@ class Github
         curl_close($curl_session);
         $result = json_decode($result, true);
 
-//debug($result, $gitOrganizations . ' - ' . $gitToken . ' - ' . $gitRepos);
-	
-//		foreach ($result ?? [] as $resultKey => $resultData) {
-//            if (strpos($resultData['name'] ?? '', $gitRepos) == 0 ) {
-//                return true;
-//    		}
-//		}
         return false;
     }
 

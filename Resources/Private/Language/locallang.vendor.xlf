@@ -3,20 +3,49 @@
 	<file
 		source-language="en"
 		datatype="plaintext"
-		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf"
-		date="2024-10-14T20:00:00Z"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf"
+		date="2025-02-16T20:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
 
+			<trans-unit id="link.add" resname="link.add">
+				<source>Add Vendor</source>
+			</trans-unit>
+
+
+			<trans-unit id="h1.list" resname="h1.list">
+				<source>Overview of Vendors</source>
+			</trans-unit>
+
+			<trans-unit id="h1.add" resname="h1.add">
+				<source>Add new Vendor</source>
+			</trans-unit>
+
+			<trans-unit id="h1.edit" resname="h1.edit">
+				<source>Edit Vendor "%s"</source>
+			</trans-unit>
+
+			<trans-unit id="h1.duplicate" resname="h1.duplicate">
+				<source>Duplicate Vendor "%s"</source>
+			</trans-unit>
+
+			<trans-unit id="h1.rename" resname="h1.rename">
+				<source>Rename Vendor "%s"</source>
+			</trans-unit>
+
+
 			<trans-unit id="startNow" resname="startNow">
 				<source>To create your first extension, you must create a vendor.</source>
 			</trans-unit>
 
-			<trans-unit id="h1" resname="h1">
-				<source>Overview of Vendors</source>
+			<trans-unit id="importExampleVendor" resname="importExampleVendor">
+				<source>Import example vendor</source>
 			</trans-unit>
+
+
+
 
 			<trans-unit id="vendorList" resname="vendorList">
 				<source>Vendors</source>
@@ -47,25 +76,9 @@
 			</trans-unit>
 
 
-			<trans-unit id="add" resname="add">
-				<source>Add Vendor</source>
-			</trans-unit>
 
-			<trans-unit id="importExampleVendor" resname="importExampleVendor">
-				<source>Import example vendor</source>
-			</trans-unit>
 
-			<trans-unit id="edit" resname="edit">
-				<source>Edit Vendor "%s"</source>
-			</trans-unit>
 
-			<trans-unit id="duplicate" resname="edit">
-				<source>Duplicate Vendor "%s"</source>
-			</trans-unit>
-
-			<trans-unit id="rename" resname="rename">
-				<source>Rename Vendor "%s"</source>
-			</trans-unit>
 
 		</body>
 	</file>

@@ -3,8 +3,8 @@
 	<file
 		source-language="en"
 		datatype="plaintext"
-		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.tables.xlf"
-		date="2024-10-14T20:00:00Z"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.backend.routes.xlf"
+		date="2025-02-16T20:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />

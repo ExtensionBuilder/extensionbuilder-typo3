@@ -1,0 +1,56 @@
+<div class="form-section" id="extension_name_row">
+
+    <div class="form-group">
+
+        <h1>
+            <f:translate 
+                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderUrl"
+            />
+        </h1>
+
+        <label>
+            <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:versionKey"/>
+        </label>
+
+        <f:translate 
+			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderUrl"
+        />
+        <div class="form-control-wrap">
+			<input
+                type="text"
+                class="form-control"
+                id="configuration.builderUrl"
+                name="configuration[builderUrl]"
+                value="{configuration.builderUrl}"
+                readonly
+            />
+        </div>
+
+        <f:translate
+			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderApi"
+        />
+        <div class="form-control-wrap">
+			<input
+                type="text"
+                class="form-control"
+                id="configuration.builderApi"
+                name="configuration[builderApi]"
+                value="{configuration.builderApi}"
+                readonly
+            />
+        </div>
+
+
+        <f:if condition="{configuration.developmentServer}">
+            <h2>
+developmentServer<br />
+                <f:translate 
+                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:proFeature"
+                />
+            </h2>
+            <p>
+            </p>
+        </f:if>
+
+    </div>
+</div>

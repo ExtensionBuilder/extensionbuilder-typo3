@@ -2,19 +2,17 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Extension Builder for TYPO3',
-    'description' => ' - ',
+    'description' => 'RC 1 - ',
     'category' => 'module',
-    'author' => 'Stephan Sellner',
+    'author' => 'Stephan Franz Sellner',
     'author_email' => 'contact@extension-builder.dev',
     'author_company' => 'extension-builder.dev',
     'state' => 'beta',
-    'version' => '0.4.97',
+    'version' => '0.5.140',
     'constraints' => [
         'depends' => [
             'typo3' => '12.4',
         ],
-        'conflicts' => [],
-        'suggests' => [],
     ],
 	'autoload' => [
 		'psr-4' => [

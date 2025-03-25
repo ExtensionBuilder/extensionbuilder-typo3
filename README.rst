@@ -22,11 +22,9 @@ The Extension Builder supports you in creating and maintaining your extensions.
 
 More at https://extension-builder.dev/
 
-Status: Beta
+
 ------------
 
 :Repository:    https://github.com/ExtensionBuilder/extensionbuilder-typo3
 :Documentation: https://extension-builder.dev/documentation/extensionbuilder-typo3/
-:TER:           https://extensions.typo3.org/extension/extensionbuilder_typo3
-
-
+:TER:           https://extensions.typo3.org/extension/eb_expand_texticon

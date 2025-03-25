@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ExtensionbuilderFolder
 {
@@ -20,23 +20,23 @@ class ExtensionbuilderFolder
 
     static function getExtensionBuilderFolder(): string
     {
-        $tmpReturn =
+        $return =
             Environment::getPublicPath() . DIRECTORY_SEPARATOR
             . 'fileadmin' . DIRECTORY_SEPARATOR
             . 'ExtensionBuilder' . DIRECTORY_SEPARATOR;
-        GeneralUtility::mkdir_deep($tmpReturn);
-		return $tmpReturn;
+        GeneralUtility::mkdir_deep($return);
+		return $return;
     }
 
     static function getVendorsAndExtensionsBaseFolder(): string
     {
-        $tmpReturn =
+        $return =
             Environment::getPublicPath() . DIRECTORY_SEPARATOR
             . 'fileadmin' . DIRECTORY_SEPARATOR
             . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR;
-        GeneralUtility::mkdir_deep($tmpReturn);
-		return $tmpReturn;
+        GeneralUtility::mkdir_deep($return);
+		return $return;
     }
 
     static function getPathToTypo3conf(): string
@@ -78,7 +78,9 @@ class ExtensionbuilderFolder
     static function getPathToExtension(
         string $extensionName,
     ): string {
-		return self::getPathToTypo3confExt() . $extensionName . DIRECTORY_SEPARATOR;
+		return
+            self::getPathToTypo3confExt()
+            . $extensionName . DIRECTORY_SEPARATOR;
     }
 
 }

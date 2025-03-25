@@ -4,29 +4,24 @@
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
-
     <f:section name="Content">
 
-        <f:comment>DevelopmentCodeStart</f:comment>
-        <f:if condition="{configuration.developmentServer}">
-            <f:if condition="{configuration.debug.project.add.fluid}">
-                <f:debug inline="1">{_all}</f:debug>
-            </f:if>
-        </f:if>
-        <f:comment>DevelopmentCodeEnd</f:comment>
+        <f:form
+            action="save"
+            controller="Project"
+            id="project-add-form"
+        >
+            <h1>
+                <f:translate
+                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:h1.add"
+                />
+            </h1>
 
-        <h1>
-            <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:overviewOfProjects"
-            />
-        </h1>
-
-        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
             <div class="tx_extensionbuilder_module">
-                <f:render partial="Project/Fields/Name" arguments="{_all}" />
-    			<f:render partial="Project/Fields/Description" arguments="{_all}" />
+                <f:render partial="Project/FieldsName" arguments="{_all}" />
+    			<f:render partial="Project/FieldsDescription" arguments="{_all}" />
             </div>
-        </form>
+        </f:form>
 
     </f:section>
 </html>

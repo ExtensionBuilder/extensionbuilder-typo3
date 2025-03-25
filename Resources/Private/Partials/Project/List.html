@@ -1,15 +1,6 @@
 <div class="tx_extensionbuilder_typo3_module_table">
     <div class="panel panel-default overflow-visible">
 
-<f:comment>
-            <div class="panel-heading">
-                <span class="btn fw-bold pt-1 p-0">
-                    {f:translate(key: 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:label.projects')}
-                    ({projects -> f:count()})
-                </span>
-            </div>
-</f:comment>
-
         <div>
             <div class="table-fit mb-0">
 
@@ -39,12 +30,13 @@
                                 <f:comment>Name</f:comment>
                                 <td class="nowrap-disabled">
                                     <div class="name">
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.edit"
-                                            parameters="{projectKey: projectKey}"
+                                        <f:link.action
+                                            action="edit"
+                                            controller="Project"
+                                            arguments="{'projectKey': projectKey}"
                                         >
                                             <strong>{projectData.name}</strong>
-                                        </f:be.link>
+                                        </f:link.action>
                                     </div>
                                 </td>
 
@@ -59,45 +51,50 @@
                                 <td class="nowrap">
                                     <div class="btn-group" role="group">
 
-                                        <f:comment>Edit</f:comment>
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.edit"
-                                            parameters="{projectKey: projectKey}"
+										<f:comment>Edit</f:comment>
+                                        <f:link.action
+                                            action="edit"
+                                            controller="Project"
+                                            arguments="{'projectKey': projectKey}"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
+                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:edit')}"
                                         >
                                             <core:icon identifier="actions-open"/>
-                                        </f:be.link>
+                                        </f:link.action>
 
-                                        <f:comment>Duplicate</f:comment>
 <f:comment>
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.duplicate"
-                                            parameters="{projectKey: projectKey}"
+                                        <f:comment>Duplicate</f:comment>
+                                        <f:link.action
+                                            action="duplicate"
+                                            controller="Project"
+                                            arguments="{'projectKey': projectKey}"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
+                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:duplicate')}"
                                         >
                                             <core:icon identifier="actions-duplicate"/>
-                                        </f:be.link>
+                                        </f:link.action>
 </f:comment>
 <f:comment>
                                         <f:comment>Rename</f:comment>
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.rename"
-                                            parameters="{projectKey: projectKey}"
+                                        <f:link.action
+                                            action="rename"
+                                            controller="Poject"
+                                            arguments="{'projectKey': projectKey}"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
-                                        >
+                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:rename')}"
+                                       >
                                             <core:icon identifier="actions-rename"/>
-                                        </f:be.link>
+                                        </f:link.action>
 </f:comment>
+
                                         <f:comment>Delete</f:comment>
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.delete"
-                                            parameters="{'projectKey': projectKey}"
+                                        <f:link.action
+                                            action="delete"
+                                            controller="Project"
+                                            arguments="{'projectKey': projectKey}"
                                             class="btn btn-default t3js-modal-trigger"
                                             data="{
                                                 bs-toggle: 'tooltip',
@@ -105,10 +102,10 @@
                                                 button-close-text: '{f:translate(key: \'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel\')}',
                                                 bs-content='{f:translate(key: \'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/Language/locallang.xlf:msg.delete\')}'
                                             }"
-                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
+                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:delete')}"
                                         >
                                             <core:icon identifier="actions-edit-delete"/>
-                                        </f:be.link>
+                                        </f:link.action>
 
                                     </div>
                                 </td>

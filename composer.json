@@ -5,9 +5,9 @@
     "type": "typo3-cms-extension",
     "homepage": "https://extension-builder.dev",
     "authors": [{
-        "name": "Stephan Sellner",
-        "email": "stephan@sellner.de",
-        "homepage": "https://sellner.de/",
+        "name": "Stephan Franz Sellner",
+        "email": "contact@extension-builder.dev",
+        "homepage": "extension-builder.dev",
         "role": "Developer"
     }],
     "support": {

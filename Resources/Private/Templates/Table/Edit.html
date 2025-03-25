@@ -3,17 +3,8 @@
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-    <f:layout name="Module" />
-
+    <f:layout name="Module"/>
     <f:section name="Content">
-
-        <f:comment>DevelopmentCodeStart</f:comment>
-        <f:if condition="{configuration.developmentServer}">
-            <f:if condition="{configuration.debug.table.edit.fluid}">
-                <f:debug inline="1">{_all}</f:debug>
-            </f:if>
-        </f:if>
-        <f:comment>DevelopmentCodeEnd</f:comment>
 
         <h1>
             <f:translate
@@ -42,7 +33,6 @@ Edit Tabel {tableName}
         </div>
 
 <f:comment>
-
             <f:render
                 partial="Table/AddProperties"
                 arguments="{
@@ -53,9 +43,6 @@ Edit Tabel {tableName}
             />
 
 columns
-	
-
-
 </f:comment>
 
             <f:render partial="Table/Column/List" arguments="{_all}" />

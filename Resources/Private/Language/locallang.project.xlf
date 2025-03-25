@@ -3,20 +3,44 @@
 	<file
 		source-language="en"
 		datatype="plaintext"
-		original="EXT:scheduler/Resources/Private/Language/locallang.getstarted.xlf"
-		date="2024-10-14T20:00:00Z"
+		original="EXT:scheduler/Resources/Private/Language/locallang.project.xlf"
+		date="2025-02-16T20:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
 
-			<trans-unit id="overviewOfProjects" resname="overviewOfProjects">
+			<trans-unit id="link.add" resname="link.add">
+				<source>Add Project</source>
+			</trans-unit>
+
+
+			<trans-unit id="h1.list" resname="h1.list">
 				<source>Overview of Projects</source>
 			</trans-unit>
+
+			<trans-unit id="h1.add" resname="h1.add">
+				<source>Create a new project</source>
+			</trans-unit>
+
+			<trans-unit id="h1.edit" resname="h1.edit">
+				<source>Project settings "%s"</source>
+			</trans-unit>
+
+			<trans-unit id="h1.duplicate" resname="h1.duplicate">
+				<source>Duplicate project "%s"</source>
+			</trans-unit>
+
+			<trans-unit id="h1.rename" resname="h1.rename">
+				<source>Rename project "%s"</source>
+			</trans-unit>
+
+
 
 			<trans-unit id="createNewProject" resname="createNewProject">
 				<source>Create new Project</source>
 			</trans-unit>
+
 
 			<trans-unit id="noProject" resname="noProject">
 				<source>No project</source>
@@ -51,9 +75,7 @@
 				<source>Add extesion to project</source>
 			</trans-unit>
 
-			<trans-unit id="add" resname="add">
-				<source>Add</source>
-			</trans-unit>
+
 			<trans-unit id="addTile" resname="addTile">
 				<source>Add Project</source>
 			</trans-unit>
@@ -64,17 +86,6 @@
 			</trans-unit>
 
 
-			<trans-unit id="edit" resname="edit">
-				<source>Project settings "%s"</source>
-			</trans-unit>
-
-			<trans-unit id="duplicate" resname="duplicate">
-				<source>Duplicate project "%s"</source>
-			</trans-unit>
-
-			<trans-unit id="rename" resname="rename">
-				<source>Rename project "%s"</source>
-			</trans-unit>
 
 		</body>
 	</file>

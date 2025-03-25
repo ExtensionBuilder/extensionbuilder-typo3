@@ -4,16 +4,7 @@
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
-
     <f:section name="Content">
-
-        <f:comment>DevelopmentCodeStart</f:comment>
-        <f:if condition="{configuration.developmentServer}">
-            <f:if condition="{configuration.debug.table.add.fluid}">
-                <f:debug inline="1">{_all}</f:debug>
-            </f:if>
-        </f:if>
-        <f:comment>DevelopmentCodeEnd</f:comment>
 
         <h1>
             <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.tables.xlf:add.h1" />
@@ -23,10 +14,10 @@
 
             <div class="tx_extensionbuilder_module">
                 <div>
-                    <f:render partial="Table/Fields/Name" arguments="{nameData: nameData}"/>
-                    <f:render partial="Table/Fields/Description" arguments="{tableData: tableData}"/>
+                    <f:render partial="Table/Fields/Name" arguments="{nameData: nameData}" />
+                    <f:render partial="Table/Fields/Description" arguments="{tableData: tableData}" />
 <f:comment>
-                    <f:render partial="Table/Fields/Obtions" arguments="{tableData: tableData}"/>
+                    <f:render partial="Table/Fields/Obtions" arguments="{tableData: tableData}" />
 </f:comment>
                 </div>
             </div>

@@ -63,10 +63,6 @@ class Json
 		}
 
         if ($error) {
-// ToDo
-//debug(debug_backtrace()[0],'0');
-//debug(debug_backtrace()[2],'2');
-
             $return = [];
 
             $jsonFile = substr($jsonFile, strlen(Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder()));

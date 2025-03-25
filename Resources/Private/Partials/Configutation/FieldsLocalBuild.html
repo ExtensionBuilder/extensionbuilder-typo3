@@ -1,0 +1,45 @@
+
+<f:if condition="{builderLocal}">
+rewrwerwer
+</f:if>
+
+
+<div class="form-section">
+
+    <div class="form-group">
+
+        <h1>
+builderLocal			
+        </h1>
+
+
+
+                    <div class="raw">
+                        <div class="form-group">
+                            <label class="form-label">Add</label>
+                            <div class="formengine-field-item">
+                                <div class="form-wizards-wrap">
+                                    <div class="form-wizards-item-element">
+                                        <div class="form-check form-switch">
+                                            <input type="hidden" name="configuration[buildLocal]" value="false">
+                                            <input
+                                                type="checkbox"
+                                                class="form-check-input"
+                                                name="configuration[buildLocal]"
+                                                value="true"
+                                                {f:if(
+                                                    condition: '{configuration.buildLocal}',
+                                                    then:'checked=configuration.buildLocal'
+                                                )}
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+    </div>
+</div>

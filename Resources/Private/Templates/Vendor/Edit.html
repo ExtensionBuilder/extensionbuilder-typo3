@@ -4,50 +4,44 @@
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
-
     <f:section name="Content">
 
-        <f:comment>DevelopmentCodeStart</f:comment>
-        <f:if condition="{configuration.developmentServer}">
-            <f:if condition="{configuration.debug.vendor.edit.fluid}">
-                <f:debug inline="1">{_all}</f:debug>
-            </f:if>
-        </f:if>
-        <f:comment>DevelopmentCodeEnd</f:comment>
-
-        <h1>
-            <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:edit"
-                arguments="{0: vendorData.vendorName}"
-            />
-        </h1>
-
-        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
+        <f:form
+            action="save"
+            controller="vendor"
+            id="vendor-edit-form"
+        >
+            <h1>
+                <f:translate
+                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:h1.edit"
+                    arguments="{0: vendorData.vendorName}"
+                />
+            </h1>
 
             <div class="tx_extensionbuilder_module">
 
                 <div class="form-section">
-                    <f:render partial="Vendor/Fields/VendorName" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/Fields/Company" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsVendorName" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsCompany" arguments="{vendorData: vendorData}" />
                 </div>
 
                 <div class="form-section">
-                    <f:render partial="Vendor/Fields/Description" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsDescription" arguments="{vendorData: vendorData}" />
                 </div>
 
                 <div class="form-section">
-                    <f:render partial="Vendor/Fields/Address" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/Fields/Postalcode" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/Fields/City" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/Fields/Country" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsAddress" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsPostalcode" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsCity" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsCountry" arguments="{vendorData: vendorData}" />
                 </div>
 
                 <div class="form-section">
-                    <f:render partial="Vendor/Fields/Homepage" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsHomepage" arguments="{vendorData: vendorData}" />
                 </div>
 
             </div>
-        </form>
+        </f:form>
 
     </f:section>
 </html>

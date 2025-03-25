@@ -11,16 +11,15 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
                                 />
                                 ({project.extensions -> f:count()})
 
-                                <f:be.link
-                                    route="extensionbuilder_typo3.project.addextension"
-                                    parameters="{
-                                        projectKey: projectKey
-                                    }"
+                                <f:link.action
+                                    action="addextension"
+                                    controller="Project"
+                                    arguments="{'projectKey': projectKey}"
                                     class="btn btn-default"
                                     title="Add Extension"
                                 >
                                     Add
-                                </f:be.link>
+                                </f:link.action>
                             </th>
                             <th data-sort-method="none"></th>                     
                         </tr>
@@ -62,6 +61,7 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
                                                 >
                                                     <core:icon identifier="actions-edit-hide"/>
                                                 </f:be.link>
+
                                             </f:then>
                                             <f:else>
                                                 <f:be.link
@@ -80,6 +80,7 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
                                                 </f:be.link>
                                             </f:else>
                                         </f:if>
+
                                         <f:be.link
                                             route="extensionbuilder_typo3.project.deleteextension"
                                             parameters="{

@@ -1,0 +1,25 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+    <f:section name="Content">
+
+        <h1>
+            <f:translate
+                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.viewhelper.xlf:h1.add"
+            />
+        </h1>
+
+        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
+            <div class="tx_extensionbuilder_module">
+
+                <f:render partial="ViewHelper/Fields/Name" arguments="{viewHelperData: viewHelperData}" />
+	    		<f:render partial="ViewHelper/Fields/Description" arguments="{viewHelperData: viewHelperData}" />
+
+            </div>
+        </form>
+
+    </f:section>
+</html>

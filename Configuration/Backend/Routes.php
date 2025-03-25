@@ -4,231 +4,265 @@ use ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
 return [
 
-    'extensionbuilder_typo3.extension' => [
-        'path' => '/module/extensionBuilder/typo3/extensions',
-        'target' => Controller\ExtensionModuleController::class.'::list'
-    ],
-    'extensionbuilder_typo3.extension.add' => [
-        'path' => '/module/extensionBuilder/typo3/extension/add',
-        'target' => Controller\ExtensionModuleController::class.'::add'
-    ],
     'extensionbuilder_typo3.extension.edit' => [
         'path' => '/module/extensionBuilder/typo3/extension/edit',
-        'target' => Controller\ExtensionModuleController::class.'::edit'
+        'target' => Controller\ExtensionController::class.'::editAction'
     ],
     'extensionbuilder_typo3.extension.duplicate' => [
         'path' => '/module/extensionBuilder/typo3/extension/duplicate',
-        'target' => Controller\ExtensionModuleController::class.'::duplicate'
+        'target' => Controller\ExtensionController::class.'::duplicateAction'
     ],
     'extensionbuilder_typo3.extension.rename' => [
         'path' => '/module/extensionBuilder/typo3/extension/rename',
-        'target' => Controller\ExtensionModuleController::class.'::rename'
+        'target' => Controller\ExtensionController::class.'::renameAction'
     ],
     'extensionbuilder_typo3.extension.delete' => [
         'path' => '/module/extensionBuilder/typo3/extension/delete',
-        'target' => Controller\ExtensionModuleController::class.'::delete'
-    ],
-    'extensionbuilder_typo3.extension.build' => [
-        'path' => '/module/extensionBuilder/typo3/extension/build',
-        'target' => Controller\ExtensionModuleController::class.'::build'
+        'target' => Controller\ExtensionController::class.'::deleteAction'
     ],
     'extensionbuilder_typo3.extension.upload' => [
         'path' => '/module/eextensionBuilder/typo3/extension/upload',
-        'target' => Controller\ExtensionModuleController::class.'::upload'
+        'target' => Controller\ExtensionController::class.'::uploadAction'
+    ],
+    'extensionbuilder_typo3.extension.build' => [
+        'path' => '/module/extensionBuilder/typo3/extension/build',
+        'target' => Controller\ExtensionController::class.'::buildAction'
     ],
 
 
-    'extensionbuilder_typo3.table.add' => [
-        'path' => '/module/extensionBuilder/typo3/table/add',
-        'target' => Controller\TableModuleController::class.'::add'
+    'extensionbuilder_typo3.contentElement.edit' => [
+        'path' => '/module/extensionBuilder/typo3/contentElement/edit',
+        'target' => Controller\ContentElementController::class.'::editAction'
     ],
+    'extensionbuilder_typo3.contentElement.duplicate' => [
+        'path' => '/module/extensionBuilder/typo3/contentElement/duplicate',
+        'target' => Controller\ContentElementController::class.'::duplicateAction'
+    ],
+    'extensionbuilder_typo3.contentElement.rename' => [
+        'path' => '/module/extensionBuilder/typo3/contentElement/rename',
+        'target' => Controller\ContentElementController::class.'::renameAction'
+    ],
+    'extensionbuilder_typo3.contentElement.delete' => [
+        'path' => '/module/extensionBuilder/typo3/contentElement/delete',
+        'target' => Controller\ContentElementController::class.'::deleteAction'
+    ],
+
+
+    'extensionbuilder_typo3.plugin.edit' => [
+        'path' => '/module/extensionBuilder/typo3/plugin/edit',
+        'target' => Controller\PluginController::class.'::editAction'
+    ],
+    'extensionbuilder_typo3.plugin.duplicate' => [
+        'path' => '/module/extensionBuilder/typo3/plugin/duplicate',
+        'target' => Controller\PluginController::class.'::duplicateAction'
+    ],
+    'extensionbuilder_typo3.plugin.rename' => [
+        'path' => '/module/extensionBuilder/typo3/plugin/rename',
+        'target' => Controller\PluginController::class.'::renameAction'
+    ],
+    'extensionbuilder_typo3.plugin.delete' => [
+        'path' => '/module/extensionBuilder/typo3/plugin/delete',
+        'target' => Controller\PluginController::class.'::deleteAction'
+    ],
+
+
+    'extensionbuilder_typo3.scheduler.edit' => [
+        'path' => '/module/extensionBuilder/typo3/scheduler/edit',
+        'target' => Controller\SchedulerController::class.'::editAction'
+    ],
+    'extensionbuilder_typo3.scheduler.duplicate' => [
+        'path' => '/module/extensionBuilder/typo3/schedulern/duplicate',
+        'target' => Controller\SchedulerController::class.'::duplicateAction'
+    ],
+    'extensionbuilder_typo3.scheduler.rename' => [
+        'path' => '/module/extensionBuilder/typo3/scheduler/rename',
+        'target' => Controller\SchedulerController::class.'::renameAction'
+    ],
+    'extensionbuilder_typo3.scheduler.delete' => [
+        'path' => '/module/extensionBuilder/typo3/scheduler/delete',
+        'target' => Controller\SchedulerController::class.'::deleteAction'
+    ],
+
+
+    'extensionbuilder_typo3.command.edit' => [
+        'path' => '/module/extensionBuilder/typo3/command/edit',
+        'target' => Controller\CommandController::class.'::editAction'
+    ],
+    'extensionbuilder_typo3.command.duplicate' => [
+        'path' => '/module/extensionBuilder/typo3/command/duplicate',
+        'target' => Controller\CommandController::class.'::duplicateAction'
+    ],
+    'extensionbuilder_typo3.command.rename' => [
+        'path' => '/module/extensionBuilder/typo3/command/rename',
+        'target' => Controller\CommandController::class.'::renameAction'
+    ],
+    'extensionbuilder_typo3.command.delete' => [
+        'path' => '/module/extensionBuilder/typo3/command/delete',
+        'target' => Controller\CommandController::class.'::deleteAction'
+    ],
+
+
+    'extensionbuilder_typo3.viewHelper.edit' => [
+        'path' => '/module/extensionBuilder/typo3/viewHelper/edit',
+        'target' => Controller\ViewHelperController::class.'::editAction'
+    ],
+    'extensionbuilder_typo3.pviewHelper.duplicate' => [
+        'path' => '/module/extensionBuilder/typo3/viewHelper/duplicate',
+        'target' => Controller\ViewHelperController::class.'::duplicateAction'
+    ],
+    'extensionbuilder_typo3.viewHelper.rename' => [
+        'path' => '/module/extensionBuilder/typo3/viewHelper/rename',
+        'target' => Controller\ViewHelperController::class.'::renameAction'
+    ],
+    'extensionbuilder_typo3.viewHelper.delete' => [
+        'path' => '/module/extensionBuilder/typo3/viewHelper/delete',
+        'target' => Controller\ViewHelperController::class.'::deleteAction'
+    ],
+
+
+
     'extensionbuilder_typo3.table.edit' => [
         'path' => '/module/extensionBuilder/typo3/table/edit',
-        'target' => Controller\TableModuleController::class.'::edit'
+        'target' => Controller\TableController::class.'::editAction'
     ],
     'extensionbuilder_typo3.table.duplicate' => [
         'path' => '/module/extensionBuilder/typo3/table/duplicate',
-        'target' => Controller\TableModuleController::class.'::duplicate'
+        'target' => Controller\TableController::class.'::duplicateAction'
     ],
     'extensionbuilder_typo3.table.rename' => [
         'path' => '/module/extensionBuilder/typo3/table/rename',
-        'target' => Controller\TableModuleController::class.'::rename'
+        'target' => Controller\TableController::class.'::renameAction'
     ],
     'extensionbuilder_typo3.table.delete' => [
         'path' => '/module/extensionBuilder/typo3/table/delete',
-        'target' => Controller\TableModuleController::class.'::delete'
+        'target' => Controller\TableController::class.'::deleteAction'
     ],
 
 
-    'extensionbuilder_typo3.table.column.add' => [
-        'path' => '/module/extensionBuilder/typo3/table/column/add',
-        'target' => Controller\TableColumnModuleController::class.'::add'
-    ],
     'extensionbuilder_typo3.table.column.edit' => [
         'path' => '/module/extensionBuilder/typo3/table/column/edit',
-        'target' => Controller\TableColumnModuleController::class.'::edit'
+        'target' => Controller\TableColumnController::class.'::editAction'
     ],
     'extensionbuilder_typo3.table.column.duplicate' => [
         'path' => '/module/extensionBuilder/typo3/table/column/duplicate',
-        'target' => Controller\TableColumnModuleController::class.'::duplicate'
+        'target' => Controller\TableColumnController::class.'::duplicateAction'
     ],
     'extensionbuilder_typo3.table.column.rename' => [
         'path' => '/module/extensionBuilder/typo3/table/column/rename',
-        'target' => Controller\TableColumnModuleController::class.'::rename'
+        'target' => Controller\TableColumnController::class.'::renameAction'
     ],
     'extensionbuilder_typo3.table.column.delete' => [
         'path' => '/module/extensionBuilder/typo3/table/column/delete',
-        'target' => Controller\TableColumnModuleController::class.'::delete'
+        'target' => Controller\TableColumnController::class.'::deleteAction'
     ],
 
 
-    'extensionbuilder_typo3.backend.modules.add' => [
-        'path' => '/module/extensionBuilder/typo3/backend/modules/add',
-        'target' => Controller\BackendModulesModuleController::class.'::add'
-    ],
     'extensionbuilder_typo3.backend.modules.edit' => [
         'path' => '/module/extensionBuilder/typo3/backend/modules/edit',
-        'target' => Controller\BackendModulesModuleController::class.'::edit'
+        'target' => Controller\BackendModulesController::class.'::editAction'
     ],
     'extensionbuilder_typo3.backend.modules.duplicate' => [
         'path' => '/module/extensionBuilder/typo3/backend/modules/duplicate',
-        'target' => Controller\BackendModulesModuleController::class.'::duplicate'
+        'target' => Controller\BackendModulesController::class.'::duplicateAction'
     ],
     'extensionbuilder_typo3.backend.modules.rename' => [
         'path' => '/module/extensionBuilder/typo3/backend/modules/rename',
-        'target' => Controller\BackendModulesModuleController::class.'::rename'
+        'target' => Controller\BackendModulesController::class.'::renameAction'
     ],
     'extensionbuilder_typo3.backend.modules.delete' => [
         'path' => '/module/extensionBuilder/typo3/backend/modules/delete',
-        'target' => Controller\BackendModulesModuleController::class.'::delete'
+        'target' => Controller\BackendModulesController::class.'::deleteAction'
     ],
 
-    'extensionbuilder_typo3.backend.routes.add' => [
-        'path' => '/module/extensionBuilder/typo3/backend/routes/add',
-        'target' => Controller\BackendRoutesModuleController::class.'::add'
-    ],
     'extensionbuilder_typo3.backend.routes.edit' => [
         'path' => '/module/extensionBuilder/typo3/backend/routes/edit',
-        'target' => Controller\BackendRoutesModuleController::class.'::edit'
+        'target' => Controller\BackendRoutesController::class.'::editAction'
     ],
     'extensionbuilder_typo3.backend.routes.duplicate' => [
         'path' => '/module/extensionBuilder/typo3/backend/routes/duplicate',
-        'target' => Controller\BackendRoutesModuleController::class.'::duplicate'
+        'target' => Controller\BackendRoutesController::class.'::duplicateAction'
     ],
     'extensionbuilder_typo3.backend.routes.rename' => [
         'path' => '/module/extensionBuilder/typo3/backend/routes/rename',
-        'target' => Controller\BackendRoutesModuleController::class.'::rename'
+        'target' => Controller\BackendRoutesController::class.'::renameAction'
     ],
     'extensionbuilder_typo3.backend.routes.delete' => [
         'path' => '/module/extensionBuilder/typo3/backend/routes/delete',
-        'target' => Controller\BackendRoutesModuleController::class.'::delete'
+        'target' => Controller\BackendRoutesController::class.'::deleteAction'
     ],
 
 
 
-    'extensionbuilder_typo3.enumeration.add' => [
-        'path' => '/module/extensionBuilder/typo3/enumeration/add',
-        'target' => Controller\EnumerationModuleController::class.'::add'
-    ],
     'extensionbuilder_typo3.enumeration.edit' => [
         'path' => '/module/extensionBuilder/typo3/enumeration/edit',
-        'target' => Controller\EnumerationModuleController::class.'::edit'
+        'target' => Controller\EnumerationController::class.'::editAction'
     ],
     'extensionbuilder_typo3.enumeration.duplicate' => [
         'path' => '/module/extensionBuilder/typo3/enumeration/duplicate',
-        'target' => Controller\EnumerationModuleController::class.'::duplicate'
+        'target' => Controller\EnumerationController::class.'::duplicateAction'
     ],
     'extensionbuilder_typo3.enumeration.constant.rename' => [
         'path' => '/module/extensionBuilder/typo3/enumeration/constant/rename',
-        'target' => Controller\EnumerationConstantModuleController::class.'::rename'
+        'target' => Controller\EnumerationConstantController::class.'::renameAction'
     ],
     'extensionbuilder_typo3.enumeration.constant.edit' => [
         'path' => '/module/extensionBuilder/typo3/enumeration/constant/edit',
-        'target' => Controller\EnumerationConstantModuleController::class.'::edit'
+        'target' => Controller\EnumerationConstantController::class.'::editAction'
     ],
     'extensionbuilder_typo3.enumeration.constant.delete' => [
         'path' => '/module/extensionBuilder/typo3/enumeration/constant/delete',
-        'target' => Controller\EnumerationConstantModuleController::class.'::delete'
+        'target' => Controller\EnumerationConstantController::class.'::deleteAction'
     ],
 
 
-    'extensionbuilder_typo3.project' => [
-        'path' => '/module/extensionBuilder/typo3/projects',
-        'target' => Controller\ProjectModuleController::class.'::list'
-    ],
-    'extensionbuilder_typo3.project.add' => [
-        'path' => '/module/extensionBuilder/typo3/project/add',
-        'target' => Controller\ProjectModuleController::class.'::add'
-    ],
     'extensionbuilder_typo3.project.edit' => [
         'path' => '/module/extensionBuilder/typo3/project/edit',
-        'target' => Controller\ProjectModuleController::class.'::edit'
-    ],
-    'extensionbuilder_typo3.project.duplicate' => [
-        'path' => '/module/extensionBuilder/typo3/project/duplicate',
-        'target' => Controller\ProjectModuleController::class.'::duplicate'
-    ],
-    'extensionbuilder_typo3.project.rename' => [
-        'path' => '/module/extensionBuilder/typo3/project/rename',
-        'target' => Controller\ProjectModuleController::class.'::rename'
+        'target' => Controller\ProjectController::class.'::editAction'
     ],
     'extensionbuilder_typo3.project.delete' => [
         'path' => '/module/extensionBuilder/typo3/project/delete',
-        'target' => Controller\ProjectModuleController::class.'::delete'
+        'target' => Controller\ProjectController::class.'::deleteAction'
     ],
     'extensionbuilder_typo3.project.addextension' => [
         'path' => '/module/extensionBuilder/typo3/project/addextension',
-        'target' => Controller\ProjectModuleController::class.'::addExtension'
+        'target' => Controller\ProjectController::class.'::addExtensionAction'
     ],
     'extensionbuilder_typo3.project.deleteextension' => [
         'path' => '/module/extensionBuilder/typo3/project/deleteextension',
-        'target' => Controller\ProjectModuleController::class.'::deleteExtension'
+        'target' => Controller\ProjectController::class.'::deleteExtensionAction'
     ],
 
 
-    'extensionbuilder_typo3.vendor' => [
-        'path' => '/module/extensionBuilder/typo3/vendors',
-        'target' => Controller\VendorModuleController::class.'::list'
-    ],
-    'extensionbuilder_typo3.vendor.add' => [
-        'path' => '/module/extensionBuilder/typo3/vendor/add',
-        'target' => Controller\VendorModuleController::class.'::add'
-    ],
-    'extensionbuilder_typo3.vendor.importExampleVendor' => [
-        'path' => '/module/extensionBuilder/typo3/vendor/importExampleVendor',
-        'target' => Controller\VendorModuleController::class.'::importExampleVendor'
-    ],
     'extensionbuilder_typo3.vendor.edit' => [
         'path' => '/module/extensionBuilder/typo3/vendor/edit',
-        'target' => Controller\VendorModuleController::class.'::edit'
+        'target' => Controller\VendorController::class.'::editAction'
     ],
     'extensionbuilder_typo3.vendor.duplicate' => [
         'path' => '/module/extensionBuilder/typo3/vendor/duplicate',
-        'target' => Controller\VendorModuleController::class.'::duplicate'
+        'target' => Controller\VendorController::class.'::duplicateAction'
     ],
     'extensionbuilder_typo3.vendor.rename' => [
         'path' => '/module/extensionBuilder/typo3/vendor/rename',
-        'target' => Controller\VendorModuleController::class.'::rename'
+        'target' => Controller\VendorController::class.'::renameAction'
     ],
     'extensionbuilder_typo3.vendor.delete' => [
         'path' => '/module/extensionBuilder/typo3/vendor/delete',
-        'target' => Controller\VendorModuleController::class.'::delete'
+        'target' => Controller\VendorController::class.'::deleteAction'
     ],
 
 
-    'extensionbuilder_typo3.developer' => [
-        'path' => '/module/extensionBuilder/typo3/developer',
-        'target' => Controller\DeveloperModuleController::class.'::developer'
-    ],
 
-    'extensionbuilder_typo3.configuration' => [
-        'path' => '/module/extensionBuilder/typo3/configuration',
-        'target' => Controller\ConfigurationModuleController::class.'::configuration'
+    'extensionbuilder_typo3.notesandideas.add' => [
+        'path' => '/module/extensionBuilder/typo3/notesandideas/add',
+        'target' => Controller\NotesAndIdeasController::class.'::addAction'
     ],
-
-    'extensionbuilder_typo3.info' => [
-        'path' => '/module/extensionBuilder/typo3/info',
-        'target' => Controller\InfoModuleController::class.'::info'
+    'extensionbuilder_typo3.notesandideas.edit' => [
+        'path' => '/module/extensionBuilder/typo3/notesandideas/edit',
+        'target' => Controller\NotesAndIdeasController::class.'::editAction'
+    ],
+    'extensionbuilder_typo3.notesandideas.delete' => [
+        'path' => '/module/extensionBuilder/typo3/notesandideas/delete',
+        'target' => Controller\NotesAndIdeasController::class.'::deleteAction'
     ],
 
 ];

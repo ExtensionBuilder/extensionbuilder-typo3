@@ -5,53 +5,59 @@ declare(strict_types = 1);
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 use TYPO3\CMS\Core\Core\Environment;
-
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
-
-use ExtensionBuilder\ExtensionbuilderTypo3\Setup;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 class RestApiClient
 {
 
     public static function build(
-        string $baseUri,
+        string $authority,
+        string $path,
         array $multipart,
     ): array {
-        return self::post(
-            $baseUri,
-            'api/v1/' . Setup\Config::REMOTE_API,
-            $multipart,
-        );
+        return self::executeClientJsonResponseB($authority, $path, $multipart);
 	}
 
+
     public static function getStatus(
-        string $baseUri,
+        string $authority,
+        string $path,
     ): array {
-        $hostStatus = new Tools\Uri($baseUri);
-
-        if (!$hostStatus->isOnline) { return []; }
-		
-        $client = new \GuzzleHttp\Client();
-
         $multipart = [];
         $multipart['multipart'] = [];
         $multipart['multipart'][] = ['name' => 'command', 'contents' => 'getStatus'];
-
-        $response = $client->request(
-            'POST',
-            $baseUri . 'api/v1/' . Setup\Config::REMOTE_API,
-            $multipart,
-        );
-
-        $body = (string)$response->getBody() ?? '';
-
-        return (array)json_decode($body, true);
+        return self::executeClientJsonResponse($authority, $path, $multipart);
 	}
 
-    public static function check(
-        string $baseUri,
+
+    public static function checkKey(
+        string $authority,
+        string $path,
+        string $systemId,
+        string $systemProKey,
+        string $developerId,
+        string $developerProKey,
+    ): array {
+        $multipart = [];
+        $multipart['multipart'] = [];
+        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'checkProKey'];
+        $multipart['multipart'][] = ['name' => 'systemId', 'contents' => $systemId];
+        $multipart['multipart'][] = ['name' => 'systemProKey', 'contents' => $systemProKey];
+        $multipart['multipart'][] = ['name' => 'developerId', 'contents' => $developerId];
+        $multipart['multipart'][] = ['name' => 'developerProKey', 'contents' => $developerProKey];
+        return self::executeClientJsonResponse($authority, $path, $multipart);
+	}
+
+
+
+
+
+    public static function checkRemove(
+        string $authority,
+        string $path,
         array $multipart,
     ): array {
         $client = new \GuzzleHttp\Client();
@@ -62,7 +68,7 @@ class RestApiClient
 
         $response = $client->request(
             'POST',
-            $baseUri . 'api/v1/' . 'extensionbuilder',
+            $authority . $path,
             $multipart,
         );
 
@@ -71,8 +77,9 @@ class RestApiClient
         return (array)json_decode($string, true);
 	}
 
-    public static function register(
-        string $baseUri,
+    public static function registerRemove(
+        string $authority,
+        string $path,
         array $multipart,
     ): array {
         $client = new \GuzzleHttp\Client();
@@ -83,7 +90,7 @@ class RestApiClient
 
         $response = $client->request(
             'POST',
-            $baseUri . 'api/v1/' . 'extensionbuilder',
+            $authority . $path,
             $multipart,
         );
 
@@ -91,6 +98,13 @@ class RestApiClient
 
         return (array)json_decode($string, true);
 	}
+
+
+
+
+
+
+
 
     public static function githubSearchRemove(
         array &$extension,
@@ -109,7 +123,6 @@ class RestApiClient
             ],
         ];
 //        $result = self::get('https://api.github.com/', 'search/repositories', $multipart);
-//		debug($result, 'github.com search result');
 
         if (count($result['items']) > 0) {
             return true;
@@ -187,7 +200,7 @@ class RestApiClient
         }
     }
 
-    private static function checkUrl(
+    private static function checkUrlRemove(
         string $url,
         int $port = 443,
     ): bool|string {
@@ -201,46 +214,55 @@ class RestApiClient
         return true;
 	}
 
-    private static function post(
-        string $baseUri,
-        string $apiPath,
+    private static function postRemove(
+        string $authority,
+        string $path,
         array $multipart,
     ): array {
         return self::restapiPostGet(
             'POST',
-            $baseUri,
-            $apiPath,
+            $authority,
+            $path,
             $multipart,
         );
 	}
 
-    private static function get(
-        string $baseUri,
-        string $apiPath,
+    private static function getRemove(
+        string $authority,
+        string $path,
         array $multipar,
     ): array {
         return self::restapiPostGet(
             'GET',
-            $baseUri,
-            $apiPath,
+            $authority,
+            $path,
             $multipar,
         );
 	}
 
-    private static function restapiPostGet(
+    private static function restapiPostGetRemove(
         string $modePostGet,
-        string $baseUri,
-        string $apiPath,
+        string $authority,
+        string $path,
         array $multipart,
     ): array {
         $client = new \GuzzleHttp\Client();
 
+try {
         $response = $client->request(
             $modePostGet,
-            $baseUri . $apiPath,
+            $authority . $path,
             $multipart,
         );
-
+} catch (RequestException $e) {
+    if ($e->hasResponse() && $e->getResponse()->getStatusCode() === 404) {
+        // Hier fängst du den 404 gezielt ab
+        echo '404 - Seite nicht gefunden';
+    } else {
+        // Andere Fehler kannst du hier behandeln oder weiterwerfen
+        echo 'Ein anderer Fehler ist aufgetreten: ' . $e->getMessage();
+    }
+}
         $string = (string)$response->getBody();
 		
         file_put_contents(
@@ -263,6 +285,7 @@ class RestApiClient
 
         $return = (array)json_decode($body, true);
 
+// ToDo
         $debugPath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
             . Setup\Config::VAR_EB . DIRECTORY_SEPARATOR
@@ -283,6 +306,91 @@ class RestApiClient
         }
 
         return $return;
+	}
+
+
+
+    public static function executeClientJsonResponse(
+        string $authority,
+        string $path,
+        array $multipart,
+    ): array {
+        $hostStatus = new Tools\Uri($authority);
+
+        if (!$hostStatus->isOnline()) {
+            $body = '{ "status": "Server offline" }';
+        } else {
+            try {
+                $client = new \GuzzleHttp\Client();
+
+                $response = $client->request(
+                    'POST',
+                    $authority . $path,
+                    $multipart,
+                );
+
+                $body = (string)$response->getBody() ?? '';
+
+            } catch (RequestException $e) {
+// ToDo Error code
+                if ($e->hasResponse() && $e->getResponse()->getStatusCode() === 404) {
+                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
+                } else {
+//                    $body = '{ "status": "Service offline2 - ' . $e->getMessage() . '", "serverUrl": "' . $hostStatus->getHost() . '" }';
+                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
+                }
+            }
+		}
+
+//debug((array)json_decode($body, true),'RestApiClient.php');
+
+        return (array)json_decode($body, true);
+	}
+
+    public static function executeClientJsonResponseB(
+        string $authority,
+        string $path,
+        array $multipart,
+    ): array {
+        $hostStatus = new Tools\Uri($authority);
+
+        if (!$hostStatus->isOnline()) {
+            $body = '{ "status": "Server offline" }';
+        } else {
+            try {
+                $client = new \GuzzleHttp\Client();
+
+                $response = $client->request(
+                    'POST',
+                    $authority . $path,
+                    $multipart,
+                );
+
+                $body = (string)$response->getBody() ?? '';
+
+                $jsonStart = strpos($body,  '"status":');
+                if ($jsonStart > 0) {
+
+//debug($body,'body2');
+//$txt = "<html><body>\n" . $body ."\n</body></html>";
+//file_put_contents($_SERVER["DOCUMENT_ROOT"].'/log.html',$txt);
+//file_put_contents($_SERVER["DOCUMENT_ROOT"].'/log.txt',$body);
+
+                    $body = substr($body, $jsonStart - 6 );
+                }
+
+            } catch (RequestException $e) {
+
+                if ($e->hasResponse() && $e->getResponse()->getStatusCode() === 404) {
+                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
+                } else {
+//                    $body = '{ "status": "Service offline2 - ' . $e->getMessage() . '", "serverUrl": "' . $hostStatus->getHost() . '" }';
+                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
+                }
+            }
+		}
+
+        return (array)json_decode($body, true);
 	}
 
 }

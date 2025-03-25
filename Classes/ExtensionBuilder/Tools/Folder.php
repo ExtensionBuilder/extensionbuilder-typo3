@@ -9,66 +9,66 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class Folder
 {
 
-    static function scanFolderForDirectory(
+    static function scanForDirectory(
         string $path,
         string $filter = '',
     ): array {
-        $returnFolder = [];
+        $return = [];
 
-        foreach (self::scanFolderContent($path) ?? [] as $tmpFolderContent) {
-            if (is_dir($path . DIRECTORY_SEPARATOR . $tmpFolderContent)) {
+        foreach (self::scanContent($path) ?? [] as $folderContent) {
+            if (is_dir($path . DIRECTORY_SEPARATOR . $folderContent)) {
                 if ($filter) {
-                    if (strpos($path . DIRECTORY_SEPARATOR . $tmpFolderContent, $filter) != false) {
-                        $returnFolder[] = $tmpFolderContent;
+                    if (strpos($path . DIRECTORY_SEPARATOR . $folderContent, $filter) != false) {
+                        $return[] = $folderContent;
                     }
                 } else {
-                    $returnFolder[] = $tmpFolderContent;
+                    $return[] = $folderContent;
                 }
             }
         }
 
-        return $returnFolder;
+        return $return;
     }
 
-    static function scanFolderForDirectoryRecursive(
+    static function scanForDirectoryRecursive(
         array &$folder,
         string $path,
     ): array {
-        $folderDirectory = FolderTools::scanFolderForDirectory($path);
+        $folderDirectory = FolderTools::scanForDirectory($path);
 
         foreach ($folderDirectory ?? [] as $folderName) {
             $folder[$folderName] = [];
             $folder[$folderName] =
-                self::scanFolderForDirectoryRecursive($folder[$folderName] , $path . DIRECTORY_SEPARATOR . $folderName);
+                self::scanForDirectoryRecursive($folder[$folderName] , $path . DIRECTORY_SEPARATOR . $folderName);
         }
 
         return $folder;
     }
 
-    static function scanFolderForDirectoryRecursiveForFile(
+    static function scanForDirectoryRecursiveForFile(
         array &$folder,
         string $path,
     ): void {
         foreach ($folder ?? [] as $folderName => $folderData) {
-			$files = self::scanFolderForFile($path . DIRECTORY_SEPARATOR . $folderName);
+			$files = self::scanForFile($path . DIRECTORY_SEPARATOR . $folderName);
 			foreach ($files ?? [] as $fileName) {
 				$folder[$folderName][$fileName] = $path . DIRECTORY_SEPARATOR . $folderName . DIRECTORY_SEPARATOR . $fileName;
 			}
 			if (is_array($folder[$folderName])) {
-			    self::scanFolderForDirectoryRecursiveForFile($folder[$folderName], $path . DIRECTORY_SEPARATOR . $folderName);
+			    self::scanForDirectoryRecursiveForFile($folder[$folderName], $path . DIRECTORY_SEPARATOR . $folderName);
 			}
         }
     }
 
-	static function scanFolderForFile(
+	static function scanForFile(
         string $path,
         string $extensionFilter = '',
         string $filter = '',
     ): array {
         $return = [];
 
-        $returnFolderContent = self::scanFolderContent($path);
-        foreach (self::scanFolderContent($path) ?? [] as $folderContent) {
+        $returnFolderContent = self::scanContent($path);
+        foreach (self::scanContent($path) ?? [] as $folderContent) {
             if (is_file($path . DIRECTORY_SEPARATOR . $folderContent)) {
                 $found = true;
 
@@ -94,7 +94,7 @@ class Folder
         return $return;
     }
 
-    static function scanFolderContent(
+    static function scanContent(
         string $path,
     ): array {
         $return = [];
@@ -114,15 +114,15 @@ class Folder
         return $return;
     }
 
-    static function deleteFolderForFile(
+    static function deleteForFile(
         string $path,
         string $filter = '',
     ): void {
-// ToDo Improve filter see function scanFolderFor File
+// ToDo Improve filter see function scanFor File
         $returnFile = [];
 
-        $returnFolderContent = self::scanFolderContent($path);
-        foreach (self::scanFolderContent($path) ?? [] as $folderContent) {
+        $returnFolderContent = self::scanContent($path);
+        foreach (self::scanContent($path) ?? [] as $folderContent) {
             if (is_file($path . DIRECTORY_SEPARATOR . $folderContent)) {
                 if (strlen($filter) > 0) {
                     if (strpos($path . DIRECTORY_SEPARATOR . $folderContent, $filter) != false) {
@@ -156,7 +156,7 @@ class Folder
         closedir($dir);
     }
 
-    static function deleteFolder(
+    static function delete(
         string $foldserToDelete,
     ): void {
 		if (!file_exists($foldserToDelete)) { return; }
