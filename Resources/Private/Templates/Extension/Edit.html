@@ -11,9 +11,9 @@
             controller="Developer"
             id="extension-edit-form"
         >
-
+<f:comment>
 <f:be.pageRenderer includeJavaScriptModules="{0: '@extensionbuilder/typo3/react-tables.js'}" />
-
+</f:comment>
             <h1>
                 <f:translate
                     key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:h1.edit"
@@ -32,7 +32,7 @@
                     <br />
                 </f:if>
 
-
+<f:comment>
 <f:form.textfield name="formData[field1]" label="Field 1" />
 
 <label for="my_custom_field">Mein benutzerdefiniertes Feld:</label>
@@ -43,9 +43,8 @@
  cols="80">
 {extensionData.extension.description}
 </textarea>
+</f:comment>
 
-
-				+
                 <f:render
                     partial="Extension/Extension"
                     arguments="{

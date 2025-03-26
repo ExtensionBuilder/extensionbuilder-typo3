@@ -6,17 +6,24 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
+<f:comment>
 <f:be.pageRenderer includeJavaScriptModules="{0: '@typo3/rte-ckeditor/ckeditor5.jsX'}" />
 <f:be.pageRenderer includeJavaScriptModules="{0: '@extensionbuilder/typo3/my-module.jsX'}" />
+</f:comment>
 
+<p><b>
+This is the preview of the first release candidate.<br />
+Some features are currently unavailable or intentionally disabled.<br />
+They will be added gradually in the near future.<br />
+</b></p>
 
         <h1>
             <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:h1.list" />
         </h1>
 
-		
+<f:comment>	
 <textarea id="myTextfieldId"></textarea>
-
+</f:comment>
 		
         <f:if condition="{project -> f:count()}">
             <f:render partial="Extension/ListProject" arguments="{_all}" />

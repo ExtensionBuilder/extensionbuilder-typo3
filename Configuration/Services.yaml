@@ -6,8 +6,6 @@ services:
 
   ExtensionBuilder\ExtensionbuilderTypo3\:
     resource: '../Classes/*'
-    exclude: ['../Classes/ExtensionBuilder/*']
-
 
   extension.remote.myremote:
     class: 'TYPO3\CMS\Extensionmanager\Remote\TerExtensionRemote'
