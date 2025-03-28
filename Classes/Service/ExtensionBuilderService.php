@@ -409,52 +409,80 @@ class ExtensionBuilderService implements SingletonInterface
         // Extesion installieren (kopieren)
 //        if ($buildOk && $copyInExtension) {
         if ($buildOk) {
-            if (!Environment::isComposerMode()) {
+            $buildPath =
+                Environment::getVarPath() . DIRECTORY_SEPARATOR
+                . $configuration['varEb'] . DIRECTORY_SEPARATOR
+                . $vendorName . DIRECTORY_SEPARATOR
+                . $extensionName . DIRECTORY_SEPARATOR
+                . 'build' . DIRECTORY_SEPARATOR;
 
-                $buildPath =
-                    Environment::getVarPath() . DIRECTORY_SEPARATOR
-                    . $configuration['varEb'] . DIRECTORY_SEPARATOR
+            if (Environment::isComposerMode()) {
+                $extPath =
+                    Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                    . 'vendor' . DIRECTORY_SEPARATOR
                     . $vendorName . DIRECTORY_SEPARATOR
-                    . $extensionName . DIRECTORY_SEPARATOR
-                    . 'build' . DIRECTORY_SEPARATOR;
-
+                    . $extensionName . DIRECTORY_SEPARATOR;
+			} else {
                 $extPath =
                     Environment::getPublicPath() . DIRECTORY_SEPARATOR
                     . 'typo3conf' . DIRECTORY_SEPARATOR
                     . 'ext' . DIRECTORY_SEPARATOR
                     . $extensionName . DIRECTORY_SEPARATOR;
+			}
 
-                GeneralUtility::rmdir($extPath, true);
-                GeneralUtility::mkdir_deep($extPath);
-                Tools\Folder::copy($buildPath, $extPath);
+            GeneralUtility::rmdir($extPath, true);
+            GeneralUtility::mkdir_deep($extPath);
+            Tools\Folder::copy($buildPath, $extPath);
+
+            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+            $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
+            $flashMessage = GeneralUtility::makeInstance(
+                FlashMessage::class,
+                '<DocumentRoot>/typo3conf/ext/' . $extensionName,
+                'Successfully copy extensions files.',
+                ContextualFeedbackSeverity::OK,
+            );
+            $notificationQueue->enqueue($flashMessage);
+
+            if (!(ExtensionManagementUtility::isLoaded($this->extensionName))) {
+                $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+                $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
+                $flashMessage = GeneralUtility::makeInstance(
+                    FlashMessage::class,
+                    '',
+// ToDo LLL
+                    'The created extension is not activated!',
+                    ContextualFeedbackSeverity::WARNING,
+                );
+                $notificationQueue->enqueue($flashMessage);
+                return;
+		    }
+
+// ToDo use for composer
+            if ($this->developer['typo3']['maintenance']['flushT3andPhpCache']) {
+                $clearCacheService = GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Service\\ClearCacheService');
+                $clearCacheService->clearAll();
 
                 $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
                 $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
-                    '<DocumentRoot>/typo3conf/ext/' . $extensionName,
-                    'Successfully copy extensions files.',
+                    '',
+// ToDo LLL
+                    'Successfully cleared all caches and all available opcode caches.',
                     ContextualFeedbackSeverity::OK,
                 );
                 $notificationQueue->enqueue($flashMessage);
+            }
 
-                if (!(ExtensionManagementUtility::isLoaded($this->extensionName))) {
-                    $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-                    $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
-                    $flashMessage = GeneralUtility::makeInstance(
-                        FlashMessage::class,
-                        '',
-// ToDo LLL
-                        'The created extension is not activated!',
-                        ContextualFeedbackSeverity::WARNING,
-                    );
-                    $notificationQueue->enqueue($flashMessage);
-                    return;
-		        }
+// ToDo analyzeDatabaseStructure
+            if ($this->developer['typo3']['maintenance']['analyzeDatabaseStructure']) {
 
-                if ($this->developer['typo3']['maintenance']['flushT3andPhpCache']) {
-                    $clearCacheService = GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Service\\ClearCacheService');
-                    $clearCacheService->clearAll();
+		    }
+
+            if ($this->developer['typo3']['maintenance']['rebuildPhpAutoload']) {
+                if (!Environment::isComposerMode()) {
+                    ClassLoadingInformation::dumpClassLoadingInformation();
 
                     $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
                     $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
@@ -462,39 +490,12 @@ class ExtensionBuilderService implements SingletonInterface
                         FlashMessage::class,
                         '',
 // ToDo LLL
-                        'Successfully cleared all caches and all available opcode caches.',
+                        'Successfully dumped class loading information for extensions.',
                         ContextualFeedbackSeverity::OK,
                     );
                     $notificationQueue->enqueue($flashMessage);
-        		}
-
-// ToDo analyzeDatabaseStructure
-                if ($this->developer['typo3']['maintenance']['analyzeDatabaseStructure']) {
-
-		        }
-
-                if ($this->developer['typo3']['maintenance']['rebuildPhpAutoload']) {
-                    if (!Environment::isComposerMode()) {
-                        ClassLoadingInformation::dumpClassLoadingInformation();
-
-                        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-                        $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
-                        $flashMessage = GeneralUtility::makeInstance(
-                            FlashMessage::class,
-                            '',
-// ToDo LLL
-                            'Successfully dumped class loading information for extensions.',
-                            ContextualFeedbackSeverity::OK,
-                        );
-                        $notificationQueue->enqueue($flashMessage);
-                    }
-	        	}
-
-            } else {
-
-//ToDo Ext / Composer Version
-
-            }
+                }
+	         }
         } else {
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
