@@ -434,15 +434,27 @@ class ExtensionBuilderService implements SingletonInterface
             GeneralUtility::mkdir_deep($extPath);
             Tools\Folder::copy($buildPath, $extPath);
 
+if (Environment::isComposerMode()) {
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
             $flashMessage = GeneralUtility::makeInstance(
                 FlashMessage::class,
-                '<DocumentRoot>/typo3conf/ext/' . $extensionName,
+                '<ProjectPath>/vendor/' . $vendorName . '' . $extensionName,
                 'Successfully copy extensions files.',
                 ContextualFeedbackSeverity::OK,
             );
             $notificationQueue->enqueue($flashMessage);
+} else {
+            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+            $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
+            $flashMessage = GeneralUtility::makeInstance(
+                FlashMessage::class,
+                '<PublicPath>/typo3conf/ext/' . $extensionName,
+                'Successfully copy extensions files.',
+                ContextualFeedbackSeverity::OK,
+            );
+            $notificationQueue->enqueue($flashMessage);
+}
 
             if (!(ExtensionManagementUtility::isLoaded($this->extensionName))) {
                 $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
@@ -459,7 +471,7 @@ class ExtensionBuilderService implements SingletonInterface
 		    }
 
 // ToDo use for composer
-            if ($this->developer['typo3']['maintenance']['flushT3andPhpCache']) {
+            if ($this->developer['typo3']['maintenance']['flushT3andPhpCache'] ?? false) {
                 $clearCacheService = GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Service\\ClearCacheService');
                 $clearCacheService->clearAll();
 
@@ -476,11 +488,11 @@ class ExtensionBuilderService implements SingletonInterface
             }
 
 // ToDo analyzeDatabaseStructure
-            if ($this->developer['typo3']['maintenance']['analyzeDatabaseStructure']) {
+            if ($this->developer['typo3']['maintenance']['analyzeDatabaseStructure'] ?? false) {
 
 		    }
 
-            if ($this->developer['typo3']['maintenance']['rebuildPhpAutoload']) {
+            if ($this->developer['typo3']['maintenance']['rebuildPhpAutoload'] ?? false) {
                 if (!Environment::isComposerMode()) {
                     ClassLoadingInformation::dumpClassLoadingInformation();
 
