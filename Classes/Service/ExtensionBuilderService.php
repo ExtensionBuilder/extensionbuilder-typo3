@@ -434,27 +434,27 @@ class ExtensionBuilderService implements SingletonInterface
             GeneralUtility::mkdir_deep($extPath);
             Tools\Folder::copy($buildPath, $extPath);
 
-if (Environment::isComposerMode()) {
-            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-            $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
-            $flashMessage = GeneralUtility::makeInstance(
-                FlashMessage::class,
-                '<ProjectPath>/vendor/' . $vendorName . '' . $extensionName,
-                'Successfully copy extensions files.',
-                ContextualFeedbackSeverity::OK,
-            );
-            $notificationQueue->enqueue($flashMessage);
-} else {
-            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-            $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
-            $flashMessage = GeneralUtility::makeInstance(
-                FlashMessage::class,
-                '<PublicPath>/typo3conf/ext/' . $extensionName,
-                'Successfully copy extensions files.',
-                ContextualFeedbackSeverity::OK,
-            );
-            $notificationQueue->enqueue($flashMessage);
-}
+            if (Environment::isComposerMode()) {
+                $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+                $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
+                $flashMessage = GeneralUtility::makeInstance(
+                    FlashMessage::class,
+                    '<ProjectPath>/vendor/' . $vendorName . DIRECTORY_SEPARATOR . $extensionName,
+                    'Successfully copy extensions files.',
+                    ContextualFeedbackSeverity::OK,
+                );
+                $notificationQueue->enqueue($flashMessage);
+            } else {
+                $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+                $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
+                $flashMessage = GeneralUtility::makeInstance(
+                    FlashMessage::class,
+                    '<PublicPath>/typo3conf/ext/' . $extensionName,
+                    'Successfully copy extensions files.',
+                    ContextualFeedbackSeverity::OK,
+                );
+                $notificationQueue->enqueue($flashMessage);
+            }
 
             if (!(ExtensionManagementUtility::isLoaded($this->extensionName))) {
                 $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
