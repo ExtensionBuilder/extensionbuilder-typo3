@@ -145,24 +145,31 @@ class Uri
                 $result,
                 $resultStatus,
         );
-        $count = count($result);
 
-        $explode = explode(', ',$result[$count-2]);
-        $pingResult['transmitted'] = (int)substr($explode[0], 0, strpos($explode[0], ' packets transmitted'));
-        $pingResult['received'] = (int)substr($explode[1], 0, strpos($explode[1], ' received'));
-        $pingResult['loss'] = (int)substr($explode[2], 0, strpos($explode[2], '% packet loss'));
-
+        $pingResult['online'] = false;
         if ($resultStatus === 0) {
-                $pingResult['online'] = true;
+            foreach ($result ?? [] as $resultData) {
+                if (!(strpos($resultData,'transmitted') === false)) {
+                    $explode = explode(', ', $resultData);
+                    $pingResult['transmitted'] = (int)substr($explode[0], 0, strpos($explode[0], ' packets transmitted'));
+                    $pingResult['received'] = (int)substr($explode[1], 0, strpos($explode[1], ' received'));
+                    $pingResult['loss'] = (int)substr($explode[2], 0, strpos($explode[2], '% packet loss'));
+// ToDo ??? put in relation to $this->count
+                    if ($pingResult['loss'] < 50) {
+                        $pingResult['online'] = true;
+                    }
+                }
+                if (!(strpos($resultData,'rtt min/avg/max/mdev = ') === false)) {
+                    $time = substr($resultData, strlen('rtt min/avg/max/mdev = '));
+                    $time = substr($time, 0, strpos($time,' ms'));
+                    $explode = explode('/', $time);
 
-                $time = substr($result[$count-1], strlen('rtt min/avg/max/mdev = '));
-                $time = substr($time, 0, strpos($time,' ms'));
-                $explode = explode('/', $time);
-
-                $pingResult['min'] = (float)$explode[0];
-                $pingResult['avg'] = (float)$explode[1];
-                $pingResult['max'] = (float)$explode[2];
-                $pingResult['mdev'] = (float)$explode[3];
+                    $pingResult['min'] = (float)$explode[0];
+                    $pingResult['avg'] = (float)$explode[1];
+                    $pingResult['max'] = (float)$explode[2];
+                    $pingResult['mdev'] = (float)$explode[3];
+                }
+            }
         }
 
         return $pingResult;

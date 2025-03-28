@@ -6,18 +6,21 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-        <h1>
-            <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:h1.edit" />
-        </h1>
+        <f:form
+            action="save"
+            controller="Command"
+            id="command-edit-form"
+        >
+            <h1>
+                <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.command.xlf:h1.edit" />
+            </h1>
 
-        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
             <div>
-
-                <f:render partial="Scheduler/Fields/Name" arguments="{schedulerData: schedulerData}" />
-	    		<f:render partial="Scheduler/Fields/Description" arguments="{schedulerData: schedulerData}" />
-
+                <f:render partial="Fields/Name" arguments="{componentData: componentData}" />
+	    		<f:render partial="Fields/Description" arguments="{componentData: componentData}" />
+	    		<f:render partial="Fields/ToDo" arguments="{componentData: componentData}" />
             </div>
-        </form>
+        </f:form>
 
     </f:section>
 </html>

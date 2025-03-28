@@ -26,7 +26,12 @@
 </f:comment>
 			
             <f:render partial="Configutation/FieldsConfigutation" arguments="{configuration: configuration}" />
-            <f:render partial="Configutation/FieldsLocalBuild" arguments="{configuration: configuration}" />
+
+            <f:if condition="{isProKey}">
+                <f:if condition="{builderLocal}">
+                    <f:render partial="Configutation/FieldsLocalBuild" arguments="{configuration: configuration}" />
+                </f:if>
+            </f:if>
 
 		</f:form>
     </f:section>

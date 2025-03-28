@@ -24,12 +24,23 @@ return [
                 'list',
                 'add',
                 'edit',
-                'duplicate',
-                'rename',
+//                'duplicate',
+//                'rename',
                 'delete',
                 'build',
                 'upload',
             ],
+            Controller\CommandController::class => [
+                'add',
+                'edit',
+                'delete',
+            ],
+            Controller\SchedulerController::class => [
+                'add',
+                'edit',
+                'delete',
+            ],
+
             Controller\ProjectController::class => [
                 'list',
                 'add',
@@ -48,8 +59,8 @@ return [
                 'list',
                 'add',
                 'edit',
-                'duplicate',
-                'rename',
+//                'duplicate',
+//                'rename',
                 'delete',
                 'importExampleVendor',
             ],
@@ -61,18 +72,6 @@ return [
             ],
             Controller\InfoController::class => [
                 'show',
-            ],
-
-            Controller\CommandController::class => [
-                'add',
-                'edit',
-            ],
-
-
-        ],
-        'routes' => [
-            '_default' => [
-                'target' => Controller\ExtensionController::class.'::listAction',
             ],
         ],
 	],

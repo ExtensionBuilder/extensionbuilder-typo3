@@ -21,10 +21,6 @@ They will be added gradually in the near future.<br />
             <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:h1.list" />
         </h1>
 
-<f:comment>	
-<textarea id="myTextfieldId"></textarea>
-</f:comment>
-		
         <f:if condition="{project -> f:count()}">
             <f:render partial="Extension/ListProject" arguments="{_all}" />
         </f:if>

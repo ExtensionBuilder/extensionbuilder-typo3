@@ -345,6 +345,37 @@ class ExtensionBuilderService implements SingletonInterface
         }
 	}
 
+
+    public function writeExtensionPropoty(
+                    string $vendorName,
+                    string $extensionName,
+                    string $propotysName,
+                    string $propotyName,
+                    array $propotyData,
+    ): void {
+            $extensionsFolder = 
+				Tools\ExtensionbuilderFolder::GetVendorsAndExtensionsBaseFolder() . DIRECTORY_SEPARATOR
+                . $vendorName . DIRECTORY_SEPARATOR
+                . $extensionName . DIRECTORY_SEPARATOR;
+
+            $propotysData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$propotysName] ?? [];
+
+            $propotyDataForJson = [];
+            $propotyDataForJson[$propotyName] = $propotyData;
+
+		    Tools\ConfigArray::arrayMerge($propotysData, $propotyDataForJson);
+
+            $propotyDataForJson = [];
+            $propotyDataForJson[$propotysName] = $propotysData;
+            Tools\ExtensionConfiguration::write(
+                $extensionsFolder,
+                $propotysName . '.json',
+                $propotyDataForJson
+            );
+	}
+
+
+
     // Area for generating the extension
 
 // 123456
@@ -709,12 +740,14 @@ class ExtensionBuilderService implements SingletonInterface
         $multipart['multipart'][] = ['name' => 'command', 'contents' => 'build'];
         $multipart['multipart'][] = ['name' => 'version', 'contents' => $version ?? '0.0.0'];
 
-        $multipart['multipart'][] = ['name' => 'systemId', 'contents' => 'community'];
-        $multipart['multipart'][] = ['name' => 'systemIp', 'contents' => 'community'];
-        $multipart['multipart'][] = ['name' => 'systemMac', 'contents' => 'community'];
-        $multipart['multipart'][] = ['name' => 'apikey', 'contents' => 'community'];
+        $multipart['multipart'][] = ['name' => 'developerId', 'contents' => $this->configuration['systemId']];
+        $multipart['multipart'][] = ['name' => 'systemId', 'contents' => $this->developer['developerId']];
 
-        $multipart['multipart'][] = ['name' => 'vendorhash', 'contents' => ''];
+        $multipart['multipart'][] = ['name' => 'serverIp', 'contents' => 'community'];
+        $multipart['multipart'][] = ['name' => 'serverMac', 'contents' => 'community'];
+
+        $multipart['multipart'][] = ['name' => 'vendorHash', 'contents' => '']; // ToDo Check for useing
+
         $multipart['multipart'][] = ['name' => 'vendor', 'contents' => $this->vendorName];
         $multipart['multipart'][] = ['name' => 'extension',  'contents' => $this->extensionName];
 

@@ -6,14 +6,18 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
+
+
         <f:form
             action="save"
             controller="Developer"
             id="extension-edit-form"
         >
+
 <f:comment>
 <f:be.pageRenderer includeJavaScriptModules="{0: '@extensionbuilder/typo3/react-tables.js'}" />
 </f:comment>
+
             <h1>
                 <f:translate
                     key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:h1.edit"
@@ -83,7 +87,7 @@
                                 arguments="{extensionName: extensionName, vendorName: vendorName, tableData: extensionData.tables}"
                             />
 		        	    </f:if>
-</f:comment>
+
         	    		<f:if condition="{extensionData.backend.module -> f:count()} > 0">
                             <f:render
                                 partial="Backend/Module/List"
@@ -91,13 +95,14 @@
                             />
 		        	    </f:if>
 
-        	    		<f:if condition="{extensionData.backend.routesX -> f:count()} > 0">
+        	    		<f:if condition="{extensionData.backend.routes -> f:count()} > 0">
                             <f:render
                                 partial="Backend/Routes/List"
                                 arguments="{
     		            	        extensionName: extensionName, vendorName: vendorName, tableData: extensionData.tables}"
                             />
 		        	    </f:if>
+</f:comment>
 
         	    		<f:if condition="{extensionData.viewHelpers -> f:count()} > 0">
                             <f:render
@@ -106,7 +111,7 @@
                                     extensionName: extensionName,
                                     vendorName: vendorName,
                                     componentsName: 'ViewHelper',
-                                    componentsRoute: 'ViewHelper',
+                                    componentsController: 'ViewHelper',
                                     componentsData: extensionData.viewHelpers
                                 }"
                             />
@@ -119,13 +124,12 @@
                                     extensionName: extensionName,
                                     vendorName: vendorName,
                                     componentsName: 'Command',
-                                    componentsRoute: 'Command',
+                                    componentsController: 'Command',
                                     componentsData: extensionData.commands
                                 }"
                             />
 		        	    </f:if>
 
-<f:comment>
         	    		<f:if condition="{extensionData.schedulers -> f:count()} > 0">
                             <f:render
                                 partial="ComponentsList"
@@ -133,12 +137,12 @@
                                     extensionName: extensionName,
                                     vendorName: vendorName,
                                     componentsName: 'Scheduler',
-                                    componentsRoute: 'Scheduler',
+                                    ccomponentsController: 'Scheduler',
                                     componentsData: extensionData.schedulers
                                 }"
                             />
 		        	    </f:if>
-</f:comment>
+
                     </f:else>
                 </f:if>
 

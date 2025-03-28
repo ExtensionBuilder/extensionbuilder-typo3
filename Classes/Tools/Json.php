@@ -32,7 +32,7 @@ class Json
     ): array {
         $error = '';
 
-// ToDO LLL
+// ToDo LLL
 
         if (file_exists($jsonFile)) {
             $return = json_decode(file_get_contents($jsonFile), true);
@@ -81,4 +81,23 @@ class Json
         return $return;
     }
 
+    static function getJsonWithcUrl(
+        string $url,
+    ): array {
+        $return = [];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        if ($output) {
+            $return = (array)json_decode($output, true);
+            if (json_last_error() === 0) {
+                $return = array_values($return);
+                $return = $return[0];
+			}
+		}
+
+        return $return;
+	}
 }

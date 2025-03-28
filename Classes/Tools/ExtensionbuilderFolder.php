@@ -63,7 +63,7 @@ class ExtensionbuilderFolder
     }
 
 // ToDo RemoveCode
-    static function getPathToVendorsAndExtensionsTargetRemoveCode(
+    static function getPathToVendorsAndExtensionsTargetRemoveCode2025(
         string $vendorName,
         string $extensionName,
     ): string {

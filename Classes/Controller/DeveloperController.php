@@ -20,6 +20,7 @@ final class DeveloperController extends ExtensionBuilderController
             case 'save':
                 Tools\ConfigArray::arrayMerge($this->developer, $bodyParams['developer']);
 
+debug($bodyParams['developer']);
                 $this->writeDeveloper();
 
                 $this->flashMessage(

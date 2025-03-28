@@ -104,7 +104,6 @@ class ExtensionBuilderController extends ActionController
         protected IconFactory $iconFactory,
         protected ExtensionBuilderService $extensionbuilderObject,
     ) {
-
         $this->isComposerMode = Environment::isComposerMode();
 
         $this->readConfiguration();
@@ -120,19 +119,22 @@ class ExtensionBuilderController extends ActionController
             $this->configuration['builderApi'],
 	    );
 
-//        $this->keyStatus = Tools\RestApiClient::checkKey(
+        $this->keyStatus = Tools\RestApiClient::checkKey(
 //            $this->configuration['builderUrl'],
-////            $this->configuration['builderApi'],
-//'/api/v1/extensionbuilderKey',
-//            $this->configuration['systemId'] ?? '',
-//            $this->configuration['proVersionKey'] ?? '',
-//            $this->developer['developerId'] ?? '',
-//            $this->developer['proVersionKey'] ?? '',
-//		);
+'https://development.extension-builder.dev',
+//            $this->configuration['builderApi'],
+'/api/v1/extensionbuilderKey',
+            $this->configuration['systemId'] ?? '',
+            $this->configuration['proVersionKey'] ?? '',
+            $this->developer['developerId'] ?? '',
+            $this->developer['proVersionKey'] ?? '',
+		);
 
+// ToDo
         $this->isProKey = $this->keyStatus['proKeyActive'] ?? false;
         $this->configuration['proKey'] = $this->isProKey;
 
+		
         $this->builderLocal = ExtensionManagementUtility::isLoaded('extensionbuilder_typo3_core');
     }
 
@@ -220,6 +222,7 @@ class ExtensionBuilderController extends ActionController
 
         if (!($this->developer['developerId'] ?? false)) {
             $this->developer['developerId'] = Tools\Uuid::uuid();
+            self::writeDeveloper();
 		}
 	}
 
