@@ -404,11 +404,15 @@ class ExtensionBuilderService implements SingletonInterface
             $buildOk = self::buildRemote();
         }
 
+// ToDo composer composerVendorName composerExtensionName
+$composerVendorName = strtolower($vendorName);
+$composerExtensionName = strtolower($extensionName);
 
 // ToDo
         // Extesion installieren (kopieren)
 //        if ($buildOk && $copyInExtension) {
         if ($buildOk) {
+
             $buildPath =
                 Environment::getVarPath() . DIRECTORY_SEPARATOR
                 . $configuration['varEb'] . DIRECTORY_SEPARATOR
@@ -417,11 +421,12 @@ class ExtensionBuilderService implements SingletonInterface
                 . 'build' . DIRECTORY_SEPARATOR;
 
             if (Environment::isComposerMode()) {
+
                 $extPath =
                     Environment::getProjectPath() . DIRECTORY_SEPARATOR
                     . 'vendor' . DIRECTORY_SEPARATOR
-                    . $vendorName . DIRECTORY_SEPARATOR
-                    . $extensionName . DIRECTORY_SEPARATOR;
+                    . $composerVendorName . DIRECTORY_SEPARATOR
+                    . $composerExtensionName . DIRECTORY_SEPARATOR;
 			} else {
                 $extPath =
                     Environment::getPublicPath() . DIRECTORY_SEPARATOR
@@ -439,7 +444,7 @@ class ExtensionBuilderService implements SingletonInterface
                 $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
-                    '<ProjectPath>/vendor/' . $vendorName . DIRECTORY_SEPARATOR . $extensionName,
+                    '<ProjectPath>/vendor/' . $composerVendorName . DIRECTORY_SEPARATOR . $composerExtensionName,
                     'Successfully copy extensions files.',
                     ContextualFeedbackSeverity::OK,
                 );
