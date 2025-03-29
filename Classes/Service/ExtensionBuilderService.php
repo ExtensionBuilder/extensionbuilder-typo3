@@ -126,6 +126,7 @@ class ExtensionBuilderService implements SingletonInterface
 
         if (!is_dir($this->pathToData)) { GeneralUtility::mkdir_deep($this->pathToData); }
         if (!$this->isComposerMode) {
+// ToDo make settings via configuration
             if (!is_file($this->pathToData  . DIRECTORY_SEPARATOR . '.htaccess')) {
                 $path = $this->pathToData  . DIRECTORY_SEPARATOR . '.htaccess';
                 $content =
@@ -142,8 +143,32 @@ class ExtensionBuilderService implements SingletonInterface
                 file_put_contents($path, $content);
             }
         } else {
+// ToDo make settings via configuration
 		    $composer = Tools\Json::read(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json');
-debug($composer);
+
+		    if (($composer['repositories'] ?? false)) {
+                $addRepositories = true;
+		        $count = count($composer['repositories']);
+		        foreach ($composer['repositories'] ?? [] as $repositorie) {
+                    if ( $repositorie['url'] === 'packages/*') {
+                        $addRepositories = false;
+                        break;
+					}
+		        }
+			} else {
+		        $count = 0;
+                $addRepositories = true;
+			}
+
+            if ($addRepositories) {
+		        $composer['repositories'][$count] = [];
+		        $composer['repositories'][$count]['type'] = 'path';
+		        $composer['repositories'][$count]['url'] = 'packages/*';
+		        $composer['repositories'][$count]['options'] = [];
+		        $composer['repositories'][$count]['options']['symlink'] = true;
+
+                Tools\Json::write(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json', $composer);
+			}
 		}
 	}
 
