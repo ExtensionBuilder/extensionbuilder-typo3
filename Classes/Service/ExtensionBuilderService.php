@@ -143,8 +143,8 @@ class ExtensionBuilderService implements SingletonInterface
                 file_put_contents($path, $content);
             }
         } else {
-            $packagesPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'packages'
-            if (is_dir($packagesPath)) {
+            $packagesPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'packages';
+            if (!is_dir($packagesPath)) {
                 GeneralUtility::mkdir_deep($packagesPath);
             }
 
