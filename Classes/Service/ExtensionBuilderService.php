@@ -71,10 +71,6 @@ class ExtensionBuilderService implements SingletonInterface
                 . '.extensionbuilder.json';
         }
 
-        $fileName =
-            Environment::getProjectPath() . DIRECTORY_SEPARATOR
-            . '.extensionbuilder.json';
-
         $configuration = [];
         $changeConfiguration = false;
 
@@ -127,7 +123,6 @@ class ExtensionBuilderService implements SingletonInterface
             $changeConfiguration = true;
             $this->configuration['htaccessAdd'] = true;
         }
-
 
         if ($changeConfiguration) {
             self::writeConfiguration();
