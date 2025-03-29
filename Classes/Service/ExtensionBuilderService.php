@@ -113,6 +113,12 @@ class ExtensionBuilderService implements SingletonInterface
             $this->configuration['ebBuild'] = 'ExtensionBuilder';
         }
 
+        if (!($this->configuration['composerPath'] ?? false)) {
+            $changeConfiguration = true;
+            $this->configuration['composerPath'] = 'packages';
+        }
+
+
         if ($changeConfiguration) {
             self::writeConfiguration();
 		}
@@ -144,18 +150,17 @@ class ExtensionBuilderService implements SingletonInterface
             }
         } else {
             $packagesPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'packages';
-            if (!is_dir($packagesPath)) {
-                GeneralUtility::mkdir_deep($packagesPath);
-            }
+            if (!is_dir($packagesPath)) { GeneralUtility::mkdir_deep($packagesPath); }
 
 // ToDo make settings via configuration
 		    $composer = Tools\Json::read(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json');
+            $composerPath = $this->configuration['composerPath'] . '/*';
 
-		    if (($composer['repositories'] ?? false)) {
+		    if ($composer['repositories'] ?? false) {
                 $addRepositories = true;
 		        $count = count($composer['repositories']);
 		        foreach ($composer['repositories'] ?? [] as $repositorie) {
-                    if ( $repositorie['url'] === 'packages/*') {
+                    if ( $repositorie['url'] === $composerPath) {
                         $addRepositories = false;
                         break;
 					}
@@ -168,7 +173,7 @@ class ExtensionBuilderService implements SingletonInterface
             if ($addRepositories) {
 		        $composer['repositories'][$count] = [];
 		        $composer['repositories'][$count]['type'] = 'path';
-		        $composer['repositories'][$count]['url'] = 'packages/*';
+		        $composer['repositories'][$count]['url'] = $composerPath;
 		        $composer['repositories'][$count]['options'] = [];
 		        $composer['repositories'][$count]['options']['symlink'] = true;
 
