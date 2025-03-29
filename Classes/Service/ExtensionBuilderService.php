@@ -118,6 +118,16 @@ class ExtensionBuilderService implements SingletonInterface
             $this->configuration['composerPath'] = 'packages';
         }
 
+        if (!($this->configuration['composerAdd'] ?? false)) {
+            $changeConfiguration = true;
+            $this->configuration['composerAdd'] = true;
+        }
+
+        if (!($this->configuration['htaccessAdd'] ?? false)) {
+            $changeConfiguration = true;
+            $this->configuration['htaccessAdd'] = true;
+        }
+
 
         if ($changeConfiguration) {
             self::writeConfiguration();
@@ -131,54 +141,57 @@ class ExtensionBuilderService implements SingletonInterface
             . $this->configuration['ebBuild'];
 
         if (!is_dir($this->pathToData)) { GeneralUtility::mkdir_deep($this->pathToData); }
-        if (!$this->isComposerMode) {
-// ToDo make settings via configuration
-            if (!is_file($this->pathToData  . DIRECTORY_SEPARATOR . '.htaccess')) {
-                $path = $this->pathToData  . DIRECTORY_SEPARATOR . '.htaccess';
-                $content =
-                    "# Apache < 2.3\n"
-                    . "<IfModule !mod_authz_core.c>\n"
-                    . "    Order allow,deny\n"
-                    . "    Deny from all\n"
-                    . "    Satisfy All\n"
-                    . "</IfModule>\n"
-                    . "# Apache ≥ 2.3\n"
-                    . "<IfModule mod_authz_core.c>\n"
-                    . "    Require all denied\n"
-                    . "</IfModule>\n";
-                file_put_contents($path, $content);
-            }
-        } else {
-            $packagesPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'packages';
+        if ($this->isComposerMode) {
+
+            $packagesPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR . $this->configuration['composerPath'];
             if (!is_dir($packagesPath)) { GeneralUtility::mkdir_deep($packagesPath); }
 
-// ToDo make settings via configuration
-		    $composer = Tools\Json::read(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json');
-            $composerPath = $this->configuration['composerPath'] . '/*';
+            if ($this->configuration['composerAdd'] ?? false) {
+    		    $composer = Tools\Json::read(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json');
+                $composerPath = $this->configuration['composerPath'] . '/*';
 
-		    if ($composer['repositories'] ?? false) {
-                $addRepositories = true;
-		        $count = count($composer['repositories']);
-		        foreach ($composer['repositories'] ?? [] as $repositorie) {
-                    if ( $repositorie['url'] === $composerPath) {
-                        $addRepositories = false;
-                        break;
-					}
-		        }
-			} else {
-		        $count = 0;
-                $addRepositories = true;
-			}
+    		    if ($composer['repositories'] ?? false) {
+                    $addRepositories = true;
+		            $count = count($composer['repositories']);
+	    	        foreach ($composer['repositories'] ?? [] as $repositorie) {
+                        if ( $repositorie['url'] === $composerPath) {
+                            $addRepositories = false;
+                            break;
+		    			}
+	    	        }
+    			} else {
+		            $count = 0;
+                    $addRepositories = true;
+    			}
 
-            if ($addRepositories) {
-		        $composer['repositories'][$count] = [];
-		        $composer['repositories'][$count]['type'] = 'path';
-		        $composer['repositories'][$count]['url'] = $composerPath;
-		        $composer['repositories'][$count]['options'] = [];
-		        $composer['repositories'][$count]['options']['symlink'] = true;
+                if ($addRepositories) {
+	    	        $composer['repositories'][$count] = [];
+    		        $composer['repositories'][$count]['type'] = 'path';
+		            $composer['repositories'][$count]['url'] = $composerPath;
+		            $composer['repositories'][$count]['options'] = [];
+		            $composer['repositories'][$count]['options']['symlink'] = true;
 
-                Tools\Json::write(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json', $composer);
-			}
+                    Tools\Json::write(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json', $composer);
+    			}
+            }
+        } else {
+            if ($this->configuration['htaccessAdd'] ?? false) {
+                $htaccessFile = $this->pathToData  . DIRECTORY_SEPARATOR . '.htaccess';
+                if (!is_file($htaccessFile)) {
+                    $content =
+                        "# Apache < 2.3\n"
+                        . "<IfModule !mod_authz_core.c>\n"
+                        . "    Order allow,deny\n"
+                        . "    Deny from all\n"
+                        . "    Satisfy All\n"
+                        . "</IfModule>\n"
+                        . "# Apache ≥ 2.3\n"
+                        . "<IfModule mod_authz_core.c>\n"
+                        . "    Require all denied\n"
+                        . "</IfModule>\n";
+                    file_put_contents($htaccessFile, $content);
+                }
+    		}
 		}
 	}
 
