@@ -8,10 +8,10 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'contact@extension-builder.dev',
     'author_company' => 'extension-builder.dev',
     'state' => 'beta',
-    'version' => '0.5.148',
+    'version' => '0.5.149',
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-14.9.99',
+            'typo3' => '12.4.0-13.9.99',
         ],
     ],
 	'autoload' => [

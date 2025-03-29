@@ -17,21 +17,461 @@ use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
 class ExtensionBuilderService implements SingletonInterface
 {
+    public array $configuration = [];
+    public array $developer = [];
+    public array $vendors = [];
     public array $vendorsAndExtensions = [];
+    public array $projects = [];
+
+    public array $localExtensions = [];
+    public array $foreignExtensions = [];
+
+    public bool $isComposerMode = false;
+    public bool $builderLocal = false;
+    public bool $isProKey = false;
+    public bool $noDeveloper = true;
+    public bool $noVendors = true;
 
     private string $vendorName;
     private string $extensionName;
-    private array $configuration;
-    private array $developer;
+
+    private string $pathToConfiguration;
+    private string $pathToData;
+    private string $pathToBuild;
 
     public function __construct()
     {
-        $this->vendorsAndExtensions = self::readVendorsAndExtensions();
+        $this->isComposerMode = Environment::isComposerMode();
+        $this->builderLocal = ExtensionManagementUtility::isLoaded('extensionbuilder_typo3_core');
+
+        self::readConfiguration();
+        self::readDeveloper();
+        self::readVendor();
+        self::readVendorsAndExtensions();
+        self::readProject();
+
+        self::getLocalExtension();
+        self::getForeignExtension();
+
+        $this->coreStatus = Tools\RestApiClient::getStatus(
+            $this->configuration['builderUrl'],
+            $this->configuration['builderApi'],
+	    );
     }
 
-    private function readVendorsAndExtensions(): array
+    final function readConfiguration(): void
     {
-        $extensionsFolder = Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder();
+        if ($this->isComposerMode) {
+            $fileName =
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . 'extensionbuilder.json';
+        } else {
+            $fileName =
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . '.extensionbuilder.json';
+        }
+
+        $fileName =
+            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+            . '.extensionbuilder.json';
+
+        $configuration = [];
+        $changeConfiguration = false;
+
+        if (file_exists($fileName)) {
+            $configurationJson = Tools\Json::read($fileName);
+            $this->configuration = $configurationJson['configuration'] ?? [];
+            if ($this->configuration['typo3'] ?? false) {
+                Tools\ConfigArray::arrayMerge($this->configuration, $this->configuration['typo3']);
+			}
+            unset($this->configuration['typo3']);
+        }
+
+        if (!($this->configuration['systemId'] ?? false)) {
+            $changeConfiguration = true;
+            $this->configuration['systemId'] = Tools\Uuid::uuid();
+        }
+        if (!($this->configuration['builderUrl'] ?? false)) {
+            $changeConfiguration = true;
+            $this->configuration['builderUrl'] = 'https://typo3.extension-builder.dev';
+        }
+        if (!($this->configuration['builderApi'] ?? false)) {
+            $changeConfiguration = true;
+            $this->configuration['builderApi'] = '/api/v1/extensionbuildcoretypo3';
+        }
+
+        if (!($this->configuration['ebData'] ?? false)) {
+            $changeConfiguration = true;
+            if ($this->isComposerMode) {
+                $this->configuration['ebData'] = 'ExtensionBuilder';
+            } else {
+                $this->configuration['ebData'] = '.ExtensionBuilder';
+            }
+        }
+        if (!($this->configuration['ebBuild'] ?? false)) {
+            $changeConfiguration = true;
+            $this->configuration['ebBuild'] = 'ExtensionBuilder';
+        }
+
+        if ($changeConfiguration) {
+            self::writeConfiguration();
+		}
+
+		$this->pathToData = 
+            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+            . $this->configuration['ebData'];
+		$this->pathToBuild = 
+            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+            . $this->configuration['ebBuild'];
+
+        if (!is_dir($this->pathToData)) { GeneralUtility::mkdir_deep($this->pathToData); }
+        if (!$this->isComposerMode) {
+            if (!is_file($this->pathToData  . DIRECTORY_SEPARATOR . '.htaccess')) {
+                $path = $this->pathToData  . DIRECTORY_SEPARATOR . '.htaccess';
+                $content =
+                    "# Apache < 2.3\n"
+                    . "<IfModule !mod_authz_core.c>\n"
+                    . "    Order allow,deny\n"
+                    . "    Deny from all\n"
+                    . "    Satisfy All\n"
+                    . "</IfModule>\n"
+                    . "# Apache ≥ 2.3\n"
+                    . "<IfModule mod_authz_core.c>\n"
+                    . "    Require all denied\n"
+                    . "</IfModule>\n";
+                file_put_contents($path, $content);
+            }
+        } else {
+		    $composer = Tools\Json::read(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json');
+debug($composer);
+		}
+	}
+
+    final function writeConfiguration(): void
+    {
+        if ($this->isComposerMode) {
+            $fileName =
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . 'extensionbuilder.json';
+        } else {
+            $fileName =
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . '.extensionbuilder.json';
+        }
+
+        $configurationJson = [];
+        $configurationJson['configuration'] = $this->configuration;
+
+        Tools\ConfigArray::changeToBool($configurationJson);
+        Tools\Json::write($fileName, $configurationJson);
+	}
+
+    final function readDeveloper(): void
+    {
+        $fileName =
+            $this->pathToData . DIRECTORY_SEPARATOR
+            . 'developer.' . $GLOBALS['BE_USER']->user['username'] . '.json';
+
+        if (file_exists($fileName)) {
+            $developerJson = Tools\Json::read($fileName);
+            $this->developer = $developerJson['developer'] ?? [];
+            $this->noDeveloper = false;
+		} else {
+            $this->noDeveloper = true;			
+            $this->developer = [];
+            $this->developer['author'] = $GLOBALS['BE_USER']->user['realName'] ?? '';
+            $this->developer['author_email'] = $GLOBALS['BE_USER']->user['email'] ?? '';
+            $this->developer['author_company'] = $GLOBALS['BE_USER']->user['company'] ?? '';
+		}
+
+        if (!($this->developer['developerId'] ?? false)) {
+            $this->developer['developerId'] = Tools\Uuid::uuid();
+            self::writeDeveloper();
+		}
+	}
+
+    final function writeDeveloper(): void
+    {
+        $fileName =
+            $this->pathToData . DIRECTORY_SEPARATOR
+            . 'developer.' . $GLOBALS['BE_USER']->user['username'] . '.json';
+
+        $developer = [];
+        $developer['developer'] = $this->developer;
+
+        $this->noDeveloper = false;
+
+        Tools\ConfigArray::changeToBool($developer);
+        Tools\Json::write($fileName, $developer);
+	}
+
+    final function countDeveloper(): int
+    {
+        return count(
+            Tools\Folder::scanForFile(Environment::getProjectPath() . DIRECTORY_SEPARATOR . $this->configuration['ebData'],
+            filter: 'developer.') ?? []
+        );
+	}
+
+    final function readVendor(): void
+    {
+        $path = 
+//            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+//            . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+            $this->pathToData . DIRECTORY_SEPARATOR
+            . 'TYPO3' . DIRECTORY_SEPARATOR;
+
+        $vendorList = Tools\Folder::scanForDirectory($path);
+
+        foreach($vendorList ?? [] as $vendorName) {
+            $this->noVendors = false;
+
+            $fileName =
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+                . 'TYPO3' . DIRECTORY_SEPARATOR
+                . $vendorName . DIRECTORY_SEPARATOR
+                . 'vendor.json';
+
+            if (file_exists($fileName)) {
+                $vendor = Tools\Json::read($fileName);
+                $this->vendors[$vendorName] = [];
+                $this->vendors[$vendorName] = $vendor['vendor'] ?? [];
+            }
+		}
+	}
+
+    final function writeVendor(
+        string $vendorName,
+    ): void {
+        $filePath =
+//            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+//            . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+            $this->pathToData . DIRECTORY_SEPARATOR
+            . 'TYPO3' . DIRECTORY_SEPARATOR
+            . $vendorName . DIRECTORY_SEPARATOR;
+
+        $fileName = $filePath . 'vendor.json';
+
+        if (!is_dir($filePath)) { GeneralUtility::mkdir_deep($filePath); }
+
+        $vendorData = $this->vendors[$vendorName];
+
+        // Trim please
+	    foreach ($vendorData ?? [] as $vendorField) {
+	        if (is_string($vendorField)) {
+	            $vendorField = trim($vendorField);
+	        }
+	    }
+
+        $vendor = [];
+        $vendor['vendor'] = $vendorData;
+
+        $this->noVendors = false;
+
+        Tools\ConfigArray::changeToBool($vendor);
+        Tools\Json::write($fileName, $vendor);
+	}
+
+    final function deleteVendor(
+        string $vendorName,
+    ): void {
+        $filePath =
+//            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+//            . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+            $this->pathToData . DIRECTORY_SEPARATOR
+            . 'TYPO3' . DIRECTORY_SEPARATOR
+            . $vendorName . DIRECTORY_SEPARATOR;
+
+        unset($this->vendors[$vendorName]);
+        GeneralUtility::rmdir($filePath, true);
+	}
+
+    final function renameVendor(
+        string $vendorNameOld,
+        string $vendorNameNew,
+    ): void {
+// ToDo
+	}
+
+
+
+
+    final function readProject(): void
+    {
+        $fileName =
+//            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+//            . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+            $this->pathToData . DIRECTORY_SEPARATOR
+            . 'TYPO3' . DIRECTORY_SEPARATOR
+            . 'projects.json';
+
+        if (file_exists($fileName)) {
+            $projects = Tools\Json::read($fileName);
+            $this->projects = $projects['projects'] ?? [];
+		} else {
+            $this->projects = [];
+		}
+
+        foreach($this->projects ?? [] as $projectKey => $projectData) {
+            $extensions = [];
+            $dependencies = [];
+
+            foreach(($projectData['extensions'] ?? []) as $extensionKey => $extensionData) {
+                foreach($this->vendorsAndExtensions ?? [] as $vendorsKey => $vendorsData) {
+                    foreach($vendorsData['extensions'] ?? [] as $vendorExtensionKey => $vendorExtensionData) {
+                        if($vendorExtensionKey === $extensionKey) {
+                            $extensions[$vendorExtensionKey] = $vendorExtensionData;
+                            $extensions[$vendorExtensionKey]['extensionOnOff'] = $extensionData;
+                            if ($vendorExtensionData['extension']['depends'] ?? false) {
+                                foreach(($vendorExtensionData['extension']['depends'] ?? []) as $dependKey => $dependData) {
+                                    foreach($this->vendorsAndExtensions ?? [] as $vendorsKey => $vendorsData) {
+                                        foreach($vendorsData['extensions'] ?? [] as $vendorExtensionKey => $vendorExtensionData) {
+                                            if($vendorExtensionKey === $dependKey) {
+                                                $dependencies[$vendorExtensionKey] = $vendorExtensionData;
+                                            }
+                                        }
+                                    }
+			                    }
+                            }
+                        }
+				    }
+			    }
+			}
+
+			$this->projects[$projectKey]['extensions'] = $extensions;
+			$this->projects[$projectKey]['dependencies'] = $dependencies;
+        }
+	}
+
+    final function writeProject(): void
+    {
+        $fileName =
+//            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+//            . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+            $this->pathToData . DIRECTORY_SEPARATOR
+            . 'TYPO3' . DIRECTORY_SEPARATOR
+            . 'projects.json';
+
+        $projects = $this->projects;
+
+        foreach($projects ?? [] as $projectKey => $projectData) {
+            foreach($projectData['extensions'] ?? [] as $extensionKey => $extensionData) {
+				$extensionOnOff = $projects[$projectKey]['extensions'][$extensionKey]['extensionOnOff'];
+                unset ($projects[$projectKey]['extensions'][$extensionKey]);
+                $projects[$projectKey]['extensions'][$extensionKey] = $extensionOnOff;
+            }
+            if (!($projects[$projectKey]['extensions'] ?? false)) { $projects[$projectKey]['extensions'] = []; }
+            unset ($projects[$projectKey]['dependencies']);
+        }
+
+        $projectsNew = [];
+        $projectsNew['projects'] = $projects;
+
+        if (!$projectsNew['projects'] ) {
+            unlink($fileName);
+        } else {
+            Tools\Json::write($fileName, $projectsNew);
+		}
+	}
+
+    final function duplicateProjects(
+        string $projectKey,
+        string $projectKeyNew,
+        string $projectName,
+    ): void {
+        $this->projects[$projectKeyNew] = $this->projects[$projectKey];
+        $this->projects[$projectKey]['name'] = $projectName;
+
+        $this->writeProject();
+	}
+
+    final function renameProject(
+        string $projectKey,
+        string $projectName,
+    ): void {
+// ToDo
+        $this->projects[$projectKey]['name'] = $projectName;
+
+        $this->writeProject();
+	}
+
+    final function deleteProjects(
+        string $projectName,
+    ): void {
+// ToDo
+	}
+
+
+
+    final function getLocalExtension(): void
+	{
+        $returnArray = [];
+
+        if ($this->isComposerMode){
+
+		} else {
+            $extensionsPath =
+                \TYPO3\CMS\Core\Core\Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . 'typo3conf' . DIRECTORY_SEPARATOR
+                . 'ext' . DIRECTORY_SEPARATOR;
+            $extensionsList = Tools\Folder::scanForDirectory($extensionsPath);
+            foreach ($extensionsList ?? [] as $extensionsName) {
+                $returnArray[$extensionsName] = [];
+                $returnArray[$extensionsName]['active'] = false;
+            }
+		}
+        $this->localExtensions = $returnArray;
+	}
+
+    final function getForeignExtension(): void
+	{
+        // Searches the extensions for eb_ext export.json and reads it and returns an array.
+
+        // ToDo only load dependencies ext
+
+        $returnArray = [];
+
+        $extensionsPath =
+            \TYPO3\CMS\Core\Core\Environment::getProjectPath() . DIRECTORY_SEPARATOR
+            . 'typo3conf' . DIRECTORY_SEPARATOR
+            . 'ext' . DIRECTORY_SEPARATOR;
+
+        foreach ($this->localExtensionList ?? [] as $extensionName => $extensionData) {
+            $tmpFile = $extensionsPath . DIRECTORY_SEPARATOR . $extensionName . DIRECTORY_SEPARATOR . 'eb_ext_export.json';
+            if (file_exists($tmpFile)) {
+                $jsonData = Tools\Json::read($tmpFile);
+                if ($jsonData ?? false) {
+                    $jsonData = $jsonData ?? []; // Knoten entfernen
+				    Tools\ConfigArray::arrayMerge($returnArray, $jsonData);
+                }
+	        }
+		}
+
+        $this->foreignExtensions = $returnArray;
+	}
+
+    final function getRegisteredVendorGroups(): array
+    {
+        $array = [];
+
+        foreach ($this->vendors ?? [] as $vendorName => $vendorData) {
+
+            $array[] = $vendorData['vendorName'];
+        }
+
+        return $array;
+    }
+
+
+
+    private function readVendorsAndExtensions(): void
+    {
+        $extensionsFolder = 
+            Environment::getProjectPath() . DIRECTORY_SEPARATOR
+            . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+            . 'TYPO3' . DIRECTORY_SEPARATOR;
+
         $vendorsAndExtensions = [];
 
         // Get Vendors from directory
@@ -84,6 +524,7 @@ class ExtensionBuilderService implements SingletonInterface
                                 . $vendorName . DIRECTORY_SEPARATOR
                                 . $extensionName . DIRECTORY_SEPARATOR;
 
+
                             $vendorsAndExtensions[$vendorName]['extensions'][$extensionName] =
                                 Tools\ExtensionConfiguration::read($extensionPath);
 
@@ -98,9 +539,10 @@ class ExtensionBuilderService implements SingletonInterface
                     }
                     $vendorsAndExtensions[$vendorName]['jsonErrorInFile'][$json] = $jsonData['JsonError'];
 				}
-            }	
-        }        
-        return $vendorsAndExtensions;
+            }
+        }
+
+        $this->vendorsAndExtensions = $vendorsAndExtensions;
     }
 
     public function writeExtension(
@@ -110,8 +552,12 @@ class ExtensionBuilderService implements SingletonInterface
         if ($vendorName) {
             $vendor = $this->vendorsAndExtensions[$vendorName];
 
-            $vendorPath = Tools\ExtensionbuilderFolder::GetVendorsAndExtensionsBaseFolder();
-            $vendorPath .= DIRECTORY_SEPARATOR . $vendorName;
+            $vendorPath = 
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+                . 'TYPO3' . DIRECTORY_SEPARATOR
+                . $vendorName;
+
             GeneralUtility::mkdir_deep($vendorPath);
             $vendorDataForJson = [];
             $vendorDataForJson['vendor'] = [];
@@ -333,8 +779,13 @@ class ExtensionBuilderService implements SingletonInterface
         string $vendorName,
         string $extensionName,
     ): void {
+            $vendorPath = 
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . $this->configuration['ebData'] . DIRECTORY_SEPARATOR
+                . 'TYPO3' . DIRECTORY_SEPARATOR;
+
 		if (($this->vendorsAndExtensions[$vendorName] ?? false)) {
-            $vendorFolder = Tools\ExtensionbuilderFolder::GetVendorsAndExtensionsBaseFolder() . DIRECTORY_SEPARATOR . $vendorName;
+            $vendorFolder = $vendorPath . $vendorName;
 		    if ($extensionName) {
 		        if ($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] ?? []) {
                     $extensionsFolder = $vendorFolder . DIRECTORY_SEPARATOR . $extensionName;
@@ -415,16 +866,15 @@ $composerExtensionName = strtolower($extensionName);
 
             $buildPath =
                 Environment::getVarPath() . DIRECTORY_SEPARATOR
-                . $configuration['varEb'] . DIRECTORY_SEPARATOR
+                . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
                 . $vendorName . DIRECTORY_SEPARATOR
                 . $extensionName . DIRECTORY_SEPARATOR
                 . 'build' . DIRECTORY_SEPARATOR;
 
             if (Environment::isComposerMode()) {
-
                 $extPath =
                     Environment::getProjectPath() . DIRECTORY_SEPARATOR
-                    . 'vendor' . DIRECTORY_SEPARATOR
+                    . 'packages' . DIRECTORY_SEPARATOR
                     . $composerVendorName . DIRECTORY_SEPARATOR
                     . $composerExtensionName . DIRECTORY_SEPARATOR;
 			} else {
@@ -541,7 +991,7 @@ $composerExtensionName = strtolower($extensionName);
 
         $sourcePath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . $this->configuration['varEb'] . DIRECTORY_SEPARATOR
+            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
             . $this->vendorName . DIRECTORY_SEPARATOR
             . $this->extensionName . DIRECTORY_SEPARATOR
             . 'source' . DIRECTORY_SEPARATOR;
@@ -565,7 +1015,7 @@ $composerExtensionName = strtolower($extensionName);
 		
         $buildPath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . $this->configuration['varEb'] . DIRECTORY_SEPARATOR
+            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
             . $this->vendorName . DIRECTORY_SEPARATOR
             . $this->extensionName . DIRECTORY_SEPARATOR
             . 'build' . DIRECTORY_SEPARATOR;
@@ -574,7 +1024,7 @@ $composerExtensionName = strtolower($extensionName);
 
         $debugPath =
             Environment::getVarPath() . DIRECTORY_SEPARATOR
-            . $this->configuration['varEb'] . DIRECTORY_SEPARATOR
+            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
             . $this->vendorName . DIRECTORY_SEPARATOR
             . $this->extensionName . DIRECTORY_SEPARATOR
             . 'debug' . DIRECTORY_SEPARATOR;
@@ -624,8 +1074,6 @@ $composerExtensionName = strtolower($extensionName);
         return $return;
 	}
 
-// 9999
-
     private function buildRemote(): bool
     {
         $buildOk = false;
@@ -642,7 +1090,7 @@ $composerExtensionName = strtolower($extensionName);
             case 'build OK':
                 $debugPath =
                     Environment::getVarPath() . DIRECTORY_SEPARATOR
-                    . $this->configuration['varEb'] . DIRECTORY_SEPARATOR
+                    . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
                     . $this->vendorName . DIRECTORY_SEPARATOR
                     . $this->extensionName . DIRECTORY_SEPARATOR
                     . 'debug' . DIRECTORY_SEPARATOR;
@@ -652,13 +1100,13 @@ $composerExtensionName = strtolower($extensionName);
                 );
                 $importPath =
                     Environment::getVarPath() . DIRECTORY_SEPARATOR
-                    . $this->configuration['varEb'] . DIRECTORY_SEPARATOR
+                    . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
                     . $this->vendorName . DIRECTORY_SEPARATOR
                     . $this->extensionName . DIRECTORY_SEPARATOR
                     . 'import' . DIRECTORY_SEPARATOR;
                 $buildPath =
                     Environment::getVarPath() . DIRECTORY_SEPARATOR
-                    . $this->configuration['varEb'] . DIRECTORY_SEPARATOR
+                    . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
                     . $this->vendorName . DIRECTORY_SEPARATOR
                     . $this->extensionName . DIRECTORY_SEPARATOR
                     . 'build'.DIRECTORY_SEPARATOR;
@@ -707,7 +1155,8 @@ $composerExtensionName = strtolower($extensionName);
             . $this->extensionName . DIRECTORY_SEPARATOR;
 
         $exportPath =
-            Environment::getVarPath() . DIRECTORY_SEPARATOR . $this->configuration['varEb']
+            Environment::getVarPath() . DIRECTORY_SEPARATOR 
+            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
             . $this->vendorName . DIRECTORY_SEPARATOR
             . $this->extensionName . DIRECTORY_SEPARATOR;
 

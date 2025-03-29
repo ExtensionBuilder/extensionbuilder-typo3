@@ -18,10 +18,9 @@ final class DeveloperController extends ExtensionBuilderController
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                Tools\ConfigArray::arrayMerge($this->developer, $bodyParams['developer']);
+                Tools\ConfigArray::arrayMerge($this->ebService->developer, $bodyParams['developer']);
 
-debug($bodyParams['developer']);
-                $this->writeDeveloper();
+                $this->ebService->writeDeveloper();
 
                 $this->flashMessage(
                     '',
@@ -39,7 +38,7 @@ debug($bodyParams['developer']);
             'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:noProject',
         );
 
-	    foreach ($this->projects ?? [] as $projectName => $projectData) {
+	    foreach ($this->ebService->projects ?? [] as $projectName => $projectData) {
             $projects[$projectName] = $projectData['name'];
 	    }
 
@@ -53,13 +52,13 @@ debug($bodyParams['developer']);
             'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:noVendors',
         );
 
-	    foreach ($this->vendors ?? [] as $vendorName => $vendorData) {
+	    foreach ($this->ebService->vendors ?? [] as $vendorName => $vendorData) {
             $vendors[$vendorName] = $vendorData['vendorName'];
 	    }
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'developer' => $this->developer,
+            'configuration' => $this->ebService->configuration,
+            'developer' => $this->ebService->developer,
             'vendors' => $vendors,
             'projects' => $projects,
         ]);

@@ -17,8 +17,8 @@ final class ProjectController extends ExtensionBuilderController
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'projects' => $this->projects,
+            'configuration' => $this->ebService->configuration,
+            'projects' => $this->ebService->projects,
         ]);
 
         $this->addDocHeaderModuleDropDown(
@@ -47,9 +47,9 @@ final class ProjectController extends ExtensionBuilderController
                 if ($project['name']) {
                     $projectKey = uniqid();
 
-                    if (!($this->projects[$projectKey] ?? false)) {
-                        $this->projects[$projectKey] = $project;
-                        $this->writeProject();
+                    if (!($this->ebService->projects[$projectKey] ?? false)) {
+                        $this->ebService->projects[$projectKey] = $project;
+                        $this->ebService->writeProject();
 
                         $this->flashMessage(
                             '',
@@ -75,7 +75,7 @@ final class ProjectController extends ExtensionBuilderController
         $project['extensions'] = [];
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
             'project' => $project,
         ]);
 
@@ -101,9 +101,9 @@ final class ProjectController extends ExtensionBuilderController
             case 'save':
                 $project = $bodyParams['project'];
 
-                Tools\ConfigArray::arrayMerge($this->projects[$projectKey], $project);
+                Tools\ConfigArray::arrayMerge($this->ebService->projects[$projectKey], $project);
 
-                $this->writeProject();
+                $this->ebService->writeProject();
 
                 $this->flashMessage(
                     '',
@@ -117,22 +117,22 @@ final class ProjectController extends ExtensionBuilderController
                 break;
 
             case 'extensionOn':
-                $this->projects[$projectKey]['extensions'][$bodyParams['extensionName']]['extensionOnOff'] = true;
-                $this->writeProject();
-                $this->readProject();
+                $this->ebService->projects[$projectKey]['extensions'][$bodyParams['extensionName']]['extensionOnOff'] = true;
+                $this->ebService->writeProject();
+                $this->ebService->readProject();
                 break;
 
             case 'extensionOff':
-                $this->projects[$projectKey]['extensions'][$bodyParams['extensionName']]['extensionOnOff'] = false;
-                $this->writeProject();
-                $this->readProject();
+                $this->ebService->projects[$projectKey]['extensions'][$bodyParams['extensionName']]['extensionOnOff'] = false;
+                $this->ebService->writeProject();
+                $this->ebService->readProject();
                 break;
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
+            'project' => $this->ebService->projects[$projectKey],
             'projectKey' => $projectKey,
-            'project' => $this->projects[$projectKey],
         ]);
 
         $this->addDocHeaderModuleDropDown(
@@ -153,9 +153,9 @@ final class ProjectController extends ExtensionBuilderController
 
         $projectKey = $bodyParams['projectKey'] ?? 'noKey';
 
-        if ($this->projects[$projectKey] ?? false) {
-            unset($this->projects[$projectKey]);
-            $this->writeProject();
+        if ($this->ebService->projects[$projectKey] ?? false) {
+            unset($this->ebService->projects[$projectKey]);
+            $this->ebService->writeProject();
             $this->flashMessage('', 'Delete'); // ToDo LLL
         }
 
@@ -170,14 +170,14 @@ final class ProjectController extends ExtensionBuilderController
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'extensionAdd':
-                $this->projects[$projectKey]['extensions'][$bodyParams['extensionName']] = [];
-                $this->projects[$projectKey]['extensions'][$bodyParams['extensionName']]['extensionOnOff'] = true;
-                $this->writeProject();
-                $this->readProject();
+                $this->ebService->projects[$projectKey]['extensions'][$bodyParams['extensionName']] = [];
+                $this->ebService->projects[$projectKey]['extensions'][$bodyParams['extensionName']]['extensionOnOff'] = true;
+                $this->ebService->writeProject();
+                $this->ebService->readProject();
 
                 $this->moduleTemplate->assignMultiple([
-                    'configuration' => $this->configuration,
-                    'project' => $this->projects[$projectKey],
+                    'configuration' => $this->ebService->configuration,
+                    'project' => $this->ebService->projects[$projectKey],
                     'projectKey' => $projectKey,
                 ]);
 
@@ -199,21 +199,21 @@ final class ProjectController extends ExtensionBuilderController
         $project['extensions'] = [];
 
 		$extensions = [];
-		foreach($this->vendorsAndExtensions ?? [] as $vendorKey => $vendorData) {
+		foreach($this->ebService->vendorsAndExtensions ?? [] as $vendorKey => $vendorData) {
 		    foreach($vendorData['extensions'] ?? [] as $extensionKey => $extensionData) {
 		        $extensions[$extensionData['extension']['extensionName']] = $extensionData['extension'];
 		    }
 		}
-		foreach($this->projects[$projectKey]['extensions'] ?? [] as $extensionKey => $extensionData) {
+		foreach($this->ebService->projects[$projectKey]['extensions'] ?? [] as $extensionKey => $extensionData) {
             unset($extensions[$extensionKey]);
 		}
-		foreach($this->projects[$projectKey]['dependencies'] ?? [] as $dependencieKey => $dependencieData) {
+		foreach($this->ebService->projects[$projectKey]['dependencies'] ?? [] as $dependencieKey => $dependencieData) {
 
             unset($extensions[$dependencieKey]);
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
             'projectKey' => $projectKey,
             'extensions'  => $extensions,
         ]);
@@ -238,12 +238,12 @@ final class ProjectController extends ExtensionBuilderController
 
         unset($this->projects[$projectKey]['extensions'][$bodyParams['extensionName']]);
 
-        $this->writeProject();
-        $this->readProject();
+        $this->ebService->writeProject();
+        $this->ebService->readProject();
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'project' => $this->projects[$projectKey],
+            'configuration' => $this->ebService->configuration,
+            'project' => $this->ebService->projects[$projectKey],
             'projectKey' => $projectKey,
         ]);
 

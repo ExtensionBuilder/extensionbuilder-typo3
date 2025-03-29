@@ -22,13 +22,16 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
                                 <td class="nowrap-disabled">
                                     <div class="name">
 
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.addextension"
-                                            parameters="{
-                                                action: 'extensionAdd',
-                                                projectKey: projectKey,
-                                                extensionName: extensionData.extensionName
+                                        <f:link.action
+                                            action="editextension"
+                                            controller="Project"
+                                            arguments="{
+                                                'action': 'extensionAdd',
+                                                'projectKey': projectKey,
+                                                'extensionName': extensionData.extensionName
+
                                             }"
+
                                         >
                                             <strong>
                                                 {extensionData.vendorName} / {extensionData.extensionName}
@@ -41,17 +44,19 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
                                                     <f:format.nl2br>{extensionData.description}</f:format.nl2br>
                                                 </div>
                                             </f:if>
-                                        </f:be.link>
+                                        </f:link.action>
                                     </div>
                                 </td>
                                 <td class="nowrap">
                                     <div class="btn-group" role="group">
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.addextension"
-                                            parameters="{
-                                                action: 'extensionAdd',
-                                                projectKey: projectKey,
-                                                extensionName: extensionData.extensionName
+                                        <f:link.action
+                                            action="editextension"
+                                            controller="Project"
+                                            arguments="{
+                                                'action': 'extensionAdd',
+                                                'projectKey': projectKey,
+                                                'extensionName': extensionData.extensionName
+
                                             }"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
@@ -59,7 +64,7 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
 "{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
                                         >
                                             <core:icon identifier="actions-extension-add"/>
-                                        </f:be.link>
+                                        </f:link.action>
                                     </div>
                                 </td>
                             </tr>

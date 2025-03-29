@@ -18,9 +18,10 @@ final class ConfigurationController extends ExtensionBuilderController
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                Tools\ConfigArray::arrayMerge($this->configuration, $bodyParams['configuration']);
+                Tools\ConfigArray::arrayMerge($this->ebService->configuration, $bodyParams['configuration']);
 
-                $this->writeConfiguration();
+                $this->ebService->writeConfiguration();
+
                 $this->flashMessage(
                     '',
                     $this->getTranslatedLabel(
@@ -32,8 +33,8 @@ final class ConfigurationController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'builderLocal' => $this->builderLocal,
+            'configuration' => $this->ebService->configuration,
+            'builderLocal' => $this->ebService->builderLocal,
             'isProKey' => $this->isProKey,
         ]);
 

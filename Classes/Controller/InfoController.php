@@ -19,36 +19,39 @@ final class InfoController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+
+        $this->coreStatus = Tools\RestApiClient::getStatus(
+            $this->ebService->configuration['builderUrl'],
+            $this->ebService->configuration['builderApi'],
+	    );
+
+
 // ToDo
         $announcements = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Announcements.json');
         $issues = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Issues.json');
         $todo = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_Todo.json');
         $changeLog = $this->getJsonWithcUrl('https://typo3.extension-builder.dev/TYPO3_ChangeLog.json');
 
-// ToDo
-        $this->configuration['version'] = Utility\ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3');
+        $this->ebService->configuration['version'] = Utility\ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3');
+        $this->ebService->configuration['developerCounter'] = $this->ebService->countDeveloper();
+        $this->ebService->configuration['vendorCounter'] = count($this->ebService->vendors);
+        $this->ebService->configuration['projectCounter'] = count($this->ebService->projects ?? []);
+        $this->ebService->configuration['extensionCounter'] = 0;
 
-        $this->configuration['developerCounter'] =
-            count(Tools\Folder::scanForFile(Tools\ExtensionbuilderFolder::getExtensionBuilderFolder(), filter: 'developer.') ?? []);
-
-        $this->configuration['vendorCounter'] = count($this->vendors);
-
-        $this->configuration['extensionCounter'] = 0;
-        foreach ($this->vendors ?? [] as $vendorName => $vendorsData) {
-            $this->configuration['extensionCounter'] =
-                $this->configuration['extensionCounter']
-                + count($this->vendorsAndExtensions[$vendorName]['extensions'] ?? []);
+        foreach ($this->ebService->vendors ?? [] as $vendorName => $vendorsData) {
+            $this->ebService->configuration['extensionCounter'] =
+                $this->ebService->configuration['extensionCounter']
+                + count($this->ebService->vendorsAndExtensions[$vendorName]['extensions'] ?? []);
         }
 
-        $this->configuration['projectCounter'] = count($this->projects ?? []);
-
         $this->moduleTemplate->assignMultiple([
-              'configuration' => $this->configuration,
-              'builderLocal' => $this->builderLocal,
-              'isProKey' => $this->isProKey,
+              'configuration' => $this->ebService->configuration,
+              'developer' => $this->ebService->developer,
               'coreStatus' => $this->coreStatus,
+              'builderLocal' => $this->ebService->builderLocal,
+
+              'isProKey' => $this->isProKey,
               'keyStatus' => $this->keyStatus,
-              'developer' => $this->developer,
               'announcements' => $announcements,
               'issues' => $issues,
               'todo' => $todo,

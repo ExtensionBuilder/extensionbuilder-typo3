@@ -57,18 +57,9 @@ They will be added gradually in the near future.<br />
 
             <f:if condition="{builderLocal}">
                 <div style="float: left;  width: 100px;">Local builder</div>
-                <f:if condition="{configuration.buildLocal}">
-                    <f:then>
-                        - Pro Version -
-                    </f:then>
-                    <f:else>
-                        - Community Version -
-                    </f:else>
-                </f:if>
-
+                <div style="float: right; width: 400px;">Online</div>
                 <div style="float: left;  width: 100px;">Version</div>
                 <div style="float: right; width: 400px;">{coreStatus.version}</div>
-
             </f:if>
 
         </div>

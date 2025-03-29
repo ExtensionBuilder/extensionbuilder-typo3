@@ -19,15 +19,15 @@ final class VendorController extends ExtensionBuilderController
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'vendorList' => $this->vendors,
+            'configuration' => $this->ebService->configuration,
+            'vendorList' => $this->ebService->vendors,
         ]);
 
         $this->addDocHeaderModuleDropDown(
             'Vendor',
         );
 
-        if (($this->vendors ?? false) && ($this->vendorsAndExtensions ?? false)) {
+        if (($this->ebService->vendors ?? false) && ($this->ebService->vendorsAndExtensions ?? false)) {
             $this->addDocHeaderCloseButtons(
                 'list',
                 'Extension',
@@ -61,10 +61,11 @@ final class VendorController extends ExtensionBuilderController
                 if ($vendorName) {
                     if (!($this->vendors[$vendorName] ?? false)) {
 
-                        $this->vendors[$vendorName] = $vendorData;
-                        $this->noVendors = false;
+                        $this->ebService->vendors[$vendorName] = $vendorData;
+                        $this->ebService->noVendors = false;
 
-                        $this->writeVendor($vendorName);
+                        $this->ebService->writeVendor($vendorName);
+                        $this->ebService->readVendor();
                         $this->flashMessage(
                             '',
                             $this->getTranslatedLabel(
@@ -88,7 +89,7 @@ final class VendorController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
             'vendorData' => $vendorData,
         ]);
 
@@ -109,16 +110,16 @@ final class VendorController extends ExtensionBuilderController
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
-        $vendorData = $this->vendors[$vendorName];
+        $vendorData = $this->ebService->vendors[$vendorName];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
 
                 Tools\ConfigArray::arrayMerge($vendorData, $bodyParams['vendorData']);
 
-                $this->vendors[$vendorName] = $vendorData;
+                $this->ebService->vendors[$vendorName] = $vendorData;
 
-                $this->writeVendor($vendorName);
+                $this->ebService->writeVendor($vendorName);
 
                 $this->flashMessage(
                     '',
@@ -133,7 +134,7 @@ final class VendorController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
             'vendorData' => $vendorData,
         ]);
 
@@ -160,10 +161,10 @@ final class VendorController extends ExtensionBuilderController
             case 'save':
                 $vendorNameNew = $bodyParams['vendorData']['vendorName'];
 
-                $this->vendors[$vendorNameNew] = $this->vendors[$vendorNameOrg];
-                $this->vendors[$vendorNameNew]['vendorName'] = $vendorNameNew;
+                $this->ebService->vendors[$vendorNameNew] = $this->vendors[$vendorNameOrg];
+                $this->ebService->vendors[$vendorNameNew]['vendorName'] = $vendorNameNew;
 
-                $this->writeVendor($vendorNameNew);
+                $this->ebService->writeVendor($vendorNameNew);
 
                 $this->flashMessage(
                     '',
@@ -200,7 +201,7 @@ final class VendorController extends ExtensionBuilderController
 
         $vendorName = $bodyParams['vendorName'] ?? '';
 
-        $vendorData = $this->vendors[$vendorName];
+        $vendorData = $this->ebService->vendors[$vendorName];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
@@ -226,7 +227,7 @@ final class VendorController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
             'vendorData' => $vendorData,
         ]);
 
@@ -246,34 +247,34 @@ final class VendorController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $this->deleteVendor($bodyParams['vendorName']);
-        $this->readVendor();
+        $this->ebService->deleteVendor($bodyParams['vendorName']);
+        $this->ebService->readVendor();
 
         // Delete ExampleVendor project entry 
         if ($bodyParams['vendorName'] == 'ExampleVendor') {
-            foreach($this->projects ?? [] as $projectUi => $projectData) {
+            foreach($this->ebService->projects ?? [] as $projectUi => $projectData) {
                 if ($projectData['name'] == 'Example Vendor') {
-                    unset($this->projects[$projectUi]);
-                    $this->writeProject();
+                    unset($this->ebService->projects[$projectUi]);
+                    $this->ebService->writeProject();
                     break;
                 }
 			}
         }
 
-        if (!($this->vendors ?? false)) {
-            $this->noVendors = true;
+        if (!($this->ebService->vendors ?? false)) {
+            $this->ebService->noVendors = true;
         }
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'vendorList' => $this->vendors,
+            'configuration' => $this->ebService->configuration,
+            'vendorList' => $this->ebService->vendors,
         ]);
 
         $this->addDocHeaderModuleDropDown(
             'Vendor',
         );
 
-        if (!($this->noVendors)) {
+        if (!($this->ebService->noVendors)) {
             $this->addDocHeaderCloseButtons(
                 'list',
                 'Extension',
@@ -296,6 +297,9 @@ final class VendorController extends ExtensionBuilderController
     final function importExampleVendorAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+return $this->redirect('list', 'Vendor');
+// ToDo
 
         if (Environment::isComposerMode()) {
             $sourcePath =

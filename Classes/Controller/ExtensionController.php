@@ -26,38 +26,38 @@ final class ExtensionController extends ExtensionBuilderController
 
 // ToDo check for change
         if ($bodyParams['currentProject'] ?? false) {
-            $this->developer['typo3']['project'] = $bodyParams['currentProject'];
-            $this->writeDeveloper();
+            $this->ebService->developer['typo3']['project'] = $bodyParams['currentProject'];
+            $this->ebService->writeDeveloper();
 		}
 
 // ToDo check for change
         if ($bodyParams['currentVendor'] ?? false) {
-            $this->developer['typo3']['vendor'] = $bodyParams['currentVendor'];
-            $this->writeDeveloper();
+            $this->ebService->developer['typo3']['vendor'] = $bodyParams['currentVendor'];
+            $this->ebService->writeDeveloper();
 		}
 
         // No developer exists ToDo 
-        if ($this->noDeveloper) {
+        if ($this->ebService->noDeveloper) {
             return $this->redirect('edit', 'Developer');
         }
 
         // No vendor exists ToDo
-        if (!($this->vendors)) {
+        if (!($this->ebService->vendors)) {
             return $this->redirect('list', 'Vendor');
         }
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'currentProject' => $this->developer['typo3']['project'] ?? 'no',
-            'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
-            'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
-            'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
+            'configuration' => $this->ebService->configuration,
+            'currentProject' => $this->ebService->developer['typo3']['project'] ?? 'no',
+            'currentVendor' => $this->ebService->developer['typo3']['vendor'] ?? 'all',
+            'project' =>  $this->ebService->projects[($this->ebService->developer['typo3']['project'] ?? 'no')] ?? [],
+            'vendors' => $this->ebService->vendorsAndExtensions ?? ['no'],
         ]);
 
         $this->addDocHeaderModuleDropDown(
             'Extension',
-            activeProjcet: $this->developer['typo3']['project'] ?? 'no',
-            activeVendor: $this->developer['typo3']['vendor'] ?? 'all',
+            activeProjcet: $this->ebService->developer['typo3']['project'] ?? 'no',
+            activeVendor: $this->ebService->developer['typo3']['vendor'] ?? 'all',
         );
         $this->addDocHeaderAddButton(
             'add',
@@ -77,7 +77,7 @@ final class ExtensionController extends ExtensionBuilderController
                 $extensionName = $bodyParams['extensionData']['extension']['extensionName'];
                 $extensionData = $bodyParams['extensionData'] ?? [];
                 if ($vendorName && $extensionName) {
-                    if (!($this->localExtensions[$extensionName] ?? false)) {
+                    if (!($this->ebService->localExtensions[$extensionName] ?? false)) {
 
                         $extensionData['extension']['versionMajor'] = 0;
                         $extensionData['extension']['versionMinor'] = 1;
@@ -92,7 +92,7 @@ final class ExtensionController extends ExtensionBuilderController
                         return $this->redirect('list', 'Extension');
                     } else {
 
-                        if ($this->isComposerMode) {
+                        if ($this->ebService->isComposerMode) {
  // ToDo LLL
                             $this->flashMessage('', 'Extension exists in typo3conf/ext, please change.');
 						} else {
@@ -117,10 +117,10 @@ final class ExtensionController extends ExtensionBuilderController
         }
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
+            'projects' => $this->ebService->projects,
+			'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
             'extensionData' => $extensionData,
-			'registeredVendorGroups' => $this->getRegisteredVendorGroups(),
-            'projects' => $this->projects,
         ]);
 
         $this->addDocHeaderCloseAndSaveButtons(
@@ -139,7 +139,7 @@ final class ExtensionController extends ExtensionBuilderController
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
 
-        $extensionData = $this->extensionbuilderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $extensionData = $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
@@ -156,11 +156,11 @@ final class ExtensionController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
+            'configuration' => $this->ebService->configuration,
+            'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'extensionData' => $extensionData,
-            'registeredVendorGroups' => $this->getRegisteredVendorGroups(),
         ]);
 
         $this->addDocHeaderCloseAndSaveButtons(
@@ -213,37 +213,37 @@ final class ExtensionController extends ExtensionBuilderController
         $vendorName = $bodyParams['vendorName'] ?? '';
         $extensionName = $bodyParams['extensionName'] ?? '';
 
-        $builderUri = $this->configuration['builderUrl'];
+        $builderUri = $this->ebService->configuration['builderUrl'];
 
         $copyInExtension = true;
 
-        $flushT3andPhpCache = $this->developer['typo3']['flushT3andPhpCache'] ?? false;
-        $analyzeDatabaseStructure = $this->developer['typo3']['analyzeDatabaseStructure'] ?? false;
-        $rebuildPhpAutoload = $this->developer['typo3']['rebuildPhpAutoload'] ?? false;
+        $flushT3andPhpCache = $this->ebService->developer['typo3']['flushT3andPhpCache'] ?? false;
+        $analyzeDatabaseStructure = $this->ebService->developer['typo3']['analyzeDatabaseStructure'] ?? false;
+        $rebuildPhpAutoload = $this->ebService->developer['typo3']['rebuildPhpAutoload'] ?? false;
 
-        $this->extensionbuilderObject->build(
+        $this->ebService->build(
             $vendorName,
             $extensionName,
-            $this->configuration,
-            $this->developer,
+            $this->ebService->configuration,
+            $this->ebService->developer,
         );
 
-        $this->extensionbuilderObject->vendorsAndExtensions
+        $this->ebService->vendorsAndExtensions
             [$vendorName]['extensions'][$extensionName]['extensionBuild']['lastBuild'] = date('d-m-Y  h:i:m');
-        $this->extensionbuilderObject->writeExtension($vendorName, $extensionName);
+        $this->ebService->writeExtension($vendorName, $extensionName);
 
         $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'currentProject' => $this->developer['typo3']['project'] ?? 'no',
-            'currentVendor' => $this->developer['typo3']['vendor'] ?? 'all',
-            'project' =>  $this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? [],
-            'vendors' => $this->extensionbuilderObject->vendorsAndExtensions ?? ['no'],
+            'configuration' => $this->ebService->configuration,
+            'currentProject' => $this->ebService->developer['typo3']['project'] ?? 'no',
+            'currentVendor' => $this->ebService->developer['typo3']['vendor'] ?? 'all',
+            'project' =>  $this->ebService->projects[($this->ebService->developer['typo3']['project'] ?? 'no')] ?? [],
+            'vendors' => $this->ebService->vendorsAndExtensions ?? ['no'],
         ]);
 
         $this->addDocHeaderModuleDropDown(
             'Extension',
-            activeProjcet: $this->developer['typo3']['project'] ?? 'no',
-            activeVendor: $this->developer['typo3']['vendor'] ?? 'all',
+            activeProjcet: $this->ebService->developer['typo3']['project'] ?? 'no',
+            activeVendor: $this->ebService->developer['typo3']['vendor'] ?? 'all',
         );
         $this->addDocHeaderAddButton(
             'add',
@@ -264,8 +264,8 @@ final class ExtensionController extends ExtensionBuilderController
             'Extension',
         );
 
-        $vendorData = $this->extensionbuilderObject->vendorsAndExtensions[$vendorName];
-        $extensionData = $this->extensionbuilderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $vendorData = $this->ebService->vendorsAndExtensions[$vendorName];
+        $extensionData = $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
 
         // GtiHub
         if ($extensionData['extensionBuild']['gitHubCom'] ?? false) {
@@ -308,9 +308,9 @@ final class ExtensionController extends ExtensionBuilderController
         $extensionData['extension']['version'] .= '.';
         $extensionData['extension']['version'] .= (string)($extensionData['extension']['versionRevision'] ?? '0');
 
-        $this->extensionbuilderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData;
+        $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData;
 
-        $this->extensionbuilderObject->writeExtension($vendorName, $extensionName);
+        $this->ebService->writeExtension($vendorName, $extensionName);
 
         $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
     }
