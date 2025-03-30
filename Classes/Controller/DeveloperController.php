@@ -26,7 +26,7 @@ final class DeveloperController extends ExtensionBuilderController
                     '',
                     $this->getTranslatedLabel(
                         $this->request,
-                        $this->ebService->lll . 'developer.xlf:savingDeveloperSetings',
+                        $this->ebService->lll . '.developer.xlf:savingDeveloperSetings',
                     )
                 );
                 break;

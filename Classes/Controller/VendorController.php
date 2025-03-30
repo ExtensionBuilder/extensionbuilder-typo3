@@ -18,22 +18,24 @@ final class VendorController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+        return $this->vendorList();
+    }
+
+    private function vendorList(): ResponseInterface {
+        if (!($this->ebService->vendors ?? false)) { $this->ebService->noVendors = true; }
+
         $this->moduleTemplate->assignMultiple([
             'configuration' => $this->ebService->configuration,
             'vendorList' => $this->ebService->vendors,
         ]);
 
-        $this->addDocHeaderModuleDropDown(
-            'Vendor',
-        );
-
+        $this->addDocHeaderModuleDropDown('Vendor');
         if (($this->ebService->vendors ?? false) && ($this->ebService->vendorsAndExtensions ?? false)) {
             $this->addDocHeaderCloseButtons(
                 'list',
                 'Extension',
             );
         }
-
         $this->addDocHeaderAddButton(
             'add',
             'Vendor',
@@ -50,7 +52,7 @@ final class VendorController extends ExtensionBuilderController
 		}
 
         return $this->moduleTemplate->renderResponse('Vendor/List');
-    }
+	}
 
     final function addAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
@@ -63,7 +65,6 @@ final class VendorController extends ExtensionBuilderController
 
                 if ($vendorName) {
                     if (!($this->vendors[$vendorName] ?? false)) {
-debug($vendorName,'test');
                         $this->ebService->vendors[$vendorName] = $vendorData;
                         $this->ebService->noVendors = false;
 
@@ -77,9 +78,9 @@ debug($vendorName,'test');
                             ) . $vendorName,
                         );
 
-                        return $this->redirect('list', 'Vendor');
+                        return $this->vendorList();
                     } else {
-debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendornameexists'));
+//debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendornameexists'));
                         $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll . '.vendor.xlf:vendornameexists'));
                     }
                 } else {
@@ -103,6 +104,15 @@ debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendorn
             'Vendor',
             'vendor-add-form',
         );
+        if (
+            ($this->ebService->configuration['importExample'] ?? false) &&
+            (!($this->ebService->vendors['ExampleVendor'] ?? false))
+        ) {
+            $this->addDocHeaderImportExampleVendor(
+                'importExampleVendor',
+                'Vendor',
+            );
+		}
 
         return $this->moduleTemplate->renderResponse('Vendor/Add');
     }
@@ -116,11 +126,8 @@ debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendorn
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-
                 Tools\ConfigArray::arrayMerge($vendorData, $bodyParams['vendorData']);
-
                 $this->ebService->vendors[$vendorName] = $vendorData;
-
                 $this->ebService->writeVendor($vendorName);
 
                 $this->flashMessage(
@@ -131,7 +138,7 @@ debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendorn
                     ) . $vendorName,
                 );
 
-                return $this->redirect('list', 'Vendor');
+                return $this->vendorList();
                 break;
 		}
 
@@ -142,12 +149,21 @@ debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendorn
 
         $this->addDocHeaderModuleDropDown(
             'Vendor',
-        );   
+        );
         $this->addDocHeaderCloseAndSaveButtons(
             'list',
             'Vendor',
             'vendor-edit-form',
         );
+        if (
+            ($this->ebService->configuration['importExample'] ?? false) &&
+            (!($this->ebService->vendors['ExampleVendor'] ?? false))
+        ) {
+            $this->addDocHeaderImportExampleVendor(
+                'importExampleVendor',
+                'Vendor',
+            );
+		}
 
     	return $this->moduleTemplate->renderResponse('Vendor/Edit');
     }
@@ -263,37 +279,7 @@ debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendorn
 			}
         }
 
-        if (!($this->ebService->vendors ?? false)) {
-            $this->ebService->noVendors = true;
-        }
-
-        $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->ebService->configuration,
-            'vendorList' => $this->ebService->vendors,
-        ]);
-
-        $this->addDocHeaderModuleDropDown(
-            'Vendor',
-        );
-
-        if (!($this->ebService->noVendors)) {
-            $this->addDocHeaderCloseButtons(
-                'list',
-                'Extension',
-            );
-        }
-        $this->addDocHeaderAddButton(
-            'add',
-		    'Vendor',
-        );
-        if (!($this->vendors['ExampleVendor'] ?? false)) { // ToDo ein und ausschalten über config
-            $this->addDocHeaderImportExampleVendor(
-                'importExampleVendor',
-                'Vendor',
-            );
-		}
-
-    	return $this->moduleTemplate->renderResponse('Vendor/List');
+        return $this->vendorList();
     }
 
     final function importExampleVendorAction(): ResponseInterface {
@@ -302,40 +288,7 @@ debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendorn
 
 		$this->ebService->importExampleVendor();
 
-        $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->ebService->configuration,
-            'vendorList' => $this->ebService->vendors,
-        ]);
-
-        $this->addDocHeaderModuleDropDown(
-            'Vendor',
-        );
-
-        if (($this->ebService->vendors ?? false) && ($this->ebService->vendorsAndExtensions ?? false)) {
-            $this->addDocHeaderCloseButtons(
-                'list',
-                'Extension',
-            );
-        }
-
-        $this->addDocHeaderAddButton(
-            'add',
-            'Vendor',
-        );
-
-        if (
-            ($this->ebService->configuration['importExample'] ?? false) &&
-            (!($this->ebService->vendors['ExampleVendor'] ?? false))
-        ) {
-            $this->addDocHeaderImportExampleVendor(
-                'importExampleVendor',
-                'Vendor',
-            );
-		}
-
-        return $this->moduleTemplate->renderResponse('Vendor/List');
-
-//        return $this->redirect('list', 'Vendor');
+        return $this->vendorList();
 	}
 
 }

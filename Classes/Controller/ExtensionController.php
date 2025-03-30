@@ -19,29 +19,35 @@ final class ExtensionController extends ExtensionBuilderController
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
 // $this->pageRenderer->loadJavaScriptModule('@typo3/rte-ckeditor/ckeditor5.js');
-		
-//		JavaScriptRenderer->includeAllImports(),
-//$this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Backend/my-module.js');
+// JavaScriptRenderer->includeAllImports(),
+// $this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Backend/my-module.js');
+// $this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Modal.js');
 
-//$this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Modal.js');
-
-// ToDo check for change
-        if ($bodyParams['currentProject'] ?? false) {
+        if (
+            ($bodyParams['currentProject'] ?? false) &&
+            !($bodyParams['currentProject'] == $this->ebService->developer['typo3']['project'])
+        ) {
             $this->ebService->developer['typo3']['project'] = $bodyParams['currentProject'];
             $this->ebService->writeDeveloper();
 		}
 
-// ToDo check for change
-        if ($bodyParams['currentVendor'] ?? false) {
+        if (
+            ($bodyParams['currentVendor'] ?? false) &&
+            !($bodyParams['currentVendor'] == $this->ebService->developer['typo3']['vendor'])
+        ) {
             $this->ebService->developer['typo3']['vendor'] = $bodyParams['currentVendor'];
             $this->ebService->writeDeveloper();
 		}
 
+        return $this->extensionList();
+    }
+
+    private function extensionList(): ResponseInterface
+    {
         // No developer exists ToDo 
         if ($this->ebService->noDeveloper) {
             return $this->redirect('edit', 'Developer');
         }
-
         // No vendor exists ToDo
         if (!($this->ebService->vendors)) {
             return $this->redirect('list', 'Vendor');
@@ -66,7 +72,7 @@ final class ExtensionController extends ExtensionBuilderController
         );
 
         return $this->moduleTemplate->renderResponse('Extension/List');
-    }
+	}
 
     public function addAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
@@ -92,7 +98,7 @@ final class ExtensionController extends ExtensionBuilderController
                             $extensionData,
                         );
 
-                        return $this->redirect('list', 'Extension');
+                        return $this->extensionList();
                     } else {
 
                         if ($this->ebService->isComposerMode) {
@@ -156,7 +162,7 @@ final class ExtensionController extends ExtensionBuilderController
                     $extensionData ?? [],
                 );
 
-                return $this->redirect('list', 'Extension');
+                return $this->extensionList();
                 break;
 		}
 

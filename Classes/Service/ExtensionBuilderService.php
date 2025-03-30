@@ -634,10 +634,7 @@ class ExtensionBuilderService implements SingletonInterface
             );
 			
     		if ($extensionName) {
-
-                if($extensionData) {
-                    $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData;
-				}
+                if($extensionData) { $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData; }
 
                 $extension = $vendor['extensions'][$extensionName];
 
