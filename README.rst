@@ -31,6 +31,12 @@ The Extension Builder offers a wide range of kickstart features, including:
 
 More at https://extension-builder.dev/
 
+-----------------
+Installation
+-----------------
+
+Install this extension via ``composer req extensionbuilder/extensionbuilder-typo3`` or download it from the TYPO3 Extension Repository ``extensionbuilder_typo3`` and activate the extension in the Extension Manager of your TYPO3 installation.
+
 ------------
 
 :Repository:    https://github.com/ExtensionBuilder/extensionbuilder-typo3
