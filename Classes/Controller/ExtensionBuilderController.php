@@ -31,15 +31,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 
-
-
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
-
-use ExtensionBuilder\ExtensionbuilderTypo3\BuildExtension;
-
-use ExtensionBuilder\ExtensionbuilderTypo3\Extensions;
-
-
 use ExtensionBuilder\ExtensionbuilderTypo3\Service\ExtensionBuilderService;
 
 class ExtensionBuilderController extends ActionController
@@ -83,9 +75,6 @@ class ExtensionBuilderController extends ActionController
 	
 	public ModuleTemplate $moduleTemplate;
 
-// ToDo
-// customer projects ?
-
     function __construct(
         protected LanguageServiceFactory $languageServiceFactory,
         protected ModuleTemplateFactory $moduleTemplateFactory,
@@ -111,8 +100,6 @@ class ExtensionBuilderController extends ActionController
         $this->ebService->configuration['proKey'] = $this->isProKey;
 
     }
-
-
 
     final function readComponent(
         string $vendorName,
@@ -142,8 +129,7 @@ class ExtensionBuilderController extends ActionController
         array $componentData,
     ): void {
         $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()
-            . 'TYPO3' . DIRECTORY_SEPARATOR
+            $this->ebService->dataTypo3Path
             . $vendorName . DIRECTORY_SEPARATOR
             . $extensionName . DIRECTORY_SEPARATOR
             . lcfirst($componentName) . '.json';
@@ -175,8 +161,6 @@ class ExtensionBuilderController extends ActionController
     ): void {
 
 	}
-
-
 
     // Translated
 
@@ -217,7 +201,7 @@ class ExtensionBuilderController extends ActionController
 
             $item = $menu->makeMenuItem()
                 ->setTitle($languageService->sL(
-                    'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:function.' . lcfirst($dropdownName))
+                    $this->ebService->lll . '.xlf:function.' . lcfirst($dropdownName))
                 )
                 ->setHref($this->uriBuilder->uriFor($dropdownAction, [], $dropdownName));
             if ($dropdownName === $activeEntry) {
@@ -286,7 +270,7 @@ class ExtensionBuilderController extends ActionController
                     ['currentVendor' => 'no', 'currentProject' => $activeProjcet],
                     'Extension'
                 ))
-                ->setTitle('Show no vendors');
+                ->setTitle('Show no vendors'); // ToDo LLL
             if ($activeVendor === 'no') {
                 $item->setActive(true);
             }
@@ -334,6 +318,7 @@ class ExtensionBuilderController extends ActionController
         }
 
         $closeButton = $buttonBar->makeLinkButton();
+// ToDo own LLL
         $closeButton
             ->setTitle(
                 $languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:close'),
@@ -366,6 +351,7 @@ class ExtensionBuilderController extends ActionController
             $icon = $this->iconFactory->getIcon('actions-close', IconSize::SMALL);
         }
         $closeButton = $buttonBar->makeLinkButton();
+// ToDo own LLL
         $closeButton
             ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:close'))
             ->setShowLabelText(true)
@@ -380,6 +366,7 @@ class ExtensionBuilderController extends ActionController
             $icon = $this->iconFactory->getIcon('actions-save', IconSize::SMALL);
         }
 
+// ToDo own LLL
         $saveButton = $buttonBar->makeInputButton()
             ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save'))
             ->setShowLabelText(true)
@@ -406,7 +393,7 @@ class ExtensionBuilderController extends ActionController
         }
 
         $lll = 
-            'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.'
+            $this->ebService->lll . '.'
              . strtolower($addController)
              . '.xlf:link.'
 			 . strtolower($addAction);
@@ -437,7 +424,7 @@ class ExtensionBuilderController extends ActionController
         }
 
         $addButton = $buttonBar->makeLinkButton()
-            ->setTitle($languageService->sL('LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:importExample'))
+            ->setTitle($languageService->sL($this->ebService->lll . '.vendor.xlf:importExample'))
             ->setShowLabelText(true)
             ->setIcon($icon)
             ->setHref($this->uriBuilder->uriFor($importAction, [], $importController));

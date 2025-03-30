@@ -33,7 +33,6 @@ class Json
         $error = '';
 
 // ToDo LLL
-
         if (file_exists($jsonFile)) {
             $return = json_decode(file_get_contents($jsonFile), true);
             switch (json_last_error()) {

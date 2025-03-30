@@ -26,7 +26,7 @@ final class DeveloperController extends ExtensionBuilderController
                     '',
                     $this->getTranslatedLabel(
                         $this->request,
-                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:savingDeveloperSetings',
+                        $this->ebService->lll . 'developer.xlf:savingDeveloperSetings',
                     )
                 );
                 break;
@@ -35,7 +35,7 @@ final class DeveloperController extends ExtensionBuilderController
         $projects = [];
         $projects['no'] = $this->getTranslatedLabel(
             $this->request,
-            'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:noProject',
+            $this->ebService->lll . '.project.xlf:noProject',
         );
 
 	    foreach ($this->ebService->projects ?? [] as $projectName => $projectData) {
@@ -45,11 +45,11 @@ final class DeveloperController extends ExtensionBuilderController
         $vendors = [];
         $vendors['all'] = $this->getTranslatedLabel(
             $this->request,
-            'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:showAllVendors',
+            $this->ebService->lll . '.vendor.xlf:showAllVendors',
         );
         $vendors['no'] = $this->getTranslatedLabel(
             $this->request,
-            'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:noVendors',
+            $this->ebService->lll . '.vendor.xlf:noVendors',
         );
 
 	    foreach ($this->ebService->vendors ?? [] as $vendorName => $vendorData) {

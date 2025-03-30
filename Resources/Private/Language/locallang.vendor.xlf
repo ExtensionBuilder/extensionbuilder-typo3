@@ -45,6 +45,13 @@
 			</trans-unit>
 
 
+            <trans-unit id="vendornameexists" resname="vendornameexists">
+                <source>Vendor name exists please change</source>
+            </trans-unit>
+            <trans-unit id="specifyvendorname" resname="specifyvendorname">
+                <source>Please specify vendor name</source>
+            </trans-unit>
+
 
 
 			<trans-unit id="vendorList" resname="vendorList">

@@ -26,7 +26,7 @@ final class ConfigurationController extends ExtensionBuilderController
                     '',
                     $this->getTranslatedLabel(
                         $this->request,
-                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:savingConfiguration',
+                        $this->ebService->lll . '.configuration.xlf:savingConfiguration',
                     )
                 );
                 break;

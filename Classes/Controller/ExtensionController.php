@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use Psr\Http\Message\ResponseInterface;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
@@ -95,20 +96,22 @@ final class ExtensionController extends ExtensionBuilderController
                     } else {
 
                         if ($this->ebService->isComposerMode) {
- // ToDo LLL
-                            $this->flashMessage('', 'Extension exists in typo3conf/ext, please change.');
+                            $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:extensionexists'));
 						} else {
- // ToDo LLL
-                            $this->flashMessage('', 'Extension exists in typo3conf/ext, please change.');
+                            $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:extensionexists'));
 						}
                     }
                 } else {
                     if ($vendorName) {
- // ToDo LLL
-                        $this->flashMessage('', 'Please specify Extension name');
+                        $this->flashMessage(
+                            '',
+                            LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:specifyextensionname')
+                        );
 					} else {
- // ToDo LLL
-                        $this->flashMessage('', 'Please specify Vendor name');
+                        $this->flashMessage(
+                            '',
+                            LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:specifyvendorname')
+                        );
 					}
 			    }
                 break;

@@ -13,7 +13,10 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
+// ToDo Tools\ExtensionConfiguration remove funktion in this
 
 class ExtensionBuilderService implements SingletonInterface
 {
@@ -30,6 +33,11 @@ class ExtensionBuilderService implements SingletonInterface
     public bool $noDeveloper = true;
     public bool $noVendors = true;
 
+    public bool $builderLocal = false;
+    public bool $isProKey = false;
+
+    public string $lll = 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang';
+
     private string $vendorName;
     private string $extensionName;
 
@@ -37,9 +45,6 @@ class ExtensionBuilderService implements SingletonInterface
     private string $dataTypo3Path;
     private string $buildPath;
     private string $projectPath;
-
-    public bool $builderLocal = false;
-    public bool $isProKey = false;
 
     public function __construct()
     {
@@ -154,12 +159,13 @@ class ExtensionBuilderService implements SingletonInterface
         if (!is_dir($this->dataPath)) { GeneralUtility::mkdir_deep($this->dataPath); }
 
         if ($this->isComposerMode) {
+            $packagesPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR . $this->configuration['typo3']['composerPath'];
+            $composerJson = Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json';
 
-            $packagesPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR . $this->configuration['composerPath'];
             if (!is_dir($packagesPath)) { GeneralUtility::mkdir_deep($packagesPath); }
 
             if ($this->configuration['typo3']['composerAdd'] ?? false) {
-    		    $composer = Tools\Json::read(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json');
+    		    $composer = Tools\Json::read($composerJson);
                 $composerPath = $this->configuration['typo3']['composerPath'] . '/*';
 
     		    if ($composer['repositories'] ?? false) {
@@ -183,7 +189,7 @@ class ExtensionBuilderService implements SingletonInterface
 		            $composer['repositories'][$count]['options'] = [];
 		            $composer['repositories'][$count]['options']['symlink'] = true;
 
-                    Tools\Json::write(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json', $composer);
+                    Tools\Json::write($composerJson, $composer);
     			}
             }
         } else {
@@ -506,7 +512,7 @@ class ExtensionBuilderService implements SingletonInterface
             if (file_exists($tmpFile)) {
                 $jsonData = Tools\Json::read($tmpFile);
                 if ($jsonData ?? false) {
-                    $jsonData = $jsonData ?? []; // Knoten entfernen
+                    $jsonData = $jsonData ?? []; // Remove node
 				    Tools\ConfigArray::arrayMerge($returnArray, $jsonData);
                 }
 	        }
@@ -948,8 +954,7 @@ $composerExtensionName = strtolower($extensionName);
                     . $this->configuration['composerPath']
                     . '/' . $composerVendorName . DIRECTORY_SEPARATOR
                     . $composerExtensionName,
-// ToDo LLL
-                    'Successfully copy extensions files.',
+                    LocalizationUtility::translate($this->lll .'.extension.xlf:build.copysuccessfully'),
                     ContextualFeedbackSeverity::OK,
                 );
                 $notificationQueue->enqueue($flashMessage);
@@ -959,8 +964,7 @@ $composerExtensionName = strtolower($extensionName);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
                     '<PublicPath>/typo3conf/ext/' . $extensionName,
-// ToDo LLL
-                    'Successfully copy extensions files.',
+                    LocalizationUtility::translate($this->lll .'.extension.xlf:build.copysuccessfully'),
                     ContextualFeedbackSeverity::OK,
                 );
                 $notificationQueue->enqueue($flashMessage);
@@ -972,8 +976,7 @@ $composerExtensionName = strtolower($extensionName);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
                     '',
-// ToDo LLL
-                    'The created extension is not activated!',
+                    LocalizationUtility::translate($this->lll .'.extension.xlf:build.notactivated'),
                     ContextualFeedbackSeverity::WARNING,
                 );
                 $notificationQueue->enqueue($flashMessage);
@@ -990,16 +993,14 @@ $composerExtensionName = strtolower($extensionName);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
                     '',
-// ToDo LLL
-                    'Successfully cleared all caches and all available opcode caches.',
+                    LocalizationUtility::translate($this->lll .'.extension.xlf:build.clearedcaches'),
                     ContextualFeedbackSeverity::OK,
                 );
                 $notificationQueue->enqueue($flashMessage);
             }
 
-// ToDo analyzeDatabaseStructure
             if ($this->developer['typo3']['maintenance']['analyzeDatabaseStructure'] ?? false) {
-
+// ToDo analyzeDatabaseStructure
 		    }
 
             if ($this->developer['typo3']['maintenance']['rebuildPhpAutoload'] ?? false) {
@@ -1011,8 +1012,7 @@ $composerExtensionName = strtolower($extensionName);
                     $flashMessage = GeneralUtility::makeInstance(
                         FlashMessage::class,
                         '',
-// ToDo LLL
-                        'Successfully dumped class loading information for extensions.',
+                        LocalizationUtility::translate($this->lll .'.extension.xlf:build.dumpedloading'),
                         ContextualFeedbackSeverity::OK,
                     );
                     $notificationQueue->enqueue($flashMessage);
@@ -1024,9 +1024,7 @@ $composerExtensionName = strtolower($extensionName);
             $flashMessage = GeneralUtility::makeInstance(
                 FlashMessage::class,
                 '',
-// ToDo LLL
-// ToDo Text
-                'An error has occurred!',
+                LocalizationUtility::translate($this->lll .'.extension.xlf:build.errorhasoccurred'),
                 ContextualFeedbackSeverity::ERROR,
             );
             $notificationQueue->enqueue($flashMessage);

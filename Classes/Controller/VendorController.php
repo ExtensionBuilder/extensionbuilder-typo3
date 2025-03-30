@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
-use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use Psr\Http\Message\ResponseInterface;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
@@ -63,7 +63,7 @@ final class VendorController extends ExtensionBuilderController
 
                 if ($vendorName) {
                     if (!($this->vendors[$vendorName] ?? false)) {
-
+debug($vendorName,'test');
                         $this->ebService->vendors[$vendorName] = $vendorData;
                         $this->ebService->noVendors = false;
 
@@ -73,23 +73,22 @@ final class VendorController extends ExtensionBuilderController
                             '',
                             $this->getTranslatedLabel(
                                 $this->request,
-                                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:savingVendor'
+                                $this->ebService->lll . '.vendor.xlf:savingVendor'
                             ) . $vendorName,
                         );
 
                         return $this->redirect('list', 'Vendor');
                     } else {
-                        $this->flashMessage('', 'Vendor name exists please change'); // ToDo LLL
+debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendornameexists'));
+                        $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll . '.vendor.xlf:vendornameexists'));
                     }
                 } else {
-                    $this->flashMessage('', 'Please specify vendor name'); // ToDo LLL
+                    $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll . '.vendor.xlf:specifyvendorname'));
 			    }
                 break;
 		}
 
-        if (!($vendorData ?? false)) {
-            $vendorData = [];
-		}
+        if (!($vendorData ?? false)) { $vendorData = []; }
 
         $this->moduleTemplate->assignMultiple([
             'configuration' => $this->ebService->configuration,
@@ -128,7 +127,7 @@ final class VendorController extends ExtensionBuilderController
                     '',
                     $this->getTranslatedLabel(
                         $this->request,
-                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:savingVendor'
+                        $this->ebService->lll . '.vendor.xlf:savingVendor'
                     ) . $vendorName,
                 );
 
@@ -173,7 +172,7 @@ final class VendorController extends ExtensionBuilderController
                     '',
                     $this->getTranslatedLabel(
                         $this->request,
-                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:duplicateVendor'
+                        $this->ebService->lll . '.vendor.xlf:duplicateVendor'
                     ) . $bodyParams['vendorData']['vendorName'],
                 );
 
@@ -221,7 +220,7 @@ final class VendorController extends ExtensionBuilderController
 //                    '',
 //                    $this->getTranslatedLabel(
 //                        $request,
-//                        'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:renameVendor'
+//                        $this->ebService->lll . '.vendor.xlf:renameVendor'
 //                    ) . $vendorName,
 //                );
 

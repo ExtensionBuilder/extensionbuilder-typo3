@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use Psr\Http\Message\ResponseInterface;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
@@ -55,7 +56,7 @@ final class ProjectController extends ExtensionBuilderController
                             '',
                             $this->getTranslatedLabel(
                                 $this->request,
-                                'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:addProject',
+                                $this->ebService->lll . '.project.xlf:addProject',
                             ),
                         );
 

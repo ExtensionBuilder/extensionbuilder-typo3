@@ -138,8 +138,32 @@
 
 
 
+
+            <trans-unit id="extensionexists" resname="extensionexists">
+                <source>Extension exists in typo3conf/ext, please change.</source>
+            </trans-unit>
+            <trans-unit id="specifyextensionname" resname="specifyextensionname">
+                <source>Please specify Extension name</source>
+            </trans-unit>
+            <trans-unit id="specifyvendorname" resname="specifyvendorname">
+                <source>Please specify Vendor name</source>
+            </trans-unit>
+
+
             <trans-unit id="build." resname="build.">
                 <source></source>
+            </trans-unit>
+
+            <trans-unit id="build.notactivated" resname="build.notactivated">
+                <source>The created extension is not activated!</source>
+            </trans-unit>
+
+            <trans-unit id="build.successfully" resname="build.successfully">
+                <source>Successfully copy extensions files.</source>
+            </trans-unit>
+
+            <trans-unit id="build.copysuccessfully" resname="build.copysuccessfully">
+                <source>Successfully copy extensions files.</source>
             </trans-unit>
 
             <trans-unit id="build.clearedcaches" resname="build.clearedcaches">
@@ -154,12 +178,9 @@
                 <source>Successfully dumped class loading information for extensions.</source>
             </trans-unit>
 
-            <trans-unit id="build.successfully" resname="build.successfully">
-                <source>Successfully copy extensions files.</source>
-            </trans-unit>
 
-            <trans-unit id="build." resname="build.">
-                <source>The created extension is not activated!</source>
+            <trans-unit id="build.errorhasoccurred" resname="build.errorhasoccurred">
+                <source>An error has occurred!</source>
             </trans-unit>
 
         </body>

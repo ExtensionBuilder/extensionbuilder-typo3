@@ -18,8 +18,6 @@ final class CommandController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-//debug($bodyParams);
-
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
         $extensionData = $this->extensionbuilderObject->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
@@ -81,8 +79,6 @@ final class CommandController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-debug($bodyParams,'CommandController.php - editAction()');
-
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
         $componentName = $bodyParams['componentName'];
@@ -124,7 +120,7 @@ debug($bodyParams,'CommandController.php - editAction()');
                 break;
 		}
 //debug($this->vendorsAndExtensions[$vendorName]);
-debug($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName]['commands']);
+//debug($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName]['commands']);
 
         $commandData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName]['commands'] ?? [];
 
