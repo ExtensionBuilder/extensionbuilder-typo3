@@ -948,7 +948,7 @@ $composerExtensionName = strtolower($extensionName);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
                     '<ProjectPath>/'
-                    . $this->configuration['composerPath']
+                    . $this->configuration['typo3']['composerPath']
                     . '/' . $composerVendorName . DIRECTORY_SEPARATOR
                     . $composerExtensionName,
                     LocalizationUtility::translate($this->lll .'.extension.xlf:build.copysuccessfully'),
