@@ -13,15 +13,23 @@
 
 Extension Builder for TYPO3
 ===========================
-Focus on your business function
--------------------------------
-The Extension Builder supports you in creating and maintaining your extensions.
 
-- Generates as much program code as possible automatically.
-- Developer, vendor and project management.
+The Extension Builder for TYPO3 is a powerful tool designed to simplify and speed up the development of new TYPO3 extensions.
+Its main goal is to streamline the development process and improve the long-term maintainability of TYPO3 extensions.
+
+The Extension Builder offers a wide range of kickstart features, including:
+
+- Scheduler tasks
+- CLI commands
+- Custom ViewHelpers
+- Event listeners
+- Controller structures
+- Domain models
+- Repositories
+- Frontend plugins
+- and more…
 
 More at https://extension-builder.dev/
-
 
 ------------
 
