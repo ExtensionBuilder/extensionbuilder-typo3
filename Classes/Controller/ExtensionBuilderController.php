@@ -93,15 +93,13 @@ class ExtensionBuilderController extends ActionController
         protected ExtensionBuilderService $ebService,
     ) {
         $this->coreStatus = Tools\RestApiClient::getStatus(
-            $this->ebService->configuration['builderUrl'],
-            $this->ebService->configuration['builderApi'],
+            $this->ebService->configuration['typo3']['builderUrl'],
+            $this->ebService->configuration['typo3']['builderApi'],
 	    );
 
         $this->keyStatus = Tools\RestApiClient::checkKey(
-//            $this->configuration['builderUrl'],
-'https://development.extension-builder.dev',
-//            $this->configuration['builderApi'],
-'/api/v1/extensionbuilderKey',
+            $this->ebService->configuration['typo3']['authUrl'],
+            $this->ebService->configuration['typo3']['authApi'],
             $this->ebService->configuration['systemId'] ?? '',
             $this->ebService->configuration['proVersionKey'] ?? '',
             $this->ebService->developer['developerId'] ?? '',

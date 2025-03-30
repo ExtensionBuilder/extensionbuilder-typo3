@@ -88,8 +88,7 @@ class Uri
             }
         }
 
-        $this->ping();
-        $this->socketCheck();
+        if ($this->ping()) { $this->socketCheck(); };
 	}
 
     final function isOnline(): bool
@@ -104,20 +103,26 @@ class Uri
 
 
 
-    final function ping(): void
+    final function ping(): bool
     {
+        $ping = false;
         if ($this->hostIpV4) {
             $this->pingV4 = $this->execPing($this->hostIpV4);
             $this->onlineV4 = $this->pingV4['online'];
+            $ping = true;
         }
 
         if ($this->hostIpV6) {
             $this->pingV6 = $this->execPing($this->hostIpV6);
             $this->onlineV6 = $this->pingV6['online'];
+            $ping = true;
         }
+		
+        return $ping;
 	}
 
-    final function socketCheck(): void {
+    final function socketCheck(): bool {
+        $socket = false;
         $this->isOnline = false;
 
         if ($this->port) {
@@ -133,8 +138,11 @@ class Uri
             if ($this->socketErrNo === 0) {
                 fclose($fsock);
                 $this->online = true;
+                $socket = true;
             }
 		}
+
+        return $socket;
 	}
 
     private function execPing(

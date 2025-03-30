@@ -298,52 +298,42 @@ final class VendorController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-return $this->redirect('list', 'Vendor');
-// ToDo
+$this->ebService->importExampleVendor();
 
-        if (Environment::isComposerMode()) {
-            $sourcePath =
-                Environment::getProjectPath() . DIRECTORY_SEPARATOR
-                . 'vendor' . DIRECTORY_SEPARATOR
-                . 'extensionbuilder' . DIRECTORY_SEPARATOR
-                . 'extensionbuilder-typo3' . DIRECTORY_SEPARATOR
-                . 'ExampleVendor.zip';
-        } else {
-            $sourcePath =
-                Environment::getPublicPath() . DIRECTORY_SEPARATOR
-                . 'typo3conf' . DIRECTORY_SEPARATOR
-                . 'ext' . DIRECTORY_SEPARATOR
-                . 'extensionbuilder_typo3' . DIRECTORY_SEPARATOR
-                . 'ExampleVendor.zip';
-        }
 
-        Tools\ZipArchive::unzip(
-            $sourcePath,
-            Environment::getPublicPath() . DIRECTORY_SEPARATOR
-            . 'fileadmin' . DIRECTORY_SEPARATOR
-            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
-            . 'TYPO3' . DIRECTORY_SEPARATOR,
+
+        $this->moduleTemplate->assignMultiple([
+            'configuration' => $this->ebService->configuration,
+            'vendorList' => $this->ebService->vendors,
+        ]);
+
+        $this->addDocHeaderModuleDropDown(
+            'Vendor',
         );
 
-        $this->readVendor();
-        $this->readVendorsAndExtensions();
+        if (($this->ebService->vendors ?? false) && ($this->ebService->vendorsAndExtensions ?? false)) {
+            $this->addDocHeaderCloseButtons(
+                'list',
+                'Extension',
+            );
+        }
 
-        // Add ExampleVendor project entry
-        $projectKey = uniqid();
-        if (!($this->projects[$projectKey] ?? false)) {
-            $project = [];
-            $project['name'] = 'Example Vendor';
-            $project['description'] = 'Test';
-            $project['extensions'] = [];
-            foreach($this->vendorsAndExtensions['ExampleVendor']['extensions'] ?? [] as $extensionName => $extensionData) {
-                $project['extensions'][$extensionName] = $extensionData;
-                $project['extensions'][$extensionName]['extensionOnOff'] = true;
-            }
-            $this->projects[$projectKey] = $project;
-            $this->writeProject();
+        $this->addDocHeaderAddButton(
+            'add',
+            'Vendor',
+        );
+
+        if (!($this->vendors['ExampleVendor'] ?? false)) { // ToDo ein und ausschalten über config
+            $this->addDocHeaderImportExampleVendor(
+                'importExampleVendor',
+                'Vendor',
+            );
 		}
 
-        return $this->redirect('list', 'Vendor');
+        return $this->moduleTemplate->renderResponse('Vendor/List');
+
+
+//        return $this->redirect('list', 'Vendor');
 	}
 
 }

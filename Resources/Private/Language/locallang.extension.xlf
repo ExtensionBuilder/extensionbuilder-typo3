@@ -4,7 +4,7 @@
         source-language="en"
         datatype="plaintext"
         original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf"
-        date="2025-02-16T20:00:00Z"
+        date="2025-03-30T10:00:00Z"
         product-name="extensionbuilder_typo3"
     >
         <header />
@@ -134,6 +134,32 @@
 
             <trans-unit id="label.enumerationsconfiguration" resname="label.enumerationsconfiguration">
                 <source>Enumerations configuration</source>
+            </trans-unit>
+
+
+
+            <trans-unit id="build." resname="build.">
+                <source></source>
+            </trans-unit>
+
+            <trans-unit id="build.clearedcaches" resname="build.clearedcaches">
+                <source>Successfully cleared all caches and all available opcode caches.</source>
+            </trans-unit>
+
+            <trans-unit id="build.analyzedatabase" resname="build.analyzedatabase">
+                <source></source>
+            </trans-unit>
+
+            <trans-unit id="build.dumpedloading" resname="build.dumpedloading">
+                <source>Successfully dumped class loading information for extensions.</source>
+            </trans-unit>
+
+            <trans-unit id="build.successfully" resname="build.successfully">
+                <source>Successfully copy extensions files.</source>
+            </trans-unit>
+
+            <trans-unit id="build." resname="build.">
+                <source>The created extension is not activated!</source>
             </trans-unit>
 
         </body>

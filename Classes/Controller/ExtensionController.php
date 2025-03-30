@@ -213,7 +213,7 @@ final class ExtensionController extends ExtensionBuilderController
         $vendorName = $bodyParams['vendorName'] ?? '';
         $extensionName = $bodyParams['extensionName'] ?? '';
 
-        $builderUri = $this->ebService->configuration['builderUrl'];
+        $builderUri = $this->ebService->configuration['typo3']['builderUrl'];
 
         $copyInExtension = true;
 

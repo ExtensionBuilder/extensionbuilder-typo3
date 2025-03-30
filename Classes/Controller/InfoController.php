@@ -21,8 +21,8 @@ final class InfoController extends ExtensionBuilderController
 
 
         $this->coreStatus = Tools\RestApiClient::getStatus(
-            $this->ebService->configuration['builderUrl'],
-            $this->ebService->configuration['builderApi'],
+            $this->ebService->configuration['typo3']['builderUrl'],
+            $this->ebService->configuration['typo3']['builderApi'],
 	    );
 
 
