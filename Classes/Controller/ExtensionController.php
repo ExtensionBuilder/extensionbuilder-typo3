@@ -83,6 +83,8 @@ final class ExtensionController extends ExtensionBuilderController
                         $extensionData['extension']['versionMinor'] = 1;
                         $extensionData['extension']['versionRevision'] = 0;
 
+// $this->ebService->writeExtension($vendorName, $extensionName, $extensionData);
+
                         self::save(
                             $vendorName,
                             $extensionName,
@@ -172,14 +174,14 @@ final class ExtensionController extends ExtensionBuilderController
         return $this->moduleTemplate->renderResponse('Extension/Edit');
     }
 
-    public function duplicateAction(): ResponseInterface {
+    public function duplicateActionToDo(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         return $this->moduleTemplate->renderResponse('Extension/Duplicate');
     }
 
-    public function renameAction(): ResponseInterface {
+    public function renameActionToDo(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -193,12 +195,12 @@ final class ExtensionController extends ExtensionBuilderController
         $vendorName = $bodyParams['vendorName'] ?? '';
         $extensionName = $bodyParams['extensionName'] ?? '';
 
-        $this->extensionbuilderObject->deleteExtension($vendorName, $extensionName);
+        $this->ebService->deleteExtension($vendorName, $extensionName);
 
-        if ($this->projects[($this->developer['typo3']['project'] ?? 'no')] ?? false) {
-            unset($this->projects[$this->developer['typo3']['project']]['extensions'][$extensionName]);
-            $this->writeProject();
-            $this->readProject();
+        if ($this->ebService->projects[($this->developer['typo3']['project'] ?? 'no')] ?? false) {
+            unset($this->ebService->projects[$this->developer['typo3']['project']]['extensions'][$extensionName]);
+            $this->ebService->writeProject();
+            $this->ebService->readProject();
         }
 
         $this->flashMessage('', 'Extension: ' . $extensionName . ' is deleted'); // ToDo LLL
@@ -253,7 +255,7 @@ final class ExtensionController extends ExtensionBuilderController
         return $this->moduleTemplate->renderResponse('Extension/List');
     }
 
-    public function uploadAction(): ResponseInterface {
+    public function uploadActionToDo(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -296,6 +298,8 @@ final class ExtensionController extends ExtensionBuilderController
 
     // ------------------------------------------------------------------
 
+// ToDO move to serice
+	
     final function save(
         string $vendorName,
         string $extensionName,
@@ -310,7 +314,7 @@ final class ExtensionController extends ExtensionBuilderController
 
         $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData;
 
-        $this->ebService->writeExtension($vendorName, $extensionName);
+        $this->ebService->writeExtension($vendorName, $extensionName, $extensionData);
 
         $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
     }

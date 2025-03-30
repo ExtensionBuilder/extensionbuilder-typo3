@@ -1,43 +1,74 @@
-<div class="form-section" id="extension_name_row">
-
+<div class="form-section">
     <div class="form-group">
-
-        <h1>
-            <f:translate 
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderUrl"
-            />
-        </h1>
 
         <label>
             <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:versionKey"/>
         </label>
 
-        <f:translate 
-			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderUrl"
-        />
-        <div class="form-control-wrap">
-			<input
-                type="text"
-                class="form-control"
-                id="configuration.builderUrl"
-                name="configuration[builderUrl]"
-                value="{configuration.builderUrl}"
-                readonly
-            />
+        <div style="width: 700px; top left repeat-y;">
+            <div style="float: left; width: 300px;">
+                <f:translate 
+        			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderUrl"
+                />
+                <div class="form-control-wrap">
+    	    		<input
+                        type="text"
+                        class="form-control"
+                        id="configuration.typo3.builderUrl"
+                        name="configuration[typo3][builderUrl]"
+                        value="{configuration.typo3.builderUrl}"
+                    />
+                </div>
+            </div>
+
+            <div style="float: right; width: 300px;">
+                <f:translate
+        			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderApi"
+                />
+                <div class="form-control-wrap">
+        			<input
+                        type="text"
+                        class="form-control"
+                        id="configuration.typo3.builderApi"
+                        name="configuration[typo3][builderApi]"
+                        value="{configuration.typo3.builderApi}"
+                    />
+                </div>
+            </div>
         </div>
 
-        <f:translate
-			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:builderApi"
+
+        <div style="width: 700px; top left repeat-y;">
+            <div style="float: left; width: 300px;">
+        <f:translate 
+			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:authUrl"
         />
         <div class="form-control-wrap">
 			<input
                 type="text"
                 class="form-control"
-                id="configuration.builderApi"
-                name="configuration[builderApi]"
-                value="{configuration.builderApi}"
-                readonly
+                id="configuration.typo3.authUrl"
+                name="configuration[typo3][authUrl]"
+                value="{configuration.typo3.authUrl}"
             />
+        </div>
+        </div>
+
+            <div style="float: right; width: 300px;">
+        <f:translate
+			key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:authApi"
+        />
+        <div class="form-control-wrap">
+			<input
+                type="text"
+                class="form-control"
+                id="configuration.typo3.authApi"
+                name="configuration[typo3][authApi]"
+                value="{configuration.typo3.authApi}"
+            />
+        </div>
+        </div>
+</div>
         </div>
 
 
@@ -52,5 +83,6 @@ developmentServer<br />
             </p>
         </f:if>
 
+        <div>
     </div>
 </div>

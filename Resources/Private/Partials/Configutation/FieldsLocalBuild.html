@@ -21,15 +21,15 @@ builderLocal
                                 <div class="form-wizards-wrap">
                                     <div class="form-wizards-item-element">
                                         <div class="form-check form-switch">
-                                            <input type="hidden" name="configuration[buildLocal]" value="false">
+                                            <input type="hidden" name="configuration[typo3][buildLocal]" value="false">
                                             <input
                                                 type="checkbox"
                                                 class="form-check-input"
-                                                name="configuration[buildLocal]"
+                                                name="configuration[typo3][buildLocal]"
                                                 value="true"
                                                 {f:if(
-                                                    condition: '{configuration.buildLocal}',
-                                                    then:'checked=configuration.buildLocal'
+                                                    condition: '{configuration.typo3.buildLocal}',
+                                                    then:'checked=configuration.typo3.buildLocal'
                                                 )}
                                             >
                                         </div>

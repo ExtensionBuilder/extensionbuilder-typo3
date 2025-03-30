@@ -39,7 +39,10 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-        if (!($this->vendors['ExampleVendor'] ?? false)) { // ToDo ein und ausschalten über config
+        if (
+            ($this->ebService->configuration['importExample'] ?? false) &&
+            (!($this->ebService->vendors['ExampleVendor'] ?? false))
+        ) {
             $this->addDocHeaderImportExampleVendor(
                 'importExampleVendor',
                 'Vendor',
@@ -150,7 +153,7 @@ final class VendorController extends ExtensionBuilderController
     	return $this->moduleTemplate->renderResponse('Vendor/Edit');
     }
 
-    final function duplicateAction(): ResponseInterface {
+    final function duplicateActionToDo(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -195,7 +198,7 @@ final class VendorController extends ExtensionBuilderController
     	return $this->moduleTemplate->renderResponse('Vendor/Duplicate');
     }
 
-    final function renameAction(): ResponseInterface {
+    final function renameActionToDo(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -298,9 +301,7 @@ final class VendorController extends ExtensionBuilderController
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-$this->ebService->importExampleVendor();
-
-
+		$this->ebService->importExampleVendor();
 
         $this->moduleTemplate->assignMultiple([
             'configuration' => $this->ebService->configuration,
@@ -323,7 +324,10 @@ $this->ebService->importExampleVendor();
             'Vendor',
         );
 
-        if (!($this->vendors['ExampleVendor'] ?? false)) { // ToDo ein und ausschalten über config
+        if (
+            ($this->ebService->configuration['importExample'] ?? false) &&
+            (!($this->ebService->vendors['ExampleVendor'] ?? false))
+        ) {
             $this->addDocHeaderImportExampleVendor(
                 'importExampleVendor',
                 'Vendor',
@@ -331,7 +335,6 @@ $this->ebService->importExampleVendor();
 		}
 
         return $this->moduleTemplate->renderResponse('Vendor/List');
-
 
 //        return $this->redirect('list', 'Vendor');
 	}

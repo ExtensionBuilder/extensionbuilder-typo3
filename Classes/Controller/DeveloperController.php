@@ -66,7 +66,6 @@ final class DeveloperController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Developer',
         );
-
         $this->addDocHeaderCloseAndSaveButtons(
             'list',
             'Extension',

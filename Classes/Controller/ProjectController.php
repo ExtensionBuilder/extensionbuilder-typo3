@@ -208,7 +208,6 @@ final class ProjectController extends ExtensionBuilderController
             unset($extensions[$extensionKey]);
 		}
 		foreach($this->ebService->projects[$projectKey]['dependencies'] ?? [] as $dependencieKey => $dependencieData) {
-
             unset($extensions[$dependencieKey]);
 		}
 

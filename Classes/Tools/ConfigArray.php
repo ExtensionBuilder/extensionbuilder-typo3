@@ -73,14 +73,16 @@ class ConfigArray
             if (is_array($array[$arrayKey])) {
                 self::changeToBool($array[$arrayKey]);
             } else {
-                if (is_string($arrayKey)) {
-                    if ($arrayValue == 'true') {
-                        unset($array[$arrayKey]);
-                        $array[$arrayKey] = true;
-                    }
-                    if ($arrayValue == 'false') {
-                        unset($array[$arrayKey]);
-                        $array[$arrayKey] = false;
+                if (is_string($arrayValue)) {
+                    switch ($arrayValue) {
+                        case 'true':
+                            unset($array[$arrayKey]);
+                            $array[$arrayKey] = true;
+                            break;
+                        case 'false':
+                            unset($array[$arrayKey]);
+                            $array[$arrayKey] = false;
+                            break;
                     }
                 }
             }
