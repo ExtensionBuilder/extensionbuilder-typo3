@@ -337,7 +337,59 @@ class ExtensionBuilderService implements SingletonInterface
 // ToDo
 	}
 
+// 8888
+    final function importExampleVendor(): void
+    {
 
+        if (Environment::isComposerMode()) {
+            $sourcePath =
+                Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . 'vendor' . DIRECTORY_SEPARATOR
+                . 'extensionbuilder' . DIRECTORY_SEPARATOR
+                . 'extensionbuilder-typo3' . DIRECTORY_SEPARATOR
+                . 'ExampleVendor.zip';
+        } else {
+            $sourcePath =
+                Environment::getPublicPath() . DIRECTORY_SEPARATOR
+                . 'typo3conf' . DIRECTORY_SEPARATOR
+                . 'ext' . DIRECTORY_SEPARATOR
+                . 'extensionbuilder_typo3' . DIRECTORY_SEPARATOR
+                . 'ExampleVendor.zip';
+        }
+            $targetPath = 
+                $this->pathToData . DIRECTORY_SEPARATOR
+                . 'TYPO3' . DIRECTORY_SEPARATOR;
+
+        if (file_exists($sourcePath)) {
+            Tools\ZipArchive::unzip(
+                $sourcePath,
+                $targetPath,
+            );
+
+            $this->readVendor();
+            $this->readVendorsAndExtensions();
+
+            // Add ExampleVendor project entry
+            $projectKey = uniqid();
+            if (!($this->projects[$projectKey] ?? false)) {
+                $project = [];
+                $project['name'] = 'Example Vendor';
+                $project['description'] = 'Test';
+                $project['extensions'] = [];
+                foreach($this->vendorsAndExtensions['ExampleVendor']['extensions'] ?? [] as $extensionName => $extensionData) {
+                    $project['extensions'][$extensionName] = $extensionData;
+                    $project['extensions'][$extensionName]['extensionOnOff'] = true;
+                }
+                $this->projects[$projectKey] = $project;
+                $this->writeProject();
+            }
+
+        } else {
+// ToDo
+        }
+return;
+
+	}
 
 
     final function readProject(): void
@@ -937,7 +989,11 @@ $composerExtensionName = strtolower($extensionName);
                 $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
-                    '<ProjectPath>/vendor/' . $composerVendorName . DIRECTORY_SEPARATOR . $composerExtensionName,
+                    '<ProjectPath>/'
+                    . $this->configuration['composerPath']
+                    . '/' . $composerVendorName . DIRECTORY_SEPARATOR
+                    . $composerExtensionName,
+// ToDo LLL
                     'Successfully copy extensions files.',
                     ContextualFeedbackSeverity::OK,
                 );
@@ -948,6 +1004,7 @@ $composerExtensionName = strtolower($extensionName);
                 $flashMessage = GeneralUtility::makeInstance(
                     FlashMessage::class,
                     '<PublicPath>/typo3conf/ext/' . $extensionName,
+// ToDo LLL
                     'Successfully copy extensions files.',
                     ContextualFeedbackSeverity::OK,
                 );
@@ -1023,13 +1080,11 @@ $composerExtensionName = strtolower($extensionName);
 
     private function buildLocal(): bool
     {
-
-        // ToDo time measurement
+// ToDo time measurement
 
         $return = true;
 
         $multipart = self::buildRequest();
-
         $buildCore = new \ExtensionBuilder\ExtensionbuilderTypo3Core\BuildExtensionCore($this->vendorName, $this->extensionName);
 
         $sourcePath =
@@ -1187,12 +1242,8 @@ $composerExtensionName = strtolower($extensionName);
 
     private function buildRequest(): array
     {
-
-// ToDo Make path configurable
         $extensionDevelopmentSourcePath =
-            Environment::getPublicPath() . DIRECTORY_SEPARATOR
-            . 'fileadmin' . DIRECTORY_SEPARATOR
-            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR
+            $this->pathToData . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR
             . $this->vendorName . DIRECTORY_SEPARATOR
             . $this->extensionName . DIRECTORY_SEPARATOR;
@@ -1218,6 +1269,7 @@ $composerExtensionName = strtolower($extensionName);
         // Copyback ToDo 
         $extConf = Tools\ExtensionConfiguration::read($extensionDevelopmentSourcePath);
         if ($extConf['extensionBuild']['copyBack'] ?? false) {
+debug($extConf['extensionBuild']['copyBack'], 'xtensionBuilderService.php');
             $extensionName = $extConf['extension']['extensionName'];
             $extPath =
                 Environment::getPublicPath() . DIRECTORY_SEPARATOR
