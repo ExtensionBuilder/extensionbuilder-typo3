@@ -1,4 +1,8 @@
 
+.. image:: https://poser.pugx.org/extensionbuilder/extensionbuilder-typo3/v/
+   :alt: Beat Version
+   :target: https://extensions.typo3.org/extension/extensionbuilder_typo3
+
 .. image:: https://img.shields.io/badge/TYPO3-14-orange.svg
    :alt: TYPO3 14
    :target: https://get.typo3.org/version/14
@@ -10,6 +14,15 @@
 .. image:: https://img.shields.io/badge/TYPO3-12-orange.svg
    :alt: TYPO3 12
    :target: https://get.typo3.org/version/12
+
+.. image:: https://poser.pugx.org/extensionbuilder/extensionbuilder-typo3/downloads
+   :alt: Extension Builder for TYPO3
+   :target: https://packagist.org/packages/extensionbuilder/extensionbuilder-typo3
+
+.. image:: https://poser.pugx.org/extensionbuilder/extensionbuilder-typo3/d/monthly
+   :alt: Extension Builder for TYPO3
+   :target: https://packagist.org/packages/extensionbuilder/extensionbuilder-typo3
+
 
 Extension Builder for TYPO3
 ===========================
