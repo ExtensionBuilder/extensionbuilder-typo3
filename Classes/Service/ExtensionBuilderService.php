@@ -141,6 +141,28 @@ class ExtensionBuilderService implements SingletonInterface
             $this->configuration['typo3']['htaccessAdd'] = true;
         }
 
+        $this->configuration['typo3']['components'] = [];
+        if (!($this->configuration['typo3']['components'] ?? false)) {
+//            $changeConfiguration = true;
+            $this->configuration['typo3']['components'] = [];
+
+            $this->configuration['typo3']['components'][] = ['controler' => 'Model', 'title' => 'Model', 'lll' => '.model' ] ;
+            $this->configuration['typo3']['components'][] = ['controler' => 'Command', 'title' => 'Command', 'lll' => '.command' ] ;
+            $this->configuration['typo3']['components'][] = ['controler' => 'Scheduler', 'title' => 'Scheduler', 'lll' => '.scheduler' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'ViewHelper', 'title' => 'ViewHelper', 'lll' => '.viewHelper' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'Plugin', 'title' => 'Plugin', 'lll' => '.plugin' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'EventListener', 'title' => 'EventListener', 'lll' => '.eventlistener' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'ContentElement', 'title' => 'Content Element', 'lll' => '.' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'Enumeration', 'title' => '', 'lll' => '.' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'ContentElement', 'title' => 'Content Element', 'lll' => '.' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => '', 'title' => '', 'lll' => '.' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'BackendModul', 'title' => 'Backend module', 'lll' => '.' ] ;
+//            $this->configuration['typo3']['components'][] = ['controler' => 'BackendModul', 'title' => 'Backend route', 'lll' => '.' ] ;
+
+//            $this->configuration['typo3']['components'][] = ['controler' => '', 'title' => 'Enumeration', 'lll' => '.' ] ;
+        }
+        unset($this->configuration['typo3']['components']);
+
 		$this->projectPath = 
             Environment::getProjectPath() . DIRECTORY_SEPARATOR;
 		$this->dataPath =
@@ -216,6 +238,8 @@ class ExtensionBuilderService implements SingletonInterface
 
     final function writeConfiguration(): void
     {
+        unset($this->configuration['typo3']['component']);
+
         $configurationJson = [];
         $configurationJson['configuration'] = $this->configuration;
 

@@ -75,11 +75,14 @@
                     <f:else>
 
 
-                        <f:comment>Add Properties</f:comment>
-                        <f:render
-                            partial="Extension/AddProperties"
-                            arguments="{extensionName: extensionName, vendorName: vendorName}"
-                        />
+                        <f:comment>Add Component</f:comment>
+                        <f:if condition="{configuration.typo3.components -> f:count()} > 0">
+                            <f:render
+                                partial="Extension/AddComponent"
+                               arguments="{extensionName: extensionName, vendorName: vendorName, components: configuration.typo3.components}"
+                            />
+                        </f:if>
+
 <f:comment>
         	    		<f:if condition="{extensionData.tables -> f:count()} > 0">
                             <f:render
@@ -102,7 +105,7 @@
     		            	        extensionName: extensionName, vendorName: vendorName, tableData: extensionData.tables}"
                             />
 		        	    </f:if>
-</f:comment>
+
 
         	    		<f:if condition="{extensionData.viewHelpers -> f:count()} > 0">
                             <f:render
@@ -116,7 +119,7 @@
                                 }"
                             />
 		        	    </f:if>
-
+</f:comment>
         	    		<f:if condition="{extensionData.commands -> f:count()} > 0">
                             <f:render
                                 partial="ComponentsList"
@@ -137,10 +140,11 @@
                                     extensionName: extensionName,
                                     vendorName: vendorName,
                                     componentsName: 'Scheduler',
-                                    ccomponentsController: 'Scheduler',
+                                    componentsController: 'Scheduler',
                                     componentsData: extensionData.schedulers
                                 }"
                             />
+
 		        	    </f:if>
 
                     </f:else>

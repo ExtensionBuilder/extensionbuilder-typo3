@@ -1,0 +1,18 @@
+<div class="tx_extensionbuilder_mod1_configuration">
+    <div class="panel panel-default overflow-visible">
+        <div class="btn-toolbar panel-heading">
+            <f:for each="{components}" as="component">
+                 <f:link.action
+                     action="add"
+                     controller="{component.controller}"
+                     arguments="{'vendorName': vendorName, 'extensionName': extensionName}"
+                     class="btn btn-default"
+                     data="{bs-toggle: 'tooltip'}"
+                     title="{f:translate(component.title:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
+                 >
+                     {component.title}
+                </f:link.action>
+            </f:for>
+        </div>
+    </div>
+</div>

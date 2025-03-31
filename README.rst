@@ -1,4 +1,3 @@
-
 .. image:: https://poser.pugx.org/extensionbuilder/extensionbuilder-typo3/v/
    :alt: Beat Version
    :target: https://extensions.typo3.org/extension/extensionbuilder_typo3
@@ -22,7 +21,6 @@
 .. image:: https://poser.pugx.org/extensionbuilder/extensionbuilder-typo3/d/monthly
    :alt: Extension Builder for TYPO3
    :target: https://packagist.org/packages/extensionbuilder/extensionbuilder-typo3
-
 
 Extension Builder for TYPO3
 ===========================

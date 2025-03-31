@@ -104,15 +104,6 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
             'vendor-add-form',
         );
-        if (
-            ($this->ebService->configuration['importExample'] ?? false) &&
-            (!($this->ebService->vendors['ExampleVendor'] ?? false))
-        ) {
-            $this->addDocHeaderImportExampleVendor(
-                'importExampleVendor',
-                'Vendor',
-            );
-		}
 
         return $this->moduleTemplate->renderResponse('Vendor/Add');
     }
@@ -155,15 +146,6 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
             'vendor-edit-form',
         );
-        if (
-            ($this->ebService->configuration['importExample'] ?? false) &&
-            (!($this->ebService->vendors['ExampleVendor'] ?? false))
-        ) {
-            $this->addDocHeaderImportExampleVendor(
-                'importExampleVendor',
-                'Vendor',
-            );
-		}
 
     	return $this->moduleTemplate->renderResponse('Vendor/Edit');
     }
@@ -268,7 +250,7 @@ final class VendorController extends ExtensionBuilderController
         $this->ebService->deleteVendor($bodyParams['vendorName']);
         $this->ebService->readVendor();
 
-        // Delete ExampleVendor project entry 
+        // Delete ExampleVendor project entry
         if ($bodyParams['vendorName'] == 'ExampleVendor') {
             foreach($this->ebService->projects ?? [] as $projectUi => $projectData) {
                 if ($projectData['name'] == 'Example Vendor') {

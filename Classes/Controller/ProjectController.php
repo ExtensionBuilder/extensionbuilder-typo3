@@ -20,7 +20,7 @@ final class ProjectController extends ExtensionBuilderController
         return $this->projectList();
     }
 
-    public function projectList(): ResponseInterface {
+    private function projectList(): ResponseInterface {
         $this->moduleTemplate->assignMultiple([
             'configuration' => $this->ebService->configuration,
             'projects' => $this->ebService->projects,
@@ -41,7 +41,7 @@ final class ProjectController extends ExtensionBuilderController
         return $this->moduleTemplate->renderResponse('Project/List');
 	}
 
-    private function addAction(): ResponseInterface {
+    final function addAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -64,7 +64,7 @@ final class ProjectController extends ExtensionBuilderController
                             ),
                         );
 
-                        return $this->redirect('list', 'Project');
+                        return $this->projectList();
                     } else {
                         $this->flashMessage('', 'project name exists please change'); // ToDo LLL
 				    }
@@ -118,7 +118,7 @@ final class ProjectController extends ExtensionBuilderController
                     ),
                 );
 
-                return $this->redirect('list', 'Project');
+                return $this->projectList();
                 break;
 
             case 'extensionOn':
