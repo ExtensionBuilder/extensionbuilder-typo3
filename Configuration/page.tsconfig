@@ -1,9 +1,0 @@
-# Datei: TSConfig/PageTSConfig
-
-TCEFORM.tt_content.bodytext.config.enableRichtext = 1
-TCEFORM.tt_content.bodytext.config.enableRichtext_editor = CKEditor
-
-TCEFORM.tt_content.my_custom_field.config.enableRichtext = 1
-TCEFORM.tt_content.my_custom_field.config.enableRichtext_editor = CKEditor
-
-
