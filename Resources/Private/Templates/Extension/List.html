@@ -6,11 +6,40 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-<f:comment>
-<f:be.pageRenderer includeJavaScriptModules="{0: '@typo3/rte-ckeditor/ckeditor5.jsX'}" />
-<f:be.pageRenderer includeJavaScriptModules="{0: '@extensionbuilder/typo3/my-module.jsX'}" />
-</f:comment>
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+                0: '@extensionbuildertypo3/Backend/table.js'
+            }"
+        />
 
+<f:comment>
+<div style="width:100%; height:600px;">
+<canvas id="myLitegraph" width="100%" height="100%"></canvas>
+</div>
+
+this.addToolsButton("loadsession_button","Load","imgs/icon-load.png", this.onLoadButton.bind(this), ".tools-left" );
+
+</f:comment>
+<f:comment>
+<canvas id="myLitegraph" width="1000" height="400"></canvas>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var graph = new LGraph();
+    var canvas = new LGraphCanvas("#myLitegraph", graph);
+
+
+    // Beispiel: einfacher Knoten
+    var node_const = LiteGraph.createNode("basic/const");
+    node_const.pos = [200, 200];
+    node_const.setValue(4.5);
+    graph.add(node_const);
+
+	
+    graph.start();
+});
+</script>
+</f:comment>
 <p><b>
 This is the preview of the first release candidate.<br />
 Some features are currently unavailable or intentionally disabled.<br />

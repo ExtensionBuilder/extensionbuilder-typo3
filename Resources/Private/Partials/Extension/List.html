@@ -80,7 +80,10 @@
                                         <f:link.action
                                             action="edit"
                                             controller="Extension"
-                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                            arguments="{
+                                                'vendorName': extensionData.extension.vendorName,
+                                                'extensionName': extensionData.extension.extensionName
+                                            }"
 				                        >
                                             <strong>
                                                 {extensionData.extension.extensionName} 
@@ -149,7 +152,10 @@
                                         <f:link.action
                                             action="edit"
                                             controller="Extension"
-                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                            arguments="{
+                                                'vendorName': extensionData.extension.vendorName,
+                                                'extensionName': extensionData.extension.extensionName
+                                            }"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
@@ -161,7 +167,10 @@
                                         <f:link.action
                                             action="duplicate"
                                             controller="Extension"
-                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                            arguments="{
+                                                'vendorName': extensionData.extension.vendorName,
+                                                'extensionName': extensionData.extension.extensionName
+                                            }"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
@@ -173,7 +182,10 @@
                                         <f:link.action
                                             action="rename"
                                             controller="Extension"
-                                            arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                            arguments="{
+                                                'vendorName': extensionData.extension.vendorName,
+                                                'extensionName': extensionData.extension.extensionName
+                                            }"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
@@ -186,7 +198,10 @@
                                             <f:link.action
                                                 action="delete"
                                                 controller="Extension"
-                                                arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                                arguments="{
+                                                    'vendorName': extensionData.extension.vendorName,
+                                                    'extensionName': extensionData.extension.extensionName
+                                                }"
                                                 class="btn btn-default"
                                                 additionalAttributes="{disabled:'disabled'}"
                                                 class="btn btn-default t3js-modal-trigger"
@@ -207,9 +222,12 @@
                                     <f:if condition="{extensionData.extension.noBuild} != true">
                                         <div class="btn-group" role="group">
                                             <f:link.action
-                                                action="build"
+                                                action="listbuild"
                                                 controller="Extension"
-                                                arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                                arguments="{
+                                                    'vendorName': extensionData.extension.vendorName,
+                                                    'extensionName': extensionData.extension.extensionName
+                                                }"
                                                 class="btn btn-default"
                                                 data="{bs-toggle: 'tooltip'}"
                                                 title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:build')}"
@@ -225,7 +243,10 @@
                                             <f:link.action
                                                 action="upload"
                                                 controller="Extension"
-                                                arguments="{'vendorName': extensionData.extension.vendorName,'extensionName': extensionData.extension.extensionName}"
+                                                arguments="{
+                                                    'vendorName': extensionData.extension.vendorName,
+                                                    'extensionName': extensionData.extension.extensionName
+                                                }"
                                                 class="btn btn-default"
                                                 data="{bs-toggle: 'tooltip'}"
                                                 title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:upload')}"

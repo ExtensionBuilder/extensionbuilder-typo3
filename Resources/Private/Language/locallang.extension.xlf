@@ -4,7 +4,7 @@
         source-language="en"
         datatype="plaintext"
         original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf"
-        date="2025-03-30T10:00:00Z"
+		date="2025-04-01T12:00:00Z"
         product-name="extensionbuilder_typo3"
     >
         <header />
@@ -12,6 +12,10 @@
 
 			<trans-unit id="link.add" resname="link.add">
 				<source>Add Extension</source>
+			</trans-unit>
+
+			<trans-unit id="link.build" resname="link.build">
+				<source>Build</source>
 			</trans-unit>
 
 

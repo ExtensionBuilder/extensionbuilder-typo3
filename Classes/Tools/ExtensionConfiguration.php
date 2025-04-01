@@ -16,12 +16,14 @@ class ExtensionConfiguration
     ): array {
         $return = [];
         $extensionJsonList = Tools\Folder::scanForFile($pathToConfigurationJson, 'json');
+
         foreach ($extensionJsonList ?? [] as $json) {
             $jsonData = Tools\Json::read($pathToConfigurationJson . '/' . $json);
             if (($jsonData ?? false)) {
 				Tools\ConfigArray::arrayMerge($return, $jsonData);
             }
         }
+
         return $return;
     }
 
@@ -31,6 +33,7 @@ class ExtensionConfiguration
         array $arrayForJson,
     ): void {
         GeneralUtility::mkdir_deep($pathToConfigurationJson);
+
         Tools\Json::write(
             $pathToConfigurationJson . DIRECTORY_SEPARATOR
             . $fileName,
@@ -46,6 +49,7 @@ class ExtensionConfiguration
     ): void {
         $tmpArrayForJson = [];
         $tmpArrayForJson[$sub] = $arrayForJson;
+
         self::write($pathToConfigurationJson, $jsonFileName, $tmpArrayForJson);
     }
 
@@ -54,9 +58,11 @@ class ExtensionConfiguration
     ): array {		
         $returnArray = [];	
         $vendorJsonList = Tools\Folder::scanForFile($pathToConfigurationJson, 'json');
+
         foreach ($vendorJsonList ?? [] as $json) {
 			$returnArray[] = $pathToConfigurationJson.$json;
         }
+
         return $returnArray;
     }
 

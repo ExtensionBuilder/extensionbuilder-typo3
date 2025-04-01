@@ -9,19 +9,17 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use Psr\Http\Message\ResponseInterface;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Page\AssetCollector;
+
 #[AsController]
 final class ExtensionController extends ExtensionBuilderController
 {
 
     public function listAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-
-// $this->pageRenderer->loadJavaScriptModule('@typo3/rte-ckeditor/ckeditor5.js');
-// JavaScriptRenderer->includeAllImports(),
-// $this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Backend/my-module.js');
-// $this->pageRenderer->addJsFile('EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Modal.js');
 
         if (
             ($bodyParams['currentProject'] ?? false) &&
@@ -75,7 +73,7 @@ final class ExtensionController extends ExtensionBuilderController
 	}
 
     public function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         switch ($bodyParams['cmd'] ?? '') {
@@ -83,14 +81,13 @@ final class ExtensionController extends ExtensionBuilderController
                 $vendorName = $bodyParams['extensionData']['extension']['vendorName'];
                 $extensionName = $bodyParams['extensionData']['extension']['extensionName'];
                 $extensionData = $bodyParams['extensionData'] ?? [];
+
                 if ($vendorName && $extensionName) {
                     if (!($this->ebService->localExtensions[$extensionName] ?? false)) {
 
                         $extensionData['extension']['versionMajor'] = 0;
                         $extensionData['extension']['versionMinor'] = 1;
                         $extensionData['extension']['versionRevision'] = 0;
-
-// $this->ebService->writeExtension($vendorName, $extensionName, $extensionData);
 
                         self::save(
                             $vendorName,
@@ -100,7 +97,6 @@ final class ExtensionController extends ExtensionBuilderController
 
                         return $this->extensionList();
                     } else {
-
                         if ($this->ebService->isComposerMode) {
                             $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:extensionexists'));
 						} else {
@@ -134,23 +130,26 @@ final class ExtensionController extends ExtensionBuilderController
             'extensionData' => $extensionData,
         ]);
 
-        $this->addDocHeaderCloseAndSaveButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Extension',
-            'extension-add-form'
+        );
+        $this->addDocHeaderSaveButton(
+            'extension-add-form',
+            'Extension',
         );
 
     	return $this->moduleTemplate->renderResponse('Extension/Add');
     }
 
     public function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
 
-        $extensionData = $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
@@ -161,8 +160,6 @@ final class ExtensionController extends ExtensionBuilderController
                     $bodyParams['extensionName'] ?? '',
                     $extensionData ?? [],
                 );
-
-                return $this->extensionList();
                 break;
 		}
 
@@ -174,31 +171,40 @@ final class ExtensionController extends ExtensionBuilderController
             'extensionData' => $extensionData,
         ]);
 
-        $this->addDocHeaderCloseAndSaveButtons(
-           'list',
-           'Extension',
-           'extension-edit-form',
+        $this->addDocHeaderCloseButton(
+            'list',
+            'Extension',
+        );
+        $this->addDocHeaderSaveButton(
+            'extension-edit-form',
+            'Extension',
+        );
+        $this->addDocHeaderBuildButton(
+            'build',
+            'Extension',
+            $vendorName,
+            $extensionName,
         );
 
         return $this->moduleTemplate->renderResponse('Extension/Edit');
     }
 
     public function duplicateActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         return $this->moduleTemplate->renderResponse('Extension/Duplicate');
     }
 
     public function renameActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         return $this->moduleTemplate->renderResponse('Extension/Rename');
     }
 
     public function deleteAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
@@ -217,8 +223,63 @@ final class ExtensionController extends ExtensionBuilderController
         return $this->redirect('list', 'Extension');
     }
 
+
     public function buildAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+        $vendorName = $bodyParams['vendorName'] ?? '';
+        $extensionName = $bodyParams['extensionName'] ?? '';
+
+        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+
+        $builderUri = $this->ebService->configuration['typo3']['builderUrl'];
+
+        $copyInExtension = true;
+
+        $flushT3andPhpCache = $this->ebService->developer['typo3']['flushT3andPhpCache'] ?? false;
+        $analyzeDatabaseStructure = $this->ebService->developer['typo3']['analyzeDatabaseStructure'] ?? false;
+        $rebuildPhpAutoload = $this->ebService->developer['typo3']['rebuildPhpAutoload'] ?? false;
+
+        $this->ebService->build(
+            $vendorName,
+            $extensionName,
+            $this->ebService->configuration,
+            $this->ebService->developer,
+        );
+
+        $this->ebService->vendorsAndExtensions
+            [$vendorName]['extensions'][$extensionName]['extensionBuild']['lastBuild'] = date('d-m-Y  h:i:m');
+        $this->ebService->writeExtension($vendorName, $extensionName);
+
+        $this->moduleTemplate->assignMultiple([
+            'configuration' => $this->ebService->configuration,
+            'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
+            'vendorName' => $vendorName,
+            'extensionName' => $extensionName,
+            'extensionData' => $extensionData,
+        ]);
+
+        $this->addDocHeaderCloseButton(
+            'list',
+            'Extension',
+        );
+        $this->addDocHeaderSaveButton(
+            'extension-edit-form',
+            'Extension',
+        );
+        $this->addDocHeaderBuildButton(
+            'build',
+            'Extension',
+            $vendorName,
+            $extensionName,
+        );
+
+        return $this->moduleTemplate->renderResponse('Extension/Edit');
+    }
+
+    public function listbuildAction(): ResponseInterface {
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
@@ -265,7 +326,7 @@ final class ExtensionController extends ExtensionBuilderController
     }
 
     public function uploadActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';

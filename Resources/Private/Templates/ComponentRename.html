@@ -10,19 +10,24 @@
 <f:debug inline="1">{_all}</f:debug>
         </f:comment>
 
-        <h1>
-            <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.xlf:h1.rename"
-                arguments="{0: extensionName}"
-            />
-        </h1>
-        <form name="tx_extensionbuilder_form" id="tx_extensionbuilder_form" method="post">
+        <f:form
+            action="save"
+            controller="Component"
+            id="component-duplicate-form"
+        >
+
+            <h1>
+                <f:translate
+                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.xlf:h1.rename"
+                    arguments="{0: extensionName}"
+                />
+            </h1>
             <div class="tx_extensionbuilder_components">
-                <f:render partial="Fields/Name" arguments="{componentData: componentData}" />
-	    		<f:render partial="Fields/Description" arguments="{componentData: componentData}" />
-	    		<f:render partial="Fields/ToDo" arguments="{componentData: componentData}" />
+                <f:render partial="Component/FieldName" arguments="{componentData: componentData}" />
+	    		<f:render partial="Component/FieldDescription" arguments="{componentData: componentData}" />
+	    		<f:render partial="Component/FieldToDo" arguments="{componentData: componentData}" />
             </div>
-        </form>
+        </f:form>
 
     </f:section>
 </html>

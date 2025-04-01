@@ -8,17 +8,23 @@
 
         <f:form
             action="save"
-            controller="Command"
-            id="command-edit-form"
+            controller="Component"
+            id="component-edit-form"
         >
             <h1>
-                <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.command.xlf:h1.edit" />
+                <f:translate
+                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.xlf:h1.edit"
+                    arguments="{0: componentUid}"
+                />
             </h1>
 
             <div>
-                <f:render partial="Fields/Name" arguments="{componentData: componentData}" />
-	    		<f:render partial="Fields/Description" arguments="{componentData: componentData}" />
-	    		<f:render partial="Fields/ToDo" arguments="{componentData: componentData}" />
+                <f:render partial="Component/FieldUidReadonly" arguments="{componentUid: componentUid}" />
+<f:comment>
+                <f:render partial="Component/FieldName" arguments="{componentData: componentData}" />
+</f:comment>
+	    		<f:render partial="Component/FieldDescription" arguments="{componentData: componentData}" />
+	    		<f:render partial="Component/FieldToDo" arguments="{componentData: componentData}" />
             </div>
         </f:form>
 

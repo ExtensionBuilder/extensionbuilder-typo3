@@ -15,7 +15,7 @@ final class VendorController extends ExtensionBuilderController
 
     final function listAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         return $this->vendorList();
@@ -31,7 +31,7 @@ final class VendorController extends ExtensionBuilderController
 
         $this->addDocHeaderModuleDropDown('Vendor');
         if (($this->ebService->vendors ?? false) && ($this->ebService->vendorsAndExtensions ?? false)) {
-            $this->addDocHeaderCloseButtons(
+            $this->addDocHeaderCloseButton(
                 'list',
                 'Extension',
             );
@@ -55,7 +55,7 @@ final class VendorController extends ExtensionBuilderController
 	}
 
     final function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         switch ($bodyParams['cmd'] ?? '') {
@@ -99,17 +99,20 @@ final class VendorController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Vendor',
         );
-        $this->addDocHeaderCloseAndSaveButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Vendor',
+        );
+        $this->addDocHeaderSaveButton(
             'vendor-add-form',
+            'Vendor',
         );
 
         return $this->moduleTemplate->renderResponse('Vendor/Add');
     }
 
     final function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
@@ -141,17 +144,20 @@ final class VendorController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Vendor',
         );
-        $this->addDocHeaderCloseAndSaveButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Vendor',
+        );
+        $this->addDocHeaderSaveButton(
             'vendor-edit-form',
+            'Vendor',
         );
 
     	return $this->moduleTemplate->renderResponse('Vendor/Edit');
     }
 
     final function duplicateActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorNameOrg = $bodyParams['vendorName'];
@@ -174,7 +180,7 @@ final class VendorController extends ExtensionBuilderController
                     ) . $bodyParams['vendorData']['vendorName'],
                 );
 
-                return $this->redirect('list', 'Vendor');
+                return $this->vendorList();
                 break;
 		}
 
@@ -185,18 +191,21 @@ final class VendorController extends ExtensionBuilderController
 
         $this->addDocHeaderModuleDropDown(
             'Vendor',
-        );   
-        $this->addDocHeaderCloseAndSaveButtons(
+        ); 
+        $this->addDocHeaderCloseButton(
             'list',
             'Vendor',
-            'vendor-duplicate-form',
+        );
+        $this->addDocHeaderSaveButton(
+            'vendor-edit-form',
+            'Vendor',
         );
 
     	return $this->moduleTemplate->renderResponse('Vendor/Duplicate');
     }
 
     final function renameActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
@@ -222,7 +231,7 @@ final class VendorController extends ExtensionBuilderController
 //                    ) . $vendorName,
 //                );
 
-                return $this->redirect('list', 'Vendor');
+                return $this->vendorList();
                 break;
 		}
 
@@ -233,18 +242,21 @@ final class VendorController extends ExtensionBuilderController
 
         $this->addDocHeaderModuleDropDown(
             'Vendor',
-        );   
-        $this->addDocHeaderCloseAndSaveButtons(
+        );
+        $this->addDocHeaderCloseButton(
             'list',
             'Vendor',
-            'vendor-rename-form',
+        );
+        $this->addDocHeaderSaveButton(
+            'vendor-edit-form',
+            'Vendor',
         );
 
     	return $this->moduleTemplate->renderResponse('Vendor/Rename');
     }
 
     final function deleteAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->ebService->deleteVendor($bodyParams['vendorName']);
@@ -265,7 +277,7 @@ final class VendorController extends ExtensionBuilderController
     }
 
     final function importExampleVendorAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
 		$this->ebService->importExampleVendor();

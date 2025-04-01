@@ -14,7 +14,7 @@ final class ProjectController extends ExtensionBuilderController
 {
 
     public function listAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         return $this->projectList();
@@ -29,7 +29,7 @@ final class ProjectController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Project',
         );
-        $this->addDocHeaderCloseButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Extension',
         );
@@ -42,7 +42,7 @@ final class ProjectController extends ExtensionBuilderController
 	}
 
     final function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         switch ($bodyParams['cmd'] ?? '') {
@@ -87,17 +87,20 @@ final class ProjectController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Project',
         );
-        $this->addDocHeaderCloseAndSaveButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Project',
+        );
+        $this->addDocHeaderSaveButton(
             'project-add-form',
+            'Project',
         );
 
         return $this->moduleTemplate->renderResponse('Project/Add');
     }
 
     final function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $projectKey = $bodyParams['projectKey'] ?? 'noKey';
@@ -143,17 +146,20 @@ final class ProjectController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Project',
         );
-        $this->addDocHeaderCloseAndSaveButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Project',
+        );
+        $this->addDocHeaderSaveButton(
             'project-edit-form',
+            'Project',
         );
 
     	return $this->moduleTemplate->renderResponse('Project/Edit');
     }
 
     final function deleteAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $projectKey = $bodyParams['projectKey'] ?? 'noKey';
@@ -168,7 +174,7 @@ final class ProjectController extends ExtensionBuilderController
     }
 
     final function addextensionAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $projectKey = $bodyParams['projectKey'];
@@ -190,8 +196,13 @@ final class ProjectController extends ExtensionBuilderController
                     $this->uriBuilder,
                     'Project',
                 );
-                $this->addDocHeaderCloseAndSaveButtons(
-                    'project'
+                $this->addDocHeaderCloseButton(
+                    'list',
+                    'Project',
+                );
+                $this->addDocHeaderSaveButton(
+                    'project-edit-form',
+                    'Project',
                 );
 
                 return $this->moduleTemplate->renderResponse('Project/Edit');
@@ -225,7 +236,7 @@ final class ProjectController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Project',
         );
-        $this->addDocHeaderCloseButtons(
+        $this->addDocHeaderCloseButton(
             'edit',
             'Project',
              projectKey: $projectKey,
@@ -235,7 +246,7 @@ final class ProjectController extends ExtensionBuilderController
     }
 
     final function deleteextensionAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $projectKey = $bodyParams['projectKey'];
@@ -254,8 +265,13 @@ final class ProjectController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Project',
         );
-        $this->addDocHeaderCloseAndSaveButtons(
-            'project'
+        $this->addDocHeaderCloseButton(
+            'list',
+            'Project',
+        );
+        $this->addDocHeaderSaveButton(
+            'project-add-form',
+            'Project',
         );
 
         return $this->moduleTemplate->renderResponse('Project/Edit');

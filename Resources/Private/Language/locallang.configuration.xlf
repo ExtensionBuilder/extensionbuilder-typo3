@@ -4,7 +4,7 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:scheduler/Resources/Private/Language/locallang.configuration.xlf"
-		date="2025-02-16T20:00:00Z"
+		date="2025-04-01T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
@@ -48,12 +48,25 @@
 				<source>configuration</source>
 			</trans-unit>
 
-			<trans-unit id="builerdUrl" resname="builderUrl">
-				<source>buildUrl</source>
+
+			<trans-unit id="remoteInfo" resname="remoteInfo">
+				<source>Remote infos</source>
+			</trans-unit>
+
+			<trans-unit id="builderUrl" resname="builderUrl">
+				<source>Builder Url</source>
 			</trans-unit>
 
 			<trans-unit id="builderApi" resname="builderApi">
-				<source>buildApi</source>
+				<source>Builder Api</source>
+			</trans-unit>
+
+			<trans-unit id="authUrl" resname="authUrl">
+				<source>Auth Url</source>
+			</trans-unit>
+
+			<trans-unit id="authApi" resname="authApi">
+				<source>Aut hApi</source>
 			</trans-unit>
 
 

@@ -13,7 +13,7 @@ final class ConfigurationController extends ExtensionBuilderController
 {
 
     final function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         switch ($bodyParams['cmd'] ?? '') {
@@ -41,10 +41,13 @@ final class ConfigurationController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Configuration',
         );
-        $this->addDocHeaderCloseAndSaveButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Extension',
+        );
+        $this->addDocHeaderSaveButton(
             'configuration-form',
+            'Configuration',
         );
 
     	return $this->moduleTemplate->renderResponse('Configuration');

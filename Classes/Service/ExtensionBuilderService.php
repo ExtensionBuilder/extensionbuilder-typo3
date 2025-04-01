@@ -83,8 +83,6 @@ class ExtensionBuilderService implements SingletonInterface
             $this->configuration = $configurationJson['configuration'] ?? [];
         }
 
-
-            
         if (!($this->configuration['systemId'] ?? false)) {
             $changeConfiguration = true;
             $this->configuration['systemId'] = Tools\Uuid::uuid();
@@ -146,22 +144,81 @@ class ExtensionBuilderService implements SingletonInterface
 //            $changeConfiguration = true;
             $this->configuration['typo3']['components'] = [];
 
-            $this->configuration['typo3']['components'][] = ['controler' => 'Model', 'title' => 'Model', 'lll' => '.model' ] ;
-            $this->configuration['typo3']['components'][] = ['controler' => 'Command', 'title' => 'Command', 'lll' => '.command' ] ;
-            $this->configuration['typo3']['components'][] = ['controler' => 'Scheduler', 'title' => 'Scheduler', 'lll' => '.scheduler' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'ViewHelper', 'title' => 'ViewHelper', 'lll' => '.viewHelper' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'Plugin', 'title' => 'Plugin', 'lll' => '.plugin' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'EventListener', 'title' => 'EventListener', 'lll' => '.eventlistener' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'ContentElement', 'title' => 'Content Element', 'lll' => '.' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'Enumeration', 'title' => '', 'lll' => '.' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'ContentElement', 'title' => 'Content Element', 'lll' => '.' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => '', 'title' => '', 'lll' => '.' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'BackendModul', 'title' => 'Backend module', 'lll' => '.' ] ;
-//            $this->configuration['typo3']['components'][] = ['controler' => 'BackendModul', 'title' => 'Backend route', 'lll' => '.' ] ;
+            $this->configuration['typo3']['components'][] = [
+                'uid' => 'commands',
+                'title' => 'Command',
+                'controller' => 'Component',
+                'add' => 'ComponentAdd',
+                'edit' => 'Command/Edit',
+            ] ;
+            $this->configuration['typo3']['components'][] = [
+                'uid' => 'schedulers',
+                'title' => 'Scheduler',
+                'controller' => 'Component',
+                'add' => 'ComponentAdd',
+               'edit' => 'Scheduler/Edit',
 
-//            $this->configuration['typo3']['components'][] = ['controler' => '', 'title' => 'Enumeration', 'lll' => '.' ] ;
+            ] ;
+
+            $this->configuration['typo3']['components'][] = [
+                'uid' => 'viewHelpers',
+                'title' => 'ViewHelper',
+                'controller' => 'Component',
+                'add' => 'ComponentAdd',
+                'edit' => 'ViewHelper/Edit',
+            ] ;
+
+//            $this->configuration['typo3']['components'][] = [
+//                'uid' => 'plugins',
+//                'title' => 'Plugin',
+//                'controller' => 'Component',
+//                'add' => 'ComponentAdd',
+//                'edit' => 'Plugi/Edit',
+//            ] ;
+
+//            $this->configuration['typo3']['components'][] = [
+//                'uid' => 'tables',
+//                'title' => 'Table',
+//                'controller' => 'Component',
+//                'add' => 'ComponentAdd',
+//                'edit' => 'Table/Edit',
+//            ] ;
+
+//            $this->configuration['typo3']['components'][] = [
+//                'uid' => 'eventListenes',
+//                'title' => 'EventListener',
+//                'controller' => 'Component',
+//                'add' => 'ComponentAdd',
+//                'edit' => 'EventListener/Edit',
+//            ] ;
+
+//            $this->configuration['typo3']['components'][] = [
+//                'uid' => 'contentElements',
+//                'title' => 'ContentElement',
+//                'controller' => 'Component',
+//                'add' => 'ComponentAdd',
+//                'edit' => 'ContentElement/Edit',
+//            ] ;
+
+//            $this->configuration['typo3']['components'][] = [
+//                'uid' => 'enumeration',
+//                'title' => 'Enumeration',
+//                'controller' => 'Component',
+//                'add' => 'ComponentAdd',
+//                'edit' => 'Enumeration/Edit',
+//            ] ;
+
+//            $this->configuration['typo3']['components'][] = [
+//                'uid' => '',
+//                'title' => '',
+//                'controller' => 'Component',
+//                'add' => 'ComponentAdd',
+//                'edit' => '/Edit',
+//            ] ;
+
+
         }
-        unset($this->configuration['typo3']['components']);
+//        unset($this->configuration['typo3']['components']);
 
 		$this->projectPath = 
             Environment::getProjectPath() . DIRECTORY_SEPARATOR;
@@ -879,34 +936,62 @@ class ExtensionBuilderService implements SingletonInterface
 	}
 
 
-    public function writeExtensionPropoty(
+// ToDo trim($str," ")
+
+    public function writeExtensionComponent(
                     string $vendorName,
                     string $extensionName,
-                    string $propotysName,
-                    string $propotyName,
-                    array $propotyData,
+                    string $componentsName,
+                    string $componentName,
+                    array $componentData,
     ): void {
-            $extensionsFolder = 
-				Tools\ExtensionbuilderFolder::GetVendorsAndExtensionsBaseFolder() . DIRECTORY_SEPARATOR
+            $extensionsFolder =
+                $this->dataTypo3Path
                 . $vendorName . DIRECTORY_SEPARATOR
                 . $extensionName . DIRECTORY_SEPARATOR;
 
-            $propotysData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$propotysName] ?? [];
+            $componentsData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] ?? [];
 
-            $propotyDataForJson = [];
-            $propotyDataForJson[$propotyName] = $propotyData;
+            $componentDataForJson = [];
+            $componentDataForJson[$componentName] = $componentData;
 
-		    Tools\ConfigArray::arrayMerge($propotysData, $propotyDataForJson);
+		    Tools\ConfigArray::arrayMerge($componentsData, $componentDataForJson);
 
-            $propotyDataForJson = [];
-            $propotyDataForJson[$propotysName] = $propotysData;
+            unset($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName]);
+            $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] = $componentsData;
+
+            $componentDataForJson = [];
+            $componentDataForJson[$componentsName] = $componentsData;
             Tools\ExtensionConfiguration::write(
                 $extensionsFolder,
-                $propotysName . '.json',
-                $propotyDataForJson
+                $componentsName . '.json',
+                $componentDataForJson,
             );
 	}
 
+    public function deleteExtensionComponent(
+                    string $vendorName,
+                    string $extensionName,
+                    string $componentsName,
+                    string $componentName,
+    ): void {
+            $extensionsFolder =
+                $this->dataTypo3Path
+                . $vendorName . DIRECTORY_SEPARATOR
+                . $extensionName . DIRECTORY_SEPARATOR;
+
+            unset($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName][$componentName]);
+
+            $componentsData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] ?? [];
+
+            $componentDataForJson = [];
+            $componentDataForJson[$componentsName] = $componentsData;
+            Tools\ExtensionConfiguration::write(
+                $extensionsFolder,
+                $componentsName . '.json',
+                $componentDataForJson
+            );
+	}
 
 
     // Area for generating the extension

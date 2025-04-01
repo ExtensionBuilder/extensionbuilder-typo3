@@ -10,11 +10,10 @@
 <f:debug inline="1">{_all}</f:debug>
         </f:comment>
 <f:debug inline="1">{_all}</f:debug>
-
         <f:form
             action="save"
-            controller="Command"
-            id="command-add-form"
+            controller="Component"
+            id="component-edit-form"
         >
             <h1>
                 <f:translate
@@ -24,9 +23,14 @@
             </h1>
 
             <div class="tx_extensionbuilder_components">
-                <f:render partial="Fields/Name" arguments="{componentData: componentData}" />
-	    		<f:render partial="Fields/Description" arguments="{componentData: componentData}" />
-	    		<f:render partial="Fields/ToDo" arguments="{componentData: componentData}" />
+
+                <f:render partial="Component/FieldUid" arguments="{componentUid: componentUid}" />
+<f:comment>
+                <f:render partial="Component/FieldName" arguments="{componentData: componentData}" />
+</f:comment>
+	    		<f:render partial="Component/FieldDescription" arguments="{componentData: componentData}" />
+	    		<f:render partial="Component/FieldToDo" arguments="{componentData: componentData}" />
+
             </div>
         </f:form>
 

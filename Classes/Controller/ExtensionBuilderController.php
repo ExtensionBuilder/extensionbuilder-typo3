@@ -296,7 +296,7 @@ class ExtensionBuilderController extends ActionController
 		}
     }
 
-    final function addDocHeaderCloseButtons(
+    final function addDocHeaderCloseButton(
         string $action,
         string $controller,
         string $vendorName = '',
@@ -320,45 +320,19 @@ class ExtensionBuilderController extends ActionController
         $closeButton = $buttonBar->makeLinkButton();
 // ToDo own LLL
         $closeButton
-            ->setTitle(
-                $languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:close'),
-            )
+            ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:close'))
             ->setShowLabelText(true)
             ->setIcon($icon)
             ->setHref($this->uriBuilder->uriFor($action,$parameters,$controller));
         $buttonBar->addButton($closeButton, ButtonBar::BUTTON_POSITION_LEFT, 2);
     }
 
-    final function addDocHeaderCloseAndSaveButtons(
-        string $closeAction,
-        string $closeController,
+    final function addDocHeaderSaveButton(
         string $saveFromId,
-        string $vendorName = '',
-        string $extensionName = '',
-        string $projectKey = '',
+        string $saveController,
     ): void {
         $languageService = $GLOBALS['LANG'];
         $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
-
-        $parameters = [];
-        if ($vendorName) { $parameters['vendorName'] =  $vendorName; }
-		if ($extensionName) { $parameters['extensionName'] =  $extensionName; }
-        if ($projectKey) { $parameters['projectKey'] =  $projectKey; }
-
-        if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
-            $icon = $this->iconFactory->getIcon('actions-close', Icon::SIZE_SMALL);
-        } else {
-            $icon = $this->iconFactory->getIcon('actions-close', IconSize::SMALL);
-        }
-        $closeButton = $buttonBar->makeLinkButton();
-// ToDo own LLL
-        $closeButton
-            ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:close'))
-            ->setShowLabelText(true)
-            ->setIcon($icon)
-            ->setHref($this->uriBuilder->uriFor($closeAction,$parameters,$closeController));
-        $buttonBar->addButton($closeButton);
-
 
         if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
             $icon = $this->iconFactory->getIcon('actions-save', Icon::SIZE_SMALL);
@@ -379,9 +353,9 @@ class ExtensionBuilderController extends ActionController
     }
 
     final function addDocHeaderAddButton(
-        string $addAction,
-        string $addController,
-        array $addParameters = [],
+        string $action,
+        string $controller,
+        array $parameters = [],
     ): void {
         $languageService = $GLOBALS['LANG'];
         $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
@@ -394,19 +368,51 @@ class ExtensionBuilderController extends ActionController
 
         $lll = 
             $this->ebService->lll . '.'
-             . strtolower($addController)
+             . strtolower($controller)
              . '.xlf:link.'
-			 . strtolower($addAction);
+			 . strtolower($action);
 
         $linkButton = $buttonBar->makeLinkButton()
-            ->setTitle(
-                $languageService->sL($lll)
-            )
+            ->setTitle($languageService->sL($lll))
             ->setShowLabelText(true)
             ->setIcon($icon)
-            ->setHref($this->uriBuilder->uriFor($addAction, $addParameters, $addController));
+            ->setHref($this->uriBuilder->uriFor($action, $parameters, $controller));
 
         $buttonBar->addButton($linkButton, ButtonBar::BUTTON_POSITION_LEFT, 3);
+    }
+
+    final function addDocHeaderBuildButton(
+        string $action,
+        string $controller,
+        string $vendorName,
+        string $extensionName,
+    ): void {
+        $languageService = $GLOBALS['LANG'];
+        $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
+
+        $parameters = [];
+        if ($vendorName) { $parameters['vendorName'] =  $vendorName; }
+		if ($extensionName) { $parameters['extensionName'] =  $extensionName; }
+
+        if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
+            $icon = $this->iconFactory->getIcon('actions-archive', Icon::SIZE_SMALL);
+        } else {
+            $icon = $this->iconFactory->getIcon('actions-archive', IconSize::SMALL);
+        }
+
+        $lll = 
+            $this->ebService->lll . '.'
+             . strtolower($controller)
+             . '.xlf:link.'
+			 . strtolower($action);
+
+        $linkButton = $buttonBar->makeLinkButton()
+            ->setTitle($languageService->sL($lll))
+            ->setShowLabelText(true)
+            ->setIcon($icon)
+            ->setHref($this->uriBuilder->uriFor($action, $parameters, $controller));
+
+        $buttonBar->addButton($linkButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
     }
 
 

@@ -3,6 +3,7 @@
 declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
 class Github
 {
 

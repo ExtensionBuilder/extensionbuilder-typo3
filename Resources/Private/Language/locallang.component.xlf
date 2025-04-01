@@ -4,28 +4,32 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.xlf"
-		date="2025-03-02T20:00:00Z"
+		date="2025-04-01T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
 
 			<trans-unit id="h1.add" resname="h1.add">
-				<source>Add</source>
+				<source>Add "%s"</source>
 			</trans-unit>
 
-			<trans-unit id="h1.add" resname="h1.edit">
-				<source>Edit</source>
+			<trans-unit id="h1.edit" resname="h1.edit">
+				<source>Edit "%s"</source>
 			</trans-unit>
 
 			<trans-unit id="h1.rename" resname="h1.rename">
-				<source>Reame</source>
+				<source>Reame "%s"</source>
 			</trans-unit>
 
 			<trans-unit id="h1.duplicate" resname="h1.duplicate">
-				<source>Duplicate</source>
+				<source>Duplicate "%s"</source>
 			</trans-unit>
 
+
+			<trans-unit id="label.uid" resname="label.uid">
+				<source>Uniq ID</source>
+			</trans-unit>
 
 			<trans-unit id="label.name" resname="label.name">
 				<source>Name</source>

@@ -19,23 +19,24 @@ return [
         'labels' => 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.typo3.xlf',
         'extensionName' => 'extensionbuilder_typo3',
 
+        'moduleConfiguration' => [
+            'cssFiles' => [
+                'EXT:extensionbuilder_typo3/Resources/Public/Css/litegraph.css',
+            ],
+        ],
+
         'controllerActions' => [
             Controller\ExtensionController::class => [
                 'list',
                 'add',
                 'edit',
-//                'duplicate',
-//                'rename',
                 'delete',
+                'listbuild',
                 'build',
                 'upload',
             ],
-            Controller\CommandController::class => [
-                'add',
-                'edit',
-                'delete',
-            ],
-            Controller\SchedulerController::class => [
+
+            Controller\ComponentController::class => [
                 'add',
                 'edit',
                 'delete',
@@ -59,8 +60,6 @@ return [
                 'list',
                 'add',
                 'edit',
-//                'duplicate',
-//                'rename',
                 'delete',
                 'importExampleVendor',
             ],

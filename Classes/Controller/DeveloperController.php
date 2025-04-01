@@ -13,7 +13,7 @@ final class DeveloperController extends ExtensionBuilderController
 {
 
     final function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         switch ($bodyParams['cmd'] ?? '') {
@@ -66,10 +66,13 @@ final class DeveloperController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Developer',
         );
-        $this->addDocHeaderCloseAndSaveButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Extension',
+        );
+        $this->addDocHeaderSaveButton(
             'developer-form',
+            'Develope',
         );
 
     	return $this->moduleTemplate->renderResponse('Developer');

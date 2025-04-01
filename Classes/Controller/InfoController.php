@@ -14,7 +14,7 @@ final class InfoController extends ExtensionBuilderController
 {
 
     final function showAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getParsedBody() ?? [], $this->request->getQueryParams() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->coreStatus = Tools\RestApiClient::getStatus(
@@ -55,7 +55,7 @@ final class InfoController extends ExtensionBuilderController
         $this->addDocHeaderModuleDropDown(
             'Info',
         );
-        $this->addDocHeaderCloseButtons(
+        $this->addDocHeaderCloseButton(
             'list',
             'Extension',
         );
