@@ -79,6 +79,7 @@ final class ExtensionController extends ExtensionBuilderController
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'isProKey' => $this->isProKey,
             'components' =>  $this->ebService->extensionConfiguration['components'],
             'currentProject' => $this->ebService->developer['typo3']['project'] ?? 'no',
             'currentVendor' => $this->ebService->developer['typo3']['vendor'] ?? 'all',

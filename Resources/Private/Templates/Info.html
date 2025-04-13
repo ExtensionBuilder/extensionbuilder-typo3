@@ -6,168 +6,135 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-<div>
+        <div>
+            <h1><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3" /></h1>
 
-        <h1>
-            <f:translate
-                key="{lllBase}.info.xlf:extensionBuilderTypo3"
-            />
-            <f:if condition="{isProKey}">
-                <f:then>
-                    - Pro Version -
-                </f:then>
-                <f:else>
-                    - Community Version -
-                </f:else>
-            </f:if>
-        </h1>
-
-        <div style="width: 501px; top left repeat-y;">
-            <div style="float: left;  width: 100px;">Version</div>
-            <div style="float: right; width: 400px;">{configuration.version}</div>
-        </div>
-
-</div>
-
-<div>
-
-        <h1>
-            <f:translate
-                key="{lllBase}.info.xlf:extensionBuilderTypo3Core"
-            />
-        </h1>
-
-        <div style="width: 501px; top left repeat-y;">
-            <f:if condition="{coreStatus.version}">
+            <div style="width: 501px; top left repeat-y;">
                 <div style="float: left;  width: 100px;">Version</div>
-                <div style="float: right; width: 400px;">{coreStatus.version}</div>
-            </f:if>
-            <div style="float: left;  width: 100px;">Status</div>
-            <div style="float: right; width: 400px;">{coreStatus.status}</div>
-            <f:if condition="{coreStatus.serverUrl}">
-                <div style="float: left;  width: 100px;">Server URL</div>
-                <div style="float: right; width: 400px;">{coreStatus.serverUrl}</div>
-            </f:if>
-
-            <f:if condition="{builderLocal}">
-                <div style="float: left;  width: 100px;">Local builder</div>
-                <div style="float: right; width: 400px;">Online</div>
-                <div style="float: left;  width: 100px;">Version</div>
-                <div style="float: right; width: 400px;">{coreStatus.version}</div>
-            </f:if>
+                <div style="float: right; width: 400px;">{configuration.version}</div>
+            </div>
 
         </div>
 
-</div>
+        <div>
+            <h1><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3Core" /></h1>
 
-<div>
+            <div style="width: 501px; top left repeat-y;">
+                <f:if condition="{coreStatus.version}">
+                    <div style="float: left;  width: 100px;">Version</div>
+                    <div style="float: right; width: 400px;">{coreStatus.version}</div>
+                </f:if>
 
-        <h1>ID´s</h1>
-        <div style="width: 501px; top left repeat-y;">
-            <div style="float: left;  width: 100px;">System ID </div>
-            <div style="float: right; width: 400px;">{configuration.systemId}</div>
-            <br />
-            <div style="float: left;  width: 100px;">Developer ID </div>
-            <div style="float: right; width: 400px;">{developer.developerId}</div>
+                <div style="float: left;  width: 100px;">Status</div>
+                <div style="float: right; width: 400px;">{coreStatus.status}</div>
+
+                <f:if condition="{coreStatus.serverUrl}">
+                    <div style="float: left;  width: 100px;">Server URL</div>
+                    <div style="float: right; width: 400px;">{coreStatus.serverUrl}</div>
+                </f:if>
+
+                <f:if condition="{builderLocal}">
+                    <div style="float: left;  width: 100px;">Local builder</div>
+                    <div style="float: right; width: 400px;">Online</div>
+                    <div style="float: left;  width: 100px;">Version</div>
+                    <div style="float: right; width: 400px;">{coreStatus.version}</div>
+                </f:if>
+            </div>
         </div>
+        <br /><br />
 
-</div>
-
-<div>
-
-        <h1>Info</h1>
-        <div style="width: 501px; top left repeat-y;">
-            <div style="float: left;  width: 100px;">Develpers</div>
-            <div style="float: right; width: 400px;">{configuration.developerCounter}</div>
-            <br />
-            <div style="float: left;  width: 100px;">Vendors</div>
-            <div style="float: right; width: 400px;">{configuration.vendorCounter}</div>
-            <br />
-            <div style="float: left;  width: 100px;">Extensions</div>
-            <div style="float: right; width: 400px;">{configuration.extensionCounter}</div>
-            <br />
-            <div style="float: left;  width: 100px;">Projects</div>
-            <div style="float: right; width: 400px;">{configuration.projectCounter}</div>
-        </div>
-
-</div>
-
-<div>
-
-        <h1>Copyright</h1>
-        <div style="width: 501px; top left repeat-y;">
-            <div style="float: left;  width: 100px;">Author</div>
-            <div style="float: right; width: 400px;">Stephan Franz Sellner</div>
-            <div style="float: left;  width: 100px;">Support</div>
-            <div style="float: right; width: 400px;"><f:link.email email="contact@extension-builder.dev" target="_blank" /></div>
-            <div style="float: left;  width: 100px;">Homepage</div>
-            <div style="float: right; width: 400px;">
-                <f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external>
+        <div>
+            <h1>ID´s</h1>
+            <div style="width: 501px; top left repeat-y;">
+                <div style="float: left;  width: 100px;">System ID </div>
+                <div style="float: right; width: 400px;">{configuration.systemId}</div>
+                <br />
+                <div style="float: left;  width: 100px;">Developer ID </div>
+                <div style="float: right; width: 400px;">{developer.developerId}</div>
             </div>
         </div>
 
-</div>
+        <div>
+            <h1>Info</h1>
+            <div style="width: 501px; top left repeat-y;">
+                <div style="float: left;  width: 100px;">Develpers</div>
+                <div style="float: right; width: 400px;">{configuration.developerCounter}</div>
+                <br />
+                <div style="float: left;  width: 100px;">Vendors</div>
+                <div style="float: right; width: 400px;">{configuration.vendorCounter}</div>
+                <br />
+                <div style="float: left;  width: 100px;">Extensions</div>
+                <div style="float: right; width: 400px;">{configuration.extensionCounter}</div>
+                <br />
+                <div style="float: left;  width: 100px;">Projects</div>
+                <div style="float: right; width: 400px;">{configuration.projectCounter}</div>
+            </div>
+        </div>
+
+        <div>
+            <h1>Copyright</h1>
+            <div style="width: 501px; top left repeat-y;">
+                <div style="float: left;  width: 100px;">Author</div>
+                <div style="float: right; width: 400px;">Stephan Franz Sellner</div>
+                <div style="float: left;  width: 100px;">Support</div>
+                <div style="float: right; width: 400px;"><f:link.email email="contact@extension-builder.dev" target="_blank" /></div>
+                <div style="float: left;  width: 100px;">Homepage</div>
+                <div style="float: right; width: 400px;">
+                    <f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external>
+                </div>
+            </div>
+        </div>
 
         <f:if condition="{announcements}">
-
-<div>
-
-            <f:render
-                partial="Info/FieldsInfo"
-                arguments="{
-                    infoFields: announcements,
-                    infoTranslate: 'announcements'
-                }"
-            />
-
-</div>
-
+            <div>
+                <f:render
+                    partial="Info/FieldsInfo"
+                    arguments="{
+                        lllBase: '{lllBase}',
+                        infoFields: '{announcements}',
+                        infoTranslate: 'announcements'
+                    }"
+                />
+            </div>
         </f:if>
 
         <f:if condition="{issues}">
-
-<div>
-
-            <f:render
-                partial="Info/FieldsInfo"
-                arguments="{
-                    infoFields: issues,
-                    infoTranslate: 'issues'
-                }"
-            />
-
-</div>
-
+            <div>
+                <f:render
+                    partial="Info/FieldsInfo"
+                    arguments="{
+                        lllBase: '{lllBase}',
+                        infoFields: '{issues}',
+                        infoTranslate: 'issues'
+                    }"
+                />
+            </div>
         </f:if>
 
         <f:if condition="{todo}">
-<div>
-            <f:render
-                partial="Info/FieldsInfo"
-                arguments="{
-                    infoFields: todo,
-                    infoTranslate: 'todo'
-                }"
-            />
-
-</div>
-
+            <div>
+                <f:render
+                    partial="Info/FieldsInfo"
+                    arguments="{
+                        lllBase: '{lllBase}',
+                        infoFields: '{todo}',
+                        infoTranslate: 'todo'
+                    }"
+                />
+            </div>
         </f:if>
 
         <f:if condition="{changeLog}">
-
-<div>
-
-            <f:render
-                partial="Info/FieldsInfo"
-                arguments="{
-                    infoFields: changeLog,
-                    infoTranslate: 'changeLog'
-                }"
-            />
-
-</div>
-
+            <div>
+                <f:render
+                    partial="Info/FieldsInfo"
+                    arguments="{
+                        lllBase: '{lllBase}',
+                        infoFields: '{changeLog}',
+                        infoTranslate: 'changeLog'
+                    }"
+                />
+            </div>
         </f:if>
 
     </f:section>

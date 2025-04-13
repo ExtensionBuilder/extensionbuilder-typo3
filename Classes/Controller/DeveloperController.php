@@ -59,6 +59,7 @@ final class DeveloperController extends ExtensionBuilderController
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'isProKey' => $this->isProKey,
             'developer' => $this->ebService->developer,
             'vendors' => $vendors,
             'projects' => $projects,

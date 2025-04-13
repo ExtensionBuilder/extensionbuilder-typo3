@@ -6,15 +6,18 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-<p><b>
-This is the first release candidate.<br />
-Some features are currently disabled.<br />
-They will be added gradually in the near future.<br />
-<br />
-Found a bug? Let us know via GitHub Issues.<br />
-</b></p>
+        <p><b>
+        Found a bug? Let us know via <a href="https://github.com/ExtensionBuilder/extensionbuilder-typo3/issues" target="_blank">GitHub Issues</a>.<br />
+        <br />
+        Add: Command | Scheduler | ViewHelper(beta)
+        </b></p>
 
-        <h1><f:translate key="{lllBase}.extension.xlf:h1.list" /></h1>
+        <h1>
+            <f:translate key="{lllBase}.extension.xlf:h1.list" />
+            <f:if condition="{isProKey}">
+                - Pro Version -
+            </f:if>
+        </h1>
 
         <f:if condition="{project -> f:count()}">
             <f:render partial="Extension/ListProject" arguments="{_all}" />

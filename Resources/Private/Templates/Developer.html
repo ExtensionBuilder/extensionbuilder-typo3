@@ -10,28 +10,35 @@
             controller="Developer"
             id="developer-form"
         >
-            <h1>
-                <f:translate key="{lllBase}.developer.xlf:developerSettings" />
-            </h1>
-
+            <h1><f:translate key="{lllBase}.developer.xlf:developerSettings" /></h1>
+<f:comment>
+            <f:if condition="{isProKey}">
+                <h2>
+                    - Pro Version -
+                </h2>
+            </f:if>
+</f:comment>
             <div class="tx_extensionbuilder_module">
-                <h1>
-                    <f:translate
-                        key="{lllBase}.developer.xlf:h1"
-                    />
-                </h1>
-
-                <f:render partial="Developer/FieldsDeveloper" arguments="{lllBase: lllBase, developer: developer}" />
-                <f:render partial="Developer/FieldsDefault" arguments="{lllBase: lllBase, developer: developer, projects: projects, vendors: vendors}" />
-                <f:render partial="Developer/FieldsMaintenance" arguments="{lllBase: lllBase, developer: developer}" />
+                <f:render
+                    partial="Developer/FieldsDeveloper"
+                    arguments="{lllBase: '{lllBase}', developer: '{developer}'}"
+                />
+                <f:render
+                    partial="Developer/FieldsDefault"
+                    arguments="{lllBase: '{lllBase}', developer: '{developer}', projects: '{projects}', vendors: '{vendors}'}"
+                />
+                <f:render
+                    partial="Developer/FieldsMaintenance"
+                    arguments="{lllBase: '{lllBase}', developer: '{developer}'}"
+                />
 
 <f:comment>
                 <f:render
                     partial="BuildFields"
                     arguments="{
-                        lllBase: lllBase, 
-                        componentData: componentData,
-                        fields: componentFields,
+                        lllBase: '{lllBase}',
+                        componentData: '{componentData}',
+                        fields: '{componentFields}',
                         fieldData: 'componentData'
                     }"
                 />

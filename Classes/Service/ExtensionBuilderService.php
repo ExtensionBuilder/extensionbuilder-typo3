@@ -623,6 +623,17 @@ class ExtensionBuilderService
             }
         }
 
+        if (
+            ($vendorsAndExtensions['ExampleVendor'] ?? false) &&
+            (
+                !(array_key_exists('version', $vendorsAndExtensions['ExampleVendor']) ?? false) ||
+                (($vendorsAndExtensions['ExampleVendor']['version'] ?? 0) < 1)
+            )
+        ) {
+            unset($vendorsAndExtensions['ExampleVendor']);
+            GeneralUtility::rmdir($extensionsFolder . 'ExampleVendor', true);
+        }
+
         $this->vendorsAndExtensions = $vendorsAndExtensions;
     }
 
