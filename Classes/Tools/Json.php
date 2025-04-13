@@ -10,8 +10,6 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
-
 class Json
 {
 
@@ -65,7 +63,8 @@ class Json
         if ($error) {
             $return = [];
 
-            $jsonFile = substr($jsonFile, strlen(Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder()));
+// ToDo cut path
+//            $jsonFile = substr($jsonFile, strlen(Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder()));
 
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);

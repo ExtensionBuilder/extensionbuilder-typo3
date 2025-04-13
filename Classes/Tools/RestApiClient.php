@@ -21,7 +21,6 @@ class RestApiClient
         return self::executeClientJsonResponseB($authority, $path, $multipart);
 	}
 
-
     public static function getStatus(
         string $authority,
         string $path,
@@ -31,7 +30,6 @@ class RestApiClient
         $multipart['multipart'][] = ['name' => 'command', 'contents' => 'getStatus'];
         return self::executeClientJsonResponse($authority, $path, $multipart);
 	}
-
 
     public static function checkKey(
         string $authority,
@@ -50,12 +48,6 @@ class RestApiClient
         $multipart['multipart'][] = ['name' => 'developerProKey', 'contents' => $developerProKey];
         return self::executeClientJsonResponse($authority, $path, $multipart);
 	}
-
-
-
-
-
-
 
     public static function executeClientJsonResponse(
         string $authority,
@@ -89,8 +81,6 @@ class RestApiClient
             }
 		}
 
-//debug((array)json_decode($body, true),'RestApiClient.php');
-
         return (array)json_decode($body, true);
 	}
 
@@ -117,12 +107,6 @@ class RestApiClient
 
                 $jsonStart = strpos($body,  '"status":');
                 if ($jsonStart > 0) {
-
-//debug($body,'body2');
-//$txt = "<html><body>\n" . $body ."\n</body></html>";
-//file_put_contents($_SERVER["DOCUMENT_ROOT"].'/log.html',$txt);
-//file_put_contents($_SERVER["DOCUMENT_ROOT"].'/log.txt',$body);
-
                     $body = substr($body, $jsonStart - 6 );
                 }
 
@@ -139,11 +123,6 @@ class RestApiClient
 
         return (array)json_decode($body, true);
 	}
-
-
-
-
-
 
     public static function checkToRemove(
         string $authority,
@@ -188,7 +167,6 @@ class RestApiClient
 
         return (array)json_decode($string, true);
 	}
-
 
     public static function githubSearchToRemove(
         array &$extension,
@@ -283,6 +261,5 @@ class RestApiClient
             }
         }
     }
-
 
 }

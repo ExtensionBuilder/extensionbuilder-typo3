@@ -1,11 +1,13 @@
-<f:for each="{vendors}" as="vendorGroup" key="vendorGroupId">
+<f:comment>ToDo</f:comment>
+
+<f:for each="{vendors}" as="vendorAs">
     <f:render
         partial="Extension/List"
         arguments="{
-            extensions: vendorGroup.extensions,
-            headline: '',
-            name: vendorGroup.vendorName,
-            groupId: vendorGroup.vendorName,
+            lllBase: lllBase,
+            extensions: vendorAs.extensions,
+            vendorName: vendorAs.vendorName,
+            groupId: vendorAs.vendorName,
             collapsed: true
         }"
     />

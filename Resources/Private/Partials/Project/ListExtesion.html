@@ -1,3 +1,5 @@
+<f:comment>ToDo</f:comment>
+
 <div class="tx_t3_extensionbulder_module_table">
     <div class="panel panel-default overflow-visible">
         <div>
@@ -6,11 +8,8 @@
                     <thead>
                         <tr>
                             <th>
-                                <f:translate
-key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:projectExtensions"
-                                />
+                                <f:translate key="{lllBase}.project.xlf:projectExtensions" />
                                 ({project.extensions -> f:count()})
-
                                 <f:link.action
                                     action="addextension"
                                     controller="Project"
@@ -26,26 +25,29 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
                     </thead>
 
                     <tbody data-multi-record-selection-row-selection="true">
-                        <f:for each="{project.extensions}" as="projectData">
+                        <f:for each="{project.extensions}" as="projectAs">
+
+							
                             <tr>
                                 <td class="nowrap-disabled">
                                     <div class="name">
                                         <strong>
-                                            {projectData.extension.extensionName} 
-                                            <f:if condition="{projectData.extension.title} != ''">
-                                                ({projectData.extension.title})
+                                            {projectAs.extension.extensionName} 
+                                            <f:if condition="{projectAs.extension.title} != ''">
+                                                ({projectAs.extension.title})
                                             </f:if>
                                         </strong>
                                     </div>
-                                    <f:if condition="{projectData.extension.description} != ''">
+                                    <f:if condition="{projectAs.extension.description} != ''">
                                         <div class="text-muted" style="margin-top: 0.5em;">
-                                            <f:format.nl2br>{projectData.extension.description}</f:format.nl2br>
+                                            <f:format.nl2br>{projectAs.extension.description}</f:format.nl2br>
                                         </div>
                                     </f:if>
                                 </td>
                                 <td class="nowrap">
-<f:comment>
+
                                     <div class="btn-group" role="group">
+<f:comment>
                                         <f:if condition="{projectData.extensionOnOff}">
                                             <f:then>
                                                 <f:be.link
@@ -53,54 +55,56 @@ key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project
                                                     parameters="{
                                                         action: 'extensionOff',
                                                         projectKey: projectKey,
-                                                        extensionName: projectData.extension.extensionName
+                                                        extensionName: projectAs.extension.extensionName
                                                     }"
                                                     class="btn btn-default"
                                                     data="{bs-toggle: 'tooltip'}"
                                                     title=
 "{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
                                                 >
-                                                    <core:icon identifier="actions-edit-hide"/>
+                                                    <core:icon identifier="actions-edit-hide" />
                                                 </f:be.link>
 
                                             </f:then>
                                             <f:else>
+
                                                 <f:be.link
                                                     route="extensionbuilder_typo3.project.edit"
                                                     parameters="{
                                                         action: 'extensionOn',
                                                         projectKey: projectKey,
-                                                        extensionName: projectData.extension.extensionName
+                                                        extensionName: projectAs.extension.extensionName
                                                     }"
                                                     class="btn btn-default"
                                                     data="{bs-toggle: 'tooltip'}"
                                                     title=
 "{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
                                                 >
-                                                    <core:icon identifier="actions-edit-unhide"/>
+                                                    <core:icon identifier="actions-edit-unhide" />
                                                 </f:be.link>
                                             </f:else>
                                         </f:if>
-
-                                        <f:be.link
-                                            route="extensionbuilder_typo3.project.deleteextension"
-                                            parameters="{
-                                                projectKey: projectKey,
-                                                extensionName: projectData.extension.extensionName,
+</f:comment>
+                                        <f:link.action
+                                            action="deleteextension"
+                                            controller="Project"
+                                            arguments="{
+                                                'projectKey': projectKey,
+                                                'extensionName': projectAs.extension.extensionName
                                             }"
                                             class="btn btn-default t3js-modal-trigger"
                                             data="{
                                                 bs-toggle: 'tooltip',
                                                 severity: 'warning',
                                                 button-close-text: '{f:translate(key: \'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel\')}',
-                                                bs-content='{f:translate(key: \'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/Language/locallang.xlf:msg.delete\')}'
+                                                bs-content='{f:translate(key: \'{lllBase}.xlf:msg.delete\')}'
                                             }"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
                                         >
-                                            <core:icon identifier="actions-edit-delete"/>
-                                        </f:be.link>
+                                            <core:icon identifier="actions-edit-delete" />
+                                        </f:link.action>
                                     </div>
-</f:comment>
+
                                 </td>
                             </tr>
                         </f:for>

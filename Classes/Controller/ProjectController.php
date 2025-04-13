@@ -22,6 +22,7 @@ final class ProjectController extends ExtensionBuilderController
 
     private function projectList(): ResponseInterface {
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'projects' => $this->ebService->projects,
         ]);
@@ -80,6 +81,7 @@ final class ProjectController extends ExtensionBuilderController
         $project['extensions'] = [];
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'project' => $project,
         ]);
@@ -120,8 +122,6 @@ final class ProjectController extends ExtensionBuilderController
                         'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:projectSaved',
                     ),
                 );
-
-                return $this->projectList();
                 break;
 
             case 'extensionOn':
@@ -138,6 +138,7 @@ final class ProjectController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'project' => $this->ebService->projects[$projectKey],
             'projectKey' => $projectKey,
@@ -180,32 +181,12 @@ final class ProjectController extends ExtensionBuilderController
         $projectKey = $bodyParams['projectKey'];
 
         switch ($bodyParams['cmd'] ?? '') {
-            case 'extensionAdd':
+            case 'save':
                 $this->ebService->projects[$projectKey]['extensions'][$bodyParams['extensionName']] = [];
                 $this->ebService->projects[$projectKey]['extensions'][$bodyParams['extensionName']]['extensionOnOff'] = true;
                 $this->ebService->writeProject();
                 $this->ebService->readProject();
 
-                $this->moduleTemplate->assignMultiple([
-                    'configuration' => $this->ebService->configuration,
-                    'project' => $this->ebService->projects[$projectKey],
-                    'projectKey' => $projectKey,
-                ]);
-
-                $this->addDocHeaderModuleDropDown(
-                    $this->uriBuilder,
-                    'Project',
-                );
-                $this->addDocHeaderCloseButton(
-                    'list',
-                    'Project',
-                );
-                $this->addDocHeaderSaveButton(
-                    'project-edit-form',
-                    'Project',
-                );
-
-                return $this->moduleTemplate->renderResponse('Project/Edit');
                 break;
 		}
 
@@ -228,6 +209,7 @@ final class ProjectController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'projectKey' => $projectKey,
             'extensions'  => $extensions,
@@ -251,12 +233,12 @@ final class ProjectController extends ExtensionBuilderController
 
         $projectKey = $bodyParams['projectKey'];
 
-        unset($this->projects[$projectKey]['extensions'][$bodyParams['extensionName']]);
+        unset($this->ebService->projects[$projectKey]['extensions'][$bodyParams['extensionName']]);
 
         $this->ebService->writeProject();
-        $this->ebService->readProject();
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'project' => $this->ebService->projects[$projectKey],
             'projectKey' => $projectKey,

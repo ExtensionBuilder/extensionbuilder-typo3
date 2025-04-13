@@ -101,8 +101,6 @@ class Uri
         return $this->host;
 	}
 
-
-
     final function ping(): bool
     {
         $ping = false;

@@ -3,8 +3,8 @@
 	<file
 		source-language="en"
 		datatype="plaintext"
-		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.module.xlf"
-		date="2025-04-01T12:00:00Z"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.typo3.xlf"
+		date="2025-04-06T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
@@ -13,7 +13,6 @@
 			<trans-unit id="mlang_tabs_tab" resname="mlang_tabs_tab">
 				<source>TYPO3</source>
 			</trans-unit>
-
 
 		</body>
 	</file>

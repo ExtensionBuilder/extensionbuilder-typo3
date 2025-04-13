@@ -57,6 +57,7 @@ final class DeveloperController extends ExtensionBuilderController
 	    }
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'developer' => $this->ebService->developer,
             'vendors' => $vendors,

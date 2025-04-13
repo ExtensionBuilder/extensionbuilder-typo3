@@ -1,0 +1,36 @@
+<f:for each="{fields}" as="fieldsAs" key="fieldsKey">
+    <div class="form-group">
+
+        <label>
+            <f:if condition="{fieldsAs.lllPath}">
+                <f:then>
+                    <f:translate key="{lllBase}{fieldsAs.lllPath}.xlf:label.{fieldsKey}" /> ({fieldsAs.type})
+                </f:then>
+                <f:else>
+                    {fieldsKey} ({fieldsAs.type})
+                </f:else>
+            </f:if>
+        </label>
+
+        <f:if condition="{fieldsAs.type} == 'string'">
+            <div class="form-control-wrap">
+                <f:form.textfield
+                    id="{fieldsKey}"
+                    name="{fieldsDataName}[{fieldsKey}]"
+                    value="{fieldsData.{fieldsKey}}"
+                />
+            </div>
+        </f:if>
+
+        <f:if condition="{fieldsAs.type} == 'textarea'">
+            <div class="form-control-wrap">
+                <f:form.textarea
+                    id="{fieldsKey}"
+                    name="{fieldsDataName}[{fieldsKey}]"
+                    value="{{fieldsDataName}.{fieldsKey}}"
+                />
+            </div>
+        </f:if>
+
+    </div>
+</f:for>

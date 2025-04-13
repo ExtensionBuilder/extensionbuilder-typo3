@@ -1,3 +1,5 @@
+<f:comment>ToDo</f:comment>
+
 <div class="form-section" id="extension_name_row">
 
     <div class="form-group">
@@ -5,20 +7,16 @@
         <h1>
             <f:if condition="{configuration.validProKey}">
                 <f:then>
-                    <f:translate 
-                        key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:proVersion"
-                    />
+                    <f:translate key="{lllBase}.configuration.xlf:proVersion" />
                 </f:then>
                 <f:else>
-                    <f:translate
-                        key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:communityVersion"
-                    />
+                    <f:translate key="{lllBase}.configuration.xlf:communityVersion" />
                 </f:else>
             </f:if>
         </h1>
 
         <label>
-            <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:versionKey"/>
+            <f:translate key="{lllBase}.configuration.xlf:versionKey" />
         </label>
 
         <div class="form-control-wrap">
@@ -33,14 +31,10 @@
 
         <f:if condition="{configuration.validProKey} != true">
             <h2>
-                <f:translate 
-                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:proFeature"
-                />
+                <f:translate key="{lllBase}.configuration.xlf:proFeature" />
             </h2>
             <p>
-                <f:translate 
-                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:proFeatureDevelopmentCode"
-                />
+                <f:translate key="{lllBase}.configuration.xlf:proFeatureDevelopmentCode" />
             </p>
         </f:if>
 

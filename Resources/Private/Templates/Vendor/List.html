@@ -5,18 +5,20 @@
 >
     <f:layout name="Module" />
     <f:section name="Content">
+
     	<f:if condition="{vendorList -> f:count()} == 0">
         	<f:then>
                 <h1>
-                    <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:startNow" />
+                    <f:translate key="{lllBase}.vendor.xlf:startNow" />
                 </h1>
         	</f:then>
         	<f:else>
                 <h1>
-                    <f:translate key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:h1.list" />
+                    <f:translate key="{lllBase}.vendor.xlf:h1.list" />
                 </h1>
     			<f:render partial="Vendor/List" arguments="{_all}" />
         	</f:else>
     	</f:if>	
+
     </f:section>
 </html>

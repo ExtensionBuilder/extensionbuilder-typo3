@@ -34,6 +34,8 @@ use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 use ExtensionBuilder\ExtensionbuilderTypo3\Service\ExtensionBuilderService;
 
+use TYPO3\CMS\Backend\Form\NodeFactory;
+
 class ExtensionBuilderController extends ActionController
 {
 
@@ -65,8 +67,6 @@ class ExtensionBuilderController extends ActionController
     public const DROPDOWN_E = [
         'Extension' => 'list',
         'Project' => 'list',
-//        'NotesAndIdeas' => 'list',
-//'Food for thought' => 'list',
         'Vendor' => 'list',
         'Developer' => 'edit',
         'Configuration' => 'edit',
@@ -79,6 +79,7 @@ class ExtensionBuilderController extends ActionController
         protected LanguageServiceFactory $languageServiceFactory,
         protected ModuleTemplateFactory $moduleTemplateFactory,
         protected IconFactory $iconFactory,
+        protected NodeFactory $nodeFactory,
         protected ExtensionBuilderService $ebService,
     ) {
         $this->coreStatus = Tools\RestApiClient::getStatus(
@@ -95,7 +96,7 @@ class ExtensionBuilderController extends ActionController
             $this->ebService->developer['proVersionKey'] ?? '',
 		);
 
-// ToDo
+// ToDo - duplication?
         $this->isProKey = $this->keyStatus['proKeyActive'] ?? false;
         $this->ebService->configuration['proKey'] = $this->isProKey;
 
@@ -302,6 +303,8 @@ class ExtensionBuilderController extends ActionController
         string $vendorName = '',
         string $extensionName = '',
         string $projectKey = '',
+        string $componentsUid = '',
+        string $componentUid = '',
     ): void {
         $languageService = $GLOBALS['LANG'];
         $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
@@ -310,6 +313,8 @@ class ExtensionBuilderController extends ActionController
         if ($vendorName) { $parameters['vendorName'] =  $vendorName; }
 		if ($extensionName) { $parameters['extensionName'] =  $extensionName; }
         if ($projectKey) { $parameters['projectKey'] =  $projectKey; }
+        if ($componentsUid) { $parameters['componentsUid'] =  $componentsUid; }
+        if ($componentUid) { $parameters['componentUid'] =  $componentUid; }
 
         if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
             $icon = $this->iconFactory->getIcon('actions-close', Icon::SIZE_SMALL);
@@ -318,12 +323,12 @@ class ExtensionBuilderController extends ActionController
         }
 
         $closeButton = $buttonBar->makeLinkButton();
-// ToDo own LLL
+
         $closeButton
-            ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:close'))
+            ->setTitle($languageService->sL($this->ebService->lll . '.xlf:close'))
             ->setShowLabelText(true)
             ->setIcon($icon)
-            ->setHref($this->uriBuilder->uriFor($action,$parameters,$controller));
+            ->setHref($this->uriBuilder->uriFor($action, $parameters, $controller));
         $buttonBar->addButton($closeButton, ButtonBar::BUTTON_POSITION_LEFT, 2);
     }
 
@@ -340,9 +345,8 @@ class ExtensionBuilderController extends ActionController
             $icon = $this->iconFactory->getIcon('actions-save', IconSize::SMALL);
         }
 
-// ToDo own LLL
         $saveButton = $buttonBar->makeInputButton()
-            ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save'))
+            ->setTitle($languageService->sL($this->ebService->lll . '.xlf:save'))
             ->setShowLabelText(true)
             ->setIcon($icon)
             ->setName('cmd')
@@ -415,7 +419,6 @@ class ExtensionBuilderController extends ActionController
         $buttonBar->addButton($linkButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
     }
 
-
     final function addDocHeaderImportExampleVendor(
         string $importAction,
         string $importController,
@@ -436,7 +439,6 @@ class ExtensionBuilderController extends ActionController
             ->setHref($this->uriBuilder->uriFor($importAction, [], $importController));
         $buttonBar->addButton($addButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
     }
-
 
     final function flashMessage(
         string $flashMessage1,

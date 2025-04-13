@@ -7,12 +7,5 @@ services:
   ExtensionBuilder\ExtensionbuilderTypo3\:
     resource: '../Classes/*'
 
-  extension.remote.myremote:
-    class: 'TYPO3\CMS\Extensionmanager\Remote\TerExtensionRemote'
-    arguments:
-      $identifier: 'extension-builder'
-      $options:
-         remoteBase: 'https://typo3.extension-builder.dev//'
-    tags:
-      - name: 'extension.remote'
-        default: true
+  ExtensionBuilder\ExtensionbuilderTypo3\Service\ExtensionBuilderService:
+    shared: true

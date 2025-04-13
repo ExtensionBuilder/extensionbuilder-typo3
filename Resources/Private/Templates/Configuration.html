@@ -6,33 +6,40 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-        <f:comment>
-<f:debug inline="1">{_all}</f:debug>
-        </f:comment>
-
         <f:form
             action="save"
             controller="Configuration"
             id="configuration-form"
         >
             <h1>
-                <f:translate
-                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:extensionBuilderSettings"
-                />
+                <f:translate key="{lllBase}.configuration.xlf:extensionBuilderSettings" />
             </h1>
 
 <f:comment>
-            <f:render partial="Configutation/FieldsConfigutationVersion" arguments="{configuration: configuration}" />
+            <f:render partial="Configutation/FieldsConfigutationVersion" arguments="{lllBase: lllBase, configuration: configuration}" />
 </f:comment>
-			
-            <f:render partial="Configutation/FieldsConfigutation" arguments="{configuration: configuration}" />
+
+            <f:render partial="Configutation/FieldsConfigutation" arguments="{lllBase: lllBase, configuration: configuration}" />
 
             <f:if condition="{isProKey}">
                 <f:if condition="{builderLocal}">
-                    <f:render partial="Configutation/FieldsLocalBuild" arguments="{configuration: configuration}" />
+                    <f:render partial="Configutation/FieldsLocalBuild" arguments="{lllBase: lllBase, configuration: configuration}" />
                 </f:if>
             </f:if>
 
+<f:comment>
+            <f:render
+                partial="BuildFields"
+                arguments="{
+                    lllBase: lllBase,
+                    componentData: componentData,
+                    fields: configurationFields,
+                    fieldData: 'configuration'
+                }"
+            />
+</f:comment>
+
 		</f:form>
+
     </f:section>
 </html>

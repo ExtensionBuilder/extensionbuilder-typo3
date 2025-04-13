@@ -13,57 +13,55 @@ final class ComponentController extends ExtensionBuilderController
 {
 
     public function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+		$bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $component = $bodyParams['component'];
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
+        $componentsUid = $bodyParams['componentsUid'];
 
-        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $componentsDev = $this->ebService->extensionConfiguration['components'][$componentsUid];
+
+        $fields = array_merge(
+            ['uid' => [
+                'type' => 'string',
+                'lllPath' => '.componentproperty'
+            ]],
+            $componentsDev['fields']
+        );
+        $fieldsTabs = $componentsDev['fieldsTabs'] ?? ['general'];
+        $fieldsData = $bodyParams['fieldsData'] ?? [];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-
-// ToDo  LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:specifyextensionname'),
-                if (!preg_match("#^[a-zA-Z0-9]+$#", $bodyParams['componentUid'] ?? '') ) {
-                    $this->flashMessage(
-                        '',
-                        'nur zahlen und bucstaben',
+                $componentUid = $fieldsData['uid'];
+                if ($this->ebService->checkUid($this, $componentUid)) {
+                    unset($fieldsData['uid']);
+                    $this->ebService->writeExtensionComponent(
+                        $this,
+                        $vendorName,
+                        $extensionName,
+                        $componentUid,
+                        $fieldsData,
+                        $componentsDev['uid'],
+                        $componentsDev['title'],
                     );
-				}
-                if (preg_match("#^[0-9]+$#", $bodyParams['componentUid'] ?? '') ) {
-                    $this->flashMessage(
-                        '',
-                        'mindesetns ein bucstaben',
-                    );
+                    $fieldsData['uid'] = $componentUid;
                 }
-                if (!($bodyParams['componentUid'] ?? false)) {
-                    $this->flashMessage(
-                        '',
-                        'keine name',
-                    );
-				}
-
-                $this->ebService->writeExtensionComponent(
-                    $vendorName,
-                    $extensionName,
-                    $component['uid'],
-                    $bodyParams['componentUid'],
-                    $bodyParams['componentData'] ?? [],
-                );
-
                 break;
 		}
 
-        $componentData = [];
-
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
-            'componentUid' => $component['uid'],
-            'componentData' => $componentData,
+            'componentsTitle' => $componentsDev['title'],
+
+            'fields' => $fields,
+            'fieldsTabs' => $fieldsTabs,
+            'fieldsData' => $fieldsData,
+            'fieldsDataName' => 'fieldsData',
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -71,90 +69,105 @@ final class ComponentController extends ExtensionBuilderController
             'Extension',
             $vendorName,
             $extensionName,
-
         );
         $this->addDocHeaderSaveButton(
             'component-edit-form',
             'Component',
         );
 
-        return $this->moduleTemplate->renderResponse($component['add']);
+        return $this->moduleTemplate->renderResponse($componentsDev['add']);
     }
-
-    public function extensionEdit(): ResponseInterface {
-
-	}
 
     public function editAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $component = $bodyParams['component'];
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
-        $componentName = $bodyParams['componentName'];
-        $componentData = $bodyParams['componentData'];
+        $componentsUid = $bodyParams['componentsUid'];
+        $componentUid = $bodyParams['componentUid'];
+
+        $componentsDev = $this->ebService->extensionConfiguration['components'][$componentsUid];
+        $componentsFields = $componentsDev['fields'];
+        $propertysDev = $componentsDev['propertys'];
 
         $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $componentData = $extensionData[$componentsUid][$componentUid];
 
+        $fields = $componentsDev['fields'];
+        $fieldsTabs = $componentsDev['fieldsTabs'] ?? ['general'];
+        $fieldsData = $bodyParams['fieldsData'] ?? $extensionData[$componentsUid][$componentUid];
+        unset($fieldsData['propertys']);
+		
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
                 $this->ebService->writeExtensionComponent(
+                    $this,
                     $vendorName,
                     $extensionName,
-                    $component['uid'],
-                    $componentName,
-                    $componentData,
+                    $componentUid,
+                    $fieldsData,
+                    $componentsDev['uid'],
+                    $componentsDev['title'],
                 );
-
                 break;
 		}
 
-        $componentData = $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$component['uid']][$componentName] ?? [];
-
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
-            'componentUid' => $componentName,
-            'componentData' => $componentData,
+            'extensionData' =>$extensionData,
+            'componentsUid' => $componentsUid,
+            'componentUid' => $componentUid,
+            'componentData' =>$componentData,
+            'propertysDev' => $propertysDev,
+            'fields' => $fields,
+            'fieldsTabs' => $fieldsTabs,
+            'fieldsData' => $fieldsData,
+            'fieldsDataName' => 'fieldsData',
         ]);
-
 
         $this->addDocHeaderCloseButton(
             'edit',
             'Extension',
             $vendorName,
             $extensionName,
-
+            componentsUid: $componentsUid,
         );
         $this->addDocHeaderSaveButton(
             'component-edit-form',
             'Component',
+
         );
 
-        return $this->moduleTemplate->renderResponse($component['edit']);
+        return $this->moduleTemplate->renderResponse($componentsDev['edit']);
     }
 
     public function deleteAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $component = $bodyParams['component'];
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
+        $componentsUid = $bodyParams['componentsUid'];
+        $componentUid = $bodyParams['componentUid'];
 
         $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
 
         $this->ebService->deleteExtensionComponent(
+            $this,
             $vendorName,
             $extensionName,
-            $component['uid'],
-            $bodyParams['componentName'],
+            $componentsUid,
+            $componentUid,
         );
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'componentsDev' =>  $this->ebService->extensionConfiguration['components'],
             'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
@@ -168,6 +181,12 @@ final class ComponentController extends ExtensionBuilderController
         $this->addDocHeaderSaveButton(
             'extension-edit-form',
             'Extension',
+        );
+        $this->addDocHeaderBuildButton(
+            'build',
+            'Extension',
+            $vendorName,
+            $extensionName,
         );
 
         return $this->moduleTemplate->renderResponse('Extension/Edit');

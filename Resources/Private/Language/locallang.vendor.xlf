@@ -4,7 +4,7 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf"
-		date="2025-04-01T12:00:00Z"
+		date="2025-04-06T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
@@ -27,14 +27,6 @@
 				<source>Edit Vendor "%s"</source>
 			</trans-unit>
 
-			<trans-unit id="h1.duplicate" resname="h1.duplicate">
-				<source>Duplicate Vendor "%s"</source>
-			</trans-unit>
-
-			<trans-unit id="h1.rename" resname="h1.rename">
-				<source>Rename Vendor "%s"</source>
-			</trans-unit>
-
 
 			<trans-unit id="startNow" resname="startNow">
 				<source>To create your first extension, you must create a vendor.</source>
@@ -51,7 +43,6 @@
             <trans-unit id="specifyvendorname" resname="specifyvendorname">
                 <source>Please specify vendor name</source>
             </trans-unit>
-
 
 
 			<trans-unit id="vendorList" resname="vendorList">
@@ -77,15 +68,9 @@
 			</trans-unit>
 
 
-
 			<trans-unit id="renameVendor" resname="renameVendor">
 				<source>Renamed vendor: </source>
 			</trans-unit>
-
-
-
-
-
 
 		</body>
 	</file>

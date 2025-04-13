@@ -25,6 +25,7 @@ final class VendorController extends ExtensionBuilderController
         if (!($this->ebService->vendors ?? false)) { $this->ebService->noVendors = true; }
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'vendorList' => $this->ebService->vendors,
         ]);
@@ -77,10 +78,7 @@ final class VendorController extends ExtensionBuilderController
                                 $this->ebService->lll . '.vendor.xlf:savingVendor'
                             ) . $vendorName,
                         );
-
-                        return $this->vendorList();
                     } else {
-//debug(LocalizationUtility::translate($this->ebService->lll .'.vendor.xlf:vendornameexists'));
                         $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll . '.vendor.xlf:vendornameexists'));
                     }
                 } else {
@@ -92,6 +90,7 @@ final class VendorController extends ExtensionBuilderController
         if (!($vendorData ?? false)) { $vendorData = []; }
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'vendorData' => $vendorData,
         ]);
@@ -131,12 +130,11 @@ final class VendorController extends ExtensionBuilderController
                         $this->ebService->lll . '.vendor.xlf:savingVendor'
                     ) . $vendorName,
                 );
-
-                return $this->vendorList();
                 break;
 		}
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
             'vendorData' => $vendorData,
         ]);
@@ -154,105 +152,6 @@ final class VendorController extends ExtensionBuilderController
         );
 
     	return $this->moduleTemplate->renderResponse('Vendor/Edit');
-    }
-
-    final function duplicateActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-
-        $vendorNameOrg = $bodyParams['vendorName'];
-        $vendorData = $this->vendors[$vendorNameOrg];
-
-        switch ($bodyParams['cmd'] ?? '') {
-            case 'save':
-                $vendorNameNew = $bodyParams['vendorData']['vendorName'];
-
-                $this->ebService->vendors[$vendorNameNew] = $this->vendors[$vendorNameOrg];
-                $this->ebService->vendors[$vendorNameNew]['vendorName'] = $vendorNameNew;
-
-                $this->ebService->writeVendor($vendorNameNew);
-
-                $this->flashMessage(
-                    '',
-                    $this->getTranslatedLabel(
-                        $this->request,
-                        $this->ebService->lll . '.vendor.xlf:duplicateVendor'
-                    ) . $bodyParams['vendorData']['vendorName'],
-                );
-
-                return $this->vendorList();
-                break;
-		}
-
-        $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->configuration,
-            'vendorData' => $vendorData,
-        ]);
-
-        $this->addDocHeaderModuleDropDown(
-            'Vendor',
-        ); 
-        $this->addDocHeaderCloseButton(
-            'list',
-            'Vendor',
-        );
-        $this->addDocHeaderSaveButton(
-            'vendor-edit-form',
-            'Vendor',
-        );
-
-    	return $this->moduleTemplate->renderResponse('Vendor/Duplicate');
-    }
-
-    final function renameActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-
-        $vendorName = $bodyParams['vendorName'] ?? '';
-
-        $vendorData = $this->ebService->vendors[$vendorName];
-
-        switch ($bodyParams['cmd'] ?? '') {
-            case 'save':
-
-//                Tools\ConfigArray::arrayMerge($vendorData, $parsedBody['vendorData']);
-
-//$this->writeVendor($vendorName);
-                $this->flashMessage(
-                    '',
-                    'not yet implemented',
-                );
-
-//                $this->flashMessage(
-//                    '',
-//                    $this->getTranslatedLabel(
-//                        $request,
-//                        $this->ebService->lll . '.vendor.xlf:renameVendor'
-//                    ) . $vendorName,
-//                );
-
-                return $this->vendorList();
-                break;
-		}
-
-        $this->moduleTemplate->assignMultiple([
-            'configuration' => $this->ebService->configuration,
-            'vendorData' => $vendorData,
-        ]);
-
-        $this->addDocHeaderModuleDropDown(
-            'Vendor',
-        );
-        $this->addDocHeaderCloseButton(
-            'list',
-            'Vendor',
-        );
-        $this->addDocHeaderSaveButton(
-            'vendor-edit-form',
-            'Vendor',
-        );
-
-    	return $this->moduleTemplate->renderResponse('Vendor/Rename');
     }
 
     final function deleteAction(): ResponseInterface {

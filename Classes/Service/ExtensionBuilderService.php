@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace ExtensionBuilder\ExtensionbuilderTypo3\Service;
 
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Core\ClassLoadingInformation;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -16,9 +15,9 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
-// ToDo Tools\ExtensionConfiguration remove funktion in this
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
-class ExtensionBuilderService implements SingletonInterface
+class ExtensionBuilderService
 {
     public array $configuration = [];
     public array $developer = [];
@@ -26,8 +25,11 @@ class ExtensionBuilderService implements SingletonInterface
     public array $vendorsAndExtensions = [];
     public array $projects = [];
 
+    public array $systemExtensions = [];
     public array $localExtensions = [];
     public array $foreignExtensions = [];
+    public array $tcaTypes = [];
+    public array $extensionConfiguration = [];
 
     public bool $isComposerMode = false;
     public bool $noDeveloper = true;
@@ -36,6 +38,7 @@ class ExtensionBuilderService implements SingletonInterface
     public bool $builderLocal = false;
     public bool $isProKey = false;
 
+    public array $configurator = [];
     public string $lll = 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang';
 
     private string $vendorName;
@@ -45,6 +48,8 @@ class ExtensionBuilderService implements SingletonInterface
     private string $dataTypo3Path;
     private string $buildPath;
     private string $projectPath;
+
+
 
     public function __construct()
     {
@@ -57,8 +62,14 @@ class ExtensionBuilderService implements SingletonInterface
         self::readVendorsAndExtensions();
         self::readProject();
 
+        self::setupSystemExtensions();
         self::getLocalExtension();
         self::getForeignExtension();
+
+        self::setupTcaTypes();
+        self::setupExtensionConfiguration();
+
+        self::setupConfigurator();
 
         $this->coreStatus = Tools\RestApiClient::getStatus(
             $this->configuration['typo3']['builderUrl'],
@@ -139,86 +150,13 @@ class ExtensionBuilderService implements SingletonInterface
             $this->configuration['typo3']['htaccessAdd'] = true;
         }
 
-        $this->configuration['typo3']['components'] = [];
-        if (!($this->configuration['typo3']['components'] ?? false)) {
-//            $changeConfiguration = true;
-            $this->configuration['typo3']['components'] = [];
-
-            $this->configuration['typo3']['components'][] = [
-                'uid' => 'commands',
-                'title' => 'Command',
-                'controller' => 'Component',
-                'add' => 'ComponentAdd',
-                'edit' => 'Command/Edit',
-            ] ;
-            $this->configuration['typo3']['components'][] = [
-                'uid' => 'schedulers',
-                'title' => 'Scheduler',
-                'controller' => 'Component',
-                'add' => 'ComponentAdd',
-               'edit' => 'Scheduler/Edit',
-
-            ] ;
-
-            $this->configuration['typo3']['components'][] = [
-                'uid' => 'viewHelpers',
-                'title' => 'ViewHelper',
-                'controller' => 'Component',
-                'add' => 'ComponentAdd',
-                'edit' => 'ViewHelper/Edit',
-            ] ;
-
-//            $this->configuration['typo3']['components'][] = [
-//                'uid' => 'plugins',
-//                'title' => 'Plugin',
-//                'controller' => 'Component',
-//                'add' => 'ComponentAdd',
-//                'edit' => 'Plugi/Edit',
-//            ] ;
-
-//            $this->configuration['typo3']['components'][] = [
-//                'uid' => 'tables',
-//                'title' => 'Table',
-//                'controller' => 'Component',
-//                'add' => 'ComponentAdd',
-//                'edit' => 'Table/Edit',
-//            ] ;
-
-//            $this->configuration['typo3']['components'][] = [
-//                'uid' => 'eventListenes',
-//                'title' => 'EventListener',
-//                'controller' => 'Component',
-//                'add' => 'ComponentAdd',
-//                'edit' => 'EventListener/Edit',
-//            ] ;
-
-//            $this->configuration['typo3']['components'][] = [
-//                'uid' => 'contentElements',
-//                'title' => 'ContentElement',
-//                'controller' => 'Component',
-//                'add' => 'ComponentAdd',
-//                'edit' => 'ContentElement/Edit',
-//            ] ;
-
-//            $this->configuration['typo3']['components'][] = [
-//                'uid' => 'enumeration',
-//                'title' => 'Enumeration',
-//                'controller' => 'Component',
-//                'add' => 'ComponentAdd',
-//                'edit' => 'Enumeration/Edit',
-//            ] ;
-
-//            $this->configuration['typo3']['components'][] = [
-//                'uid' => '',
-//                'title' => '',
-//                'controller' => 'Component',
-//                'add' => 'ComponentAdd',
-//                'edit' => '/Edit',
-//            ] ;
-
-
-        }
-//        unset($this->configuration['typo3']['components']);
+        if (!($this->configuration['typo3']['extensionBuild'] ?? false)) {
+            $this->configuration['typo3']['extensionBuild']['t3Version'] = [
+                '12' => 'stable',
+                '13' => 'stable',
+                '13' => 'dev',
+            ];
+		}
 
 		$this->projectPath = 
             Environment::getProjectPath() . DIRECTORY_SEPARATOR;
@@ -290,11 +228,11 @@ class ExtensionBuilderService implements SingletonInterface
                 }
     		}
 		}
-
 	}
 
     final function writeConfiguration(): void
     {
+        unset($this->configuration['typo3']['extensionBuild']);
         unset($this->configuration['typo3']['component']);
 
         $configurationJson = [];
@@ -464,8 +402,6 @@ class ExtensionBuilderService implements SingletonInterface
         } else {
 // ToDo no ExampleVendor ZIP
         }
-
-
 	}
 
     final function readProject(): void
@@ -553,8 +489,6 @@ class ExtensionBuilderService implements SingletonInterface
 // ToDo
 	}
 
-
-
     final function getLocalExtension(): void
 	{
         $returnArray = [];
@@ -614,8 +548,6 @@ class ExtensionBuilderService implements SingletonInterface
         return $array;
     }
 
-
-
     private function readVendorsAndExtensions(): void
     {
         $extensionsFolder = $this->dataTypo3Path;
@@ -630,12 +562,14 @@ class ExtensionBuilderService implements SingletonInterface
                 $extensionsFolder
                 . $vendorName, 'json'
             );
+
             foreach ($vendorJsonList ?? [] as $json) {
                 $jsonData = Tools\Json::read(
                     $extensionsFolder
                     . $vendorName . DIRECTORY_SEPARATOR
                     . $json
                 );
+
                 if ($jsonData ?? false) {
                     if ($jsonData['vendor'] ?? false) {
                         $mdAlgo = 'sha512';
@@ -657,6 +591,7 @@ class ExtensionBuilderService implements SingletonInterface
 
                         // Create extension list
                         $extensionList = Tools\Folder::scanForDirectory($extensionsFolder . DIRECTORY_SEPARATOR . $vendorName);
+
                         foreach ($extensionList ?? [] as $extensionKey => $extensionName) {
 
                             // Read Extension
@@ -671,9 +606,8 @@ class ExtensionBuilderService implements SingletonInterface
                                 . $vendorName . DIRECTORY_SEPARATOR
                                 . $extensionName . DIRECTORY_SEPARATOR;
 
-
                             $vendorsAndExtensions[$vendorName]['extensions'][$extensionName] =
-                                Tools\ExtensionConfiguration::read($extensionPath);
+                                self::readExtensionHelper($extensionPath);
 
                             if (!($vendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension']['type'] ?? false)) {
                                 $vendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension']['type'] = "extension";
@@ -708,7 +642,7 @@ class ExtensionBuilderService implements SingletonInterface
             $vendorDataForJson['vendor'] = $vendor;
             unset($vendorDataForJson['vendor']['extensions']);
 
-            Tools\ExtensionConfiguration::write(
+            self::writeExtensionHelper(
                 $vendorPath,
                 'vendor.json',
                 $vendorDataForJson
@@ -831,7 +765,7 @@ class ExtensionBuilderService implements SingletonInterface
                                         $extensionDataForJson[$tableName] = [];
                                         $extensionDataForJson[$tableName]['columns'] = [];									
                                         $extensionDataForJson[$tableName]['columns'] = $table['columns'];
-                                        Tools\ExtensionConfiguration::writeSub(
+                                        self::writeSubExtensionHelper(
                                             'tables',
                                             $extensionPath,
                                             'table.' . $tableName . '.2.columns.json',
@@ -844,7 +778,7 @@ class ExtensionBuilderService implements SingletonInterface
                                         $extensionDataForJson[$tableName] = [];
                                         $extensionDataForJson[$tableName]['controller'] = [];									
                                         $extensionDataForJson[$tableName]['controller'] = $table['controller'];
-                                        Tools\ExtensionConfiguration::writeSub(
+                                        self::writeSubExtensionHelper(
                                             'tables',
                                             $extensionPath,
                                             'table.' . $tableName . '.3.controller.json',
@@ -857,7 +791,7 @@ class ExtensionBuilderService implements SingletonInterface
                                         $extensionDataForJson[$tableName] = [];
                                         $extensionDataForJson[$tableName]['tabs'] = [];									
                                         $extensionDataForJson[$tableName]['tabs'] = $table['tabs'];
-                                        Tools\ExtensionConfiguration::writeSub(
+                                        self::writeSubExtensionHelper(
                                             'tables',
                                             $extensionPath,
                                             'table.' . $tableName . '.4.tabs.json',
@@ -871,7 +805,7 @@ class ExtensionBuilderService implements SingletonInterface
                                         $extensionDataForJson[$tableName] = [];
                                         $extensionDataForJson[$tableName]['palettes'] = [];									
                                         $extensionDataForJson[$tableName]['palettes'] = $table['palettes'];
-                                        Tools\ExtensionConfiguration::writeSub(
+                                        self::writeSubExtensionHelper(
                                             'tables',
                                             $extensionPath,
                                             'table.' . $tableName . '.5.palettes.json',
@@ -882,7 +816,7 @@ class ExtensionBuilderService implements SingletonInterface
 
                                     $extensionDataForJson = [];
                                     $extensionDataForJson[$tableName] = $table; // ToDo array  merge?
-                                    Tools\ExtensionConfiguration::writeSub(
+                                    self::writeSubExtensionHelper(
                                         'tables',
                                         $extensionPath,
                                         'table.' . $tableName . '.1.json',
@@ -895,7 +829,7 @@ class ExtensionBuilderService implements SingletonInterface
                                 foreach ($extensionData ?? [] as $enumerationName => $enumeration) {
                                     $extensionDataForJson = [];
                                     $extensionDataForJson[$enumerationName] = $enumeration; // ToDo array  merge?
-                                    Tools\ExtensionConfiguration::writeSub(
+                                    self::writeSubExtensionHelper(
                                         'enumerations',
                                         $extensionPath,
                                         'enumeration.' . $enumerationName . '.json',
@@ -906,8 +840,9 @@ class ExtensionBuilderService implements SingletonInterface
 
                             default:
                                 $extensionDataForJson = [];
-                                $extensionDataForJson[$extensionDataName] = $extensionData; // ToDo array  merge?
-                                Tools\ExtensionConfiguration::write(
+                                $extensionDataForJson[$extensionDataName] = $extensionData;
+
+                                self::writeExtensionHelper(
                                     $extensionPath,
                                     $extensionDataName . '.json',
                                     $extensionDataForJson
@@ -917,6 +852,48 @@ class ExtensionBuilderService implements SingletonInterface
                 }
 		    }
 		}
+    }
+
+    private static function readExtensionHelper(
+        string $pathToConfigurationJson,
+    ): array {
+        $return = [];
+        $extensionJsonList = Tools\Folder::scanForFile($pathToConfigurationJson, 'json');
+
+        foreach ($extensionJsonList ?? [] as $json) {
+            $jsonData = Tools\Json::read($pathToConfigurationJson. DIRECTORY_SEPARATOR . $json);
+            if (($jsonData ?? false)) {
+				Tools\ConfigArray::arrayMerge($return, $jsonData);
+            }
+        }
+
+        return $return;
+    }
+
+    private static function writeExtensionHelper(
+        string $pathToConfigurationJson,
+        string $fileName,
+        array $arrayForJson,
+    ): void {
+        GeneralUtility::mkdir_deep($pathToConfigurationJson);
+
+        Tools\Json::write(
+            $pathToConfigurationJson . DIRECTORY_SEPARATOR
+            . $fileName,
+            $arrayForJson,
+        );
+    }
+
+    private function writeSubExtensionHelper(
+        string $sub,
+        string $pathToConfigurationJson,
+        string $jsonFileName,
+        array $arrayForJson,
+    ): void {
+        $tmpArrayForJson = [];
+        $tmpArrayForJson[$sub] = $arrayForJson;
+
+        self::writeExtensionHelper($pathToConfigurationJson, $jsonFileName, $tmpArrayForJson);
     }
 
     public function deleteExtension(
@@ -935,64 +912,152 @@ class ExtensionBuilderService implements SingletonInterface
         }
 	}
 
+    public function checkUid(
+        ActionController $actionController,
+        string &$name,
+    ): bool {
+
+        if (!preg_match("#^[a-zA-Z0-9]+$#", $name ?? '') ) {
+             $actionController->flashMessage(
+                 '',
+//LocalizationUtility::translate($this->lll .'.extension.xlf:specifyextensionname'),
+                 'Only letters and numbers allowed.',
+             );
+             return false;
+        }
+        if (preg_match("#^[0-9]+$#", $name ?? '') ) {
+             $actionController->flashMessage(
+                 '',
+//LocalizationUtility::translate($this->lll .'.extension.xlf:specifyextensionname'),
+                 'mindesetns ein bucstaben',
+             );
+             return false;
+        }
+        if (!($name ?? false)) {
+            $actionController->flashMessage(
+                '',
+//LocalizationUtility::translate($this->lll .'.extension.xlf:specifyextensionname'),
+                'keine name',
+            );
+            return false;
+        }
+
+        return true;
+	}
 
 // ToDo trim($str," ")
 
     public function writeExtensionComponent(
-                    string $vendorName,
-                    string $extensionName,
-                    string $componentsName,
-                    string $componentName,
-                    array $componentData,
+        ActionController $actionController,
+        string $vendorName,
+        string $extensionName,
+        string $componentUid,
+        array $componentData,
+        string $componentsName,
+        string $componentsTitle,
     ): void {
-            $extensionsFolder =
-                $this->dataTypo3Path
-                . $vendorName . DIRECTORY_SEPARATOR
-                . $extensionName . DIRECTORY_SEPARATOR;
+        $extensionsFolder =
+            $this->dataTypo3Path
+            . $vendorName . DIRECTORY_SEPARATOR
+            . $extensionName . DIRECTORY_SEPARATOR;
 
-            $componentsData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] ?? [];
+        $componentsData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] ?? [];
 
-            $componentDataForJson = [];
-            $componentDataForJson[$componentName] = $componentData;
+        $componentDataForJson = [];
+        $componentDataForJson[$componentUid] = $componentData;
 
-		    Tools\ConfigArray::arrayMerge($componentsData, $componentDataForJson);
+		Tools\ConfigArray::arrayMerge($componentsData, $componentDataForJson);
 
-            unset($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName]);
-            $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] = $componentsData;
+        unset($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName]);
+        $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] = $componentsData;
 
-            $componentDataForJson = [];
-            $componentDataForJson[$componentsName] = $componentsData;
-            Tools\ExtensionConfiguration::write(
-                $extensionsFolder,
-                $componentsName . '.json',
-                $componentDataForJson,
-            );
+        $componentDataForJson = [];
+        $componentDataForJson[$componentsName] = $componentsData;
+
+        self::writeExtensionHelper(
+            $extensionsFolder,
+            $componentsName . '.json',
+            $componentDataForJson,
+        );
+
+        $actionController->flashMessage(
+            '',
+// ToDo LLL
+            'Save ' . $componentsTitle . ' - '. $componentUid,
+        );
 	}
 
     public function deleteExtensionComponent(
-                    string $vendorName,
-                    string $extensionName,
-                    string $componentsName,
-                    string $componentName,
+        ActionController $actionController,
+        string $vendorName,
+        string $extensionName,
+        string $componentsUid,
+        string $componentUid,
+        string $propertysUid = '',
+        string $propertyUid = '',
     ): void {
-            $extensionsFolder =
-                $this->dataTypo3Path
-                . $vendorName . DIRECTORY_SEPARATOR
-                . $extensionName . DIRECTORY_SEPARATOR;
+        $extensionsFolder =
+            $this->dataTypo3Path
+            . $vendorName . DIRECTORY_SEPARATOR
+            . $extensionName . DIRECTORY_SEPARATOR;
 
-            unset($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName][$componentName]);
+        $componentsDev = $this->extensionConfiguration['components'][$componentsUid];
 
-            $componentsData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsName] ?? [];
+        if (!$propertysUid) {
+            $title = $componentsDev['title'];
+            $unlinkFile = $extensionsFolder . $componentsUid . '.json';
+
+            unset($this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsUid][$componentUid]);
+
+            $componentData = $this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsUid] ?? [];
+
+            if($componentData) {
+                $componentDataForJson = [];
+                $componentDataForJson[$componentsUid] = $componentData;
+
+                self::writeExtensionHelper(
+                    $extensionsFolder,
+                    $componentsUid . '.json',
+                    $componentDataForJson
+                );
+            } else {
+                if(is_file($unlinkFile)) {
+                    unlink($unlinkFile);
+                }
+            }
+
+            $actionController->flashMessage(
+                '',
+// ToDo LLL
+                'Delete ' . $title . ' - '. $componentUid,
+            );
+
+        } else {
+            $title = $componentsDev['propertys'][$propertysUid]['title'];
+
+            $componentData = &$this->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsUid];
+            unset($componentData[$componentUid]['propertys'][$propertysUid][$propertyUid]);
+
+            if (count($componentData[$componentUid]['propertys'][$propertysUid]) === 0) {
+                unset($componentData[$componentUid]['propertys'][$propertysUid]);
+            }
 
             $componentDataForJson = [];
-            $componentDataForJson[$componentsName] = $componentsData;
-            Tools\ExtensionConfiguration::write(
+            $componentDataForJson[$componentsUid] = $componentData;
+
+            self::writeExtensionHelper(
                 $extensionsFolder,
-                $componentsName . '.json',
+                $componentsUid . '.json',
                 $componentDataForJson
             );
-	}
 
+            $actionController->flashMessage(
+                '',
+// ToDo LLL
+                'Delete ' . $title . ' property '. $componentUid,
+            );
+        }
+	}
 
     // Area for generating the extension
 
@@ -1011,7 +1076,7 @@ class ExtensionBuilderService implements SingletonInterface
 
 		if (
             ExtensionManagementUtility::isLoaded('extensionbuilder_typo3_core')
-            && ($this->configuration['buildLocal'] ?? false)
+            && ($this->configuration['typo3']['buildLocal'] ?? false)
         ) {
             $buildOk = self::buildLocal();
         } else {
@@ -1158,7 +1223,7 @@ $composerExtensionName = strtolower($extensionName);
         GeneralUtility::mkdir_deep($sourcePathCore);
         Tools\Folder::copy($sourcePath, $sourcePathCore);
 
-		$extConf = Tools\ExtensionConfiguration::read($sourcePathCore);
+		$extConf = self::readExtensionHelper($sourcePathCore);
 
         // Erzeuge Extesnsion
         $buildStart = microtime(true);
@@ -1318,7 +1383,7 @@ $composerExtensionName = strtolower($extensionName);
 		Tools\Folder::copy($extensionDevelopmentSourcePath, $extensionSourceExportPath);
 
         // Copyback ToDo 
-        $extConf = Tools\ExtensionConfiguration::read($extensionDevelopmentSourcePath);
+        $extConf = self::readExtensionHelper($extensionDevelopmentSourcePath);
         if ($extConf['extensionBuild']['copyBack'] ?? false) {
             $extensionName = $extConf['extension']['extensionName'];
             $extPath =
@@ -1407,6 +1472,554 @@ $composerExtensionName = strtolower($extensionName);
         );
 
         return $multipart;
+	}
+
+    private function setupConfigurator(): void
+    {
+        $lll = 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:';
+        $fields = [];
+        $fields['builderUrl'] = ['type' => 'string','lll' => $lll];
+        $fields['builderApi'] = ['type' => 'string','lll' => $lll];
+        $fields['authUrl'] = ['type' => 'string','lll' => $lll];
+        $fields['authApi'] = ['type' => 'string','lll' => $lll];
+        $fields['dataPath'] = ['type' => 'string','lll' => $lll];
+        $fields['buildPath'] = ['type' => 'string','lll' => $lll];
+        $fields['composerPath'] = ['type' => 'string','lll' => $lll];
+        $fields['composerAdd'] = ['type' => 'string','lll' => $lll];
+        $fields['htaccessAdd'] = ['type' => 'string','lll' => $lll];
+        $this->configurator['configuration'] = ['fields' => $fields];
+
+        $lll = 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:';
+        $fields = [];
+        $fields['developerId'] = ['type' => 'string','lll' => $lll];
+        $fields['author'] = ['type' => 'string','lll' => $lll];
+        $fields['2'] = ['type' => 'string','lll' => $lll];
+        $this->configurator['developer'] = ['fields' => $fields];
+
+        $lll = 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:';
+        $fields = [];
+        $fields[''] = ['type' => 'string','lll' => $lll];
+        $fields['1'] = ['type' => 'string','lll' => $lll];
+        $this->configurator['vendor'] = ['fields' => $fields];
+
+        $lll = 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:';
+        $fields = [];
+        $fields[''] = ['type' => 'string','lll' => $lll];
+        $fields['1'] = ['type' => 'string','lll' => $lll];
+        $this->configurator['projekt'] = ['fields' => $fields];
+
+        $lll = 'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf:';
+        $fields = [];
+        $fields[''] = ['type' => 'string','lll' => $lll];
+        $fields['1'] = ['type' => 'string','lll' => $lll];
+        $this->configurator['extension'] = ['fields' => $fields];
+
+//debug($this->configurator);
+
+	}
+
+    private function setupSystemExtensions(): void
+    {
+        $systemExtensions = &$this->systemExtensions;
+
+        $systemExtensions['adminpanel'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['backend'] = ['t3v'=> '12', 'selectable' => false];
+        $systemExtensions['belog'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['beuser'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['core'] = ['t3v'=> '12', 'selectable' => false];
+        $systemExtensions['dashboard'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['extbase'] = ['t3v'=> '12', 'selectable' => false];
+        $systemExtensions['extensionmanager'] = ['t3v'=> '12', 'selectable' => false];
+        $systemExtensions['felogin'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['filelist'] = ['t3v'=> '12', 'selectable' => false];
+        $systemExtensions['filemetadata'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['fluid'] = ['t3v'=> '12', 'selectable' => false];
+        $systemExtensions['fluid_styled_content'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['form'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['frontend'] = ['t3v'=> '12', 'selectable' => false];
+        $systemExtensions['impexp'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['indexed_search'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['info'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['install'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['linkvalidator'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['lowlevel'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['opendocs'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['reactions'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['recycler'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['redirects'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['reports'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['rte_ckeditor'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['scheduler'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['seo'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['setup'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['sys_note'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['tstemplate'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['viewpage'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['webhooks'] = ['t3v'=> '12', 'selectable' => true];
+        $systemExtensions['workspaces'] = ['t3v'=> '12', 'selectable' => true];
+    }
+
+    private function setupTcaTypes(): void
+    {
+        $tcaTypes = &$this->tcaTypes;
+
+        $tcaTypes['category'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Category/Index.html',
+            'sql' => ['automatically' => 12, 'type' => 'INT', 'unsigned' => true, 'notNull' => true, 'default' => 0],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'category']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['check'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Check/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'SMALLINT', 'unsigned' => true, 'notNull' => true, 'default' => 0],
+            'php' => ['type' => 'bool', 'default' => 'false'],
+            'tca' => ['config' => ['type' => 'check']],
+            'fluid' => [],
+        ];
+
+        // Alias check
+        $tcaTypes['bool'] = $tcaTypes['check'];
+
+        // Alias check
+        $tcaTypes['checkboxToggle'] = $tcaTypes['check'];
+        $tcaTypes['checkboxToggle']['tca']['config']['renderType'] ='checkboxToggle';
+
+        // Alias check
+        $tcaTypes['checkboxLabeledToggle'] = $tcaTypes['check'];
+        $tcaTypes['checkboxLabeledToggle']['tca']['config']['renderType'] ='checkboxLabeledToggle';
+        $tcaTypes['checkboxLabeledToggle']['tca']['config']['items'] = [];
+        $tcaTypes['checkboxLabeledToggle']['tca']['config']['items']['label'] = 'Missing label';
+        $tcaTypes['checkboxLabeledToggle']['tca']['config']['items']['labelChecked'] = 'Enabled';
+        $tcaTypes['checkboxLabeledToggle']['tca']['config']['items']['labelUnchecked'] = 'Disabled';
+
+        $tcaTypes['color'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Color/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'VARCHAR', 'size' => 7, 'notNull' => true, 'default' => ''],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'color']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['datetime'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Datetime/Index.html',
+            'sql' => ['automatically' => 12, 'type' => 'BIGINT', 'default' => 0],
+            'php' => ['type' => '?\\DateTime', 'default' => 'null'],
+            'tca' => ['config' => ['type' => 'datetime', 'nullable' => true, 'size' => 20, 'default' => 0]],
+            'fluid' => ['type' => 'datetime-local'],
+        ];
+
+        // adte alias for datetime
+        $tcaTypes['date'] = $tcaTypes['datetime'];
+        $tcaTypes['date'] = [
+            'tca' => ['config' => ['format' => 'date']],
+            'fluid' => ['type' => 'date'],
+        ];
+
+        $tcaTypes['email'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Email/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'VARCHAR', 'size' => 255, 'notNull' => true, 'default' => ''],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' =>['type' => 'email']],
+            'fluid' => ['f' => 'f:link.email', 'value' => 'email'],
+        ];
+
+        $tcaTypes['file'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/File/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'INT', 'unsigned' => true, 'notNull' => true, 'default' => 0],
+            'php' => ['type' => 'string', 'default' => '0'],
+            'tca' => ['config' => ['type' => 'file']],
+            'fluid' => ['f' => 'f:image'],
+        ];
+
+// ToDo
+        // upload alias for file
+        $tcaTypes['uploadToFile'] = $tcaTypes['file'];
+        $tcaTypes['uploadToFile']['fluid']['f'] = 'f:form.upload';
+
+        $tcaTypes['flex'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Flex/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'LONGTEXT', 'default' => 'null'],
+            'php' => ['type' => 'string', 'default' => ''],
+            'tca' => ['config' => ['type' => 'flex']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['folder'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Folder/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'LONGTEXT'],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'folder']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['group'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Group/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'LONGTEXT'],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'group']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['imageManipulation'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/ImageManipulation/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'LONGTEXT'],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'imageManipulation']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['inline'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Inline/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'LONGTEXT'],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'inline']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['input'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Input/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'VARCHAR', 'size' => 255, 'notNull' => true, 'default' => ''],
+            'php' => ['type' => 'string', 'default' => ''],
+            'tca' => ['config' => ['type' => 'input']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['json'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Json/Index.html',
+            'sql' => ['automatically' => 12, 'type' => 'JSON'],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'json']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['language'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Language/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'INT', 'notNull' => true, 'default' => 0, ],
+            'php' => ['type' => 'int'],
+            'tca' => ['config' => ['type' => 'language']],
+            'fluid' => [],
+        ];
+
+        // country alias of language
+        $tcaTypes['country'] = $tcaTypes['language'];
+        $tcaTypes['country']['fluid']['f'] = 'f:form.countrySelect';
+
+        $tcaTypes['link'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Link/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'VARCHAR', 'size' => 2048, 'notNull' => true, 'default' => ''],
+            'php' => ['type' => 'string', 'default' => ''],
+            'tca' => ['config' => ['type' => 'link']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['none'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/None/Index.html',
+            'noSql' => true,
+            'noDomain' => true,
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'none']],
+            'fluid' => [],
+        ];
+
+        // map alias for none
+        $tcaTypes['map'] = $tcaTypes['none'];
+
+        // repetition alias for none
+        $tcaTypes['repetition'] = $tcaTypes['none'];
+
+        $tcaTypes['number'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Number/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'INT', 'notNull' => true, 'default' => 0],
+            'php' => ['type' => 'int', 'default' => '0'],
+            'tca' => ['config' => ['type' => 'number']],
+            'fluid' => [],
+        ];
+
+        // decimal alias of number
+        $tcaTypes['decimal'] = $tcaTypes['number'];
+        $tcaTypes['decimal']['sql']['type'] = 'DECIMAL';
+        $tcaTypes['decimal']['sql']['size'] = '10, 2';
+        $tcaTypes['decimal']['php']['type'] = 'float';
+        $tcaTypes['decimal']['tca']['config']['format'] = 'decimal';
+
+        $tcaTypes['passthrough'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/12.4/en-us/ColumnsConfig/Type/Passthrough/Index.html',
+            'sql' => ['automatically' => false],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'passthrough']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['password'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Password/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'VARCHAR', 'size' => 255, 'notNull' => true, 'default' => ''],
+            'php' => ['type' => 'string', 'default' => ''],
+            'tca' => ['config' => ['type' => 'password']],
+            'fluid' => ['f' => 'f:form.password'],
+        ];
+
+        $tcaTypes['radio'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Radio/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'VARCHAR', 'size' => 255, 'notNull' => true, 'default' => ''],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'radio']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['selectSingle'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Select/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'INT', 'unsigned' => true, 'notNull' => true, 'default' => 0, ],
+            'php' => ['type' => 'int', 'default' => '0'],
+            'tca' => ['config' => ['type' => 'select', 'renderType' => 'selectSingle']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['selectSingleBox'] = $tcaTypes['selectSingle'];
+        $tcaTypes['selectSingleBox']['tca']['config']['renderType'] = 'selectSingleBox';
+
+        $tcaTypes['selectCheckBox'] = $tcaTypes['selectSingle'];
+        $tcaTypes['selectCheckBox']['tca']['config']['renderType'] = 'selectCheckBox';
+
+        $tcaTypes['selectMultipleSideBySide'] = $tcaTypes['selectSingle'];
+        $tcaTypes['selectMultipleSideBySide']['tca']['config']['renderType'] = 'selectMultipleSideBySide';
+
+        $tcaTypes['selectTree'] = $tcaTypes['selectSingle'];
+        $tcaTypes['selectTree']['tca']['config']['renderType'] = 'selectTree';
+
+        $tcaTypes['slug'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Slug/Index.html',
+            'sql' => ['automatically' => 12, 'VARCHAR' => '', 'size' => 2024, 'notNull' => true, 'default' => '', ],
+            'php' => ['type' => 'string', 'default' => ''],
+            'tca' => ['config' => ['type' => 'slug']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['text'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Text/Index.html',
+            'sql' => ['automatically' => 13, 'type' => 'LONGTEXT'],
+            'php' => ['type' => 'string', 'default' => ''],
+            'tca' => ['config' => ['type' => 'text']],
+            'fluid' => [],
+        ];
+
+        // text Alias für RTE text
+        $tcaTypes['textrte'] = $tcaTypes['text'];
+        $tcaTypes['tex trte']['tca']['config']['enableRichtext'] = true;
+
+        // text Alias für t3editor 
+        $tcaTypes['textt3editor'] = $tcaTypes['text'];
+        $tcaTypes['textt3editor']['tca']['config']['renderType'] = 't3editor';
+
+        // text Alias für belayoutwizard
+        $tcaTypes['textbelayoutwizard'] = $tcaTypes['text'];
+        $tcaTypes['textbelayoutwizard']['tca']['config']['renderType'] = 'belayoutwizard';
+
+        // text Alias für textTable
+        $tcaTypes['texttable'] = $tcaTypes['text'];
+        $tcaTypes['texttable']['tca']['config']['renderType'] = 'textTable';
+
+        // user ???
+// ToDo Test / Aktiv?
+        $tcaTypes['user'] = [
+            't3v' => '12',
+            'document' => '',
+            'sql' => ['automatically' => false, 'type' => 'VARCHAR', 'size' => 255],
+            'php' => ['type' => 'string'],
+            'tca' => ['config' => ['type' => 'user']],
+            'fluid' => [],
+        ];
+
+        $tcaTypes['uuid'] = [
+            't3v' => '12',
+            'document' => 'https://docs.typo3.org/m/typo3/reference-tca/main/en-us/ColumnsConfig/Type/Uuid/Index.html',
+            'sql' => ['automatically' => 12, 'type' => 'VARCHAR', 'size' => 36, 'notNull' => true, 'default' => ''],
+            'php' => ['type' => 'string', ],
+            'tca' => ['config' => ['type' => 'uuid']],
+            'fluid' => [],
+        ];
+	}
+
+    private function setupExtensionConfiguration(): void
+    {
+        $extensionConfiguration = [];
+
+        $lllPath = '.componentproperty';
+
+        $standardFields = [];
+        $standardFields['description'] = ['type' => 'string', 'lllPath' => $lllPath];
+        $standardFields['todo'] = ['type' => 'textarea', 'lllPath' => $lllPath];
+
+// 9999
+
+        $extensionConfiguration['components']['commands'] = [
+            'uid' => 'commands',
+            'objectId' => 'components',
+            'disable' => false,
+            'title' => 'Command',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ] ;
+
+        $extensionConfiguration['components']['schedulers'] = [
+            'uid' => 'schedulers',
+            'disable' => false,
+            'title' => 'Scheduler',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ] ;
+
+        // ViewHelper
+
+        $argumentFields['name'] = ['type' => 'string', 'lllPath' => $lllPath];
+        $argumentFields['type'] = ['type' => 'string', 'lllPath' => $lllPath];
+        $argumentFields['description'] = ['type' => 'string', 'lllPath' => $lllPath];
+        $argumentFields['required'] = ['type' => 'bool', 'lllPath' => $lllPath];
+        $argumentFields['defaultValue'] = ['type' => 'mixed', 'lllPath' => $lllPath];
+        $argumentFields['escape'] = ['type' => 'bool|null', 'lllPath' => $lllPath];
+
+        $extensionConfiguration['components']['viewHelpers'] = [
+            'uid' => 'viewHelpers',
+            'disable' => false,
+            'title' => 'ViewHelper',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields,
+            'fieldsTabs' => ['general'],
+            'propertys' => [
+                'arguments' => [
+                    'uid' => 'arguments',
+                    'disable' => false,
+                    'title' => 'Argument',
+                    'controller' => 'Property',
+                    'add' => 'PropertyAdd',
+                    'edit' => 'PropertyEdit',
+                    'configuration' => [],
+                    'fields' => $standardFields,
+                    'fieldsTabs' => ['general'],
+                    'propertyFields' => $argumentFields,
+                    'propertyFieldsTabs' => ['general'],
+                ],
+            ],
+        ];
+
+
+        $extensionConfiguration['components']['plugin'] = [
+            'uid' => 'plugins',
+            'disable' => true,
+            'title' => 'Plugin',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ];
+
+        $extensionConfiguration['components']['table'] = [
+            'uid' => 'tables',
+            'disable' => true,
+            'title' => 'Table',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ];
+
+        $extensionConfiguration['components']['eventListener'] = [
+            'uid' => 'eventListeners',
+            'disable' => true,
+            'title' => 'EventListener',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ];
+
+        $extensionConfiguration['components']['contentElement'] = [
+            'uid' => 'contentElements',
+            'disable' => true,
+            'title' => 'ContentElement',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ];
+
+        $extensionConfiguration['components']['enumeration'] = [
+            'uid' => 'enumerations',
+            'disable' => true,
+            'title' => 'Enumeration',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ];
+
+        $extensionConfiguration['components'][''] = [
+            'uid' => '',
+            'disable' => true,
+            'title' => '',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+            'configuration' => [],
+            'propertys' => [],
+        ];
+
+        // Remove all inactive elements from the array
+        foreach ($extensionConfiguration['components'] ?? [] as $componentName => $componentData) {
+            if (!($componentData['disable'] ?? false)) {
+                foreach ($componentData['propertys'] ?? [] as $propertyName => $propertyData) {
+                    if ($propertyData['disable'] ?? false) {
+                        unset($componentData['propertys'][$propertyName]);
+                    }
+				}
+                $this->extensionConfiguration['components'][$componentName] =  $componentData;
+			}
+        }
 	}
 
 }

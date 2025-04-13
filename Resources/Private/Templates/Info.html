@@ -6,15 +6,11 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-        <f:comment>
-<f:debug inline="1">{_all}</f:debug>
-        </f:comment>
-
 <div>
 
         <h1>
             <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf:extensionBuilderTypo3"
+                key="{lllBase}.info.xlf:extensionBuilderTypo3"
             />
             <f:if condition="{isProKey}">
                 <f:then>
@@ -25,16 +21,19 @@
                 </f:else>
             </f:if>
         </h1>
+
         <div style="width: 501px; top left repeat-y;">
             <div style="float: left;  width: 100px;">Version</div>
             <div style="float: right; width: 400px;">{configuration.version}</div>
         </div>
+
 </div>
 
 <div>
+
         <h1>
             <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf:extensionBuilderTypo3Core"
+                key="{lllBase}.info.xlf:extensionBuilderTypo3Core"
             />
         </h1>
 
@@ -62,6 +61,7 @@
 </div>
 
 <div>
+
         <h1>ID´s</h1>
         <div style="width: 501px; top left repeat-y;">
             <div style="float: left;  width: 100px;">System ID </div>
@@ -70,9 +70,11 @@
             <div style="float: left;  width: 100px;">Developer ID </div>
             <div style="float: right; width: 400px;">{developer.developerId}</div>
         </div>
+
 </div>
 
 <div>
+
         <h1>Info</h1>
         <div style="width: 501px; top left repeat-y;">
             <div style="float: left;  width: 100px;">Develpers</div>
@@ -87,9 +89,11 @@
             <div style="float: left;  width: 100px;">Projects</div>
             <div style="float: right; width: 400px;">{configuration.projectCounter}</div>
         </div>
+
 </div>
 
 <div>
+
         <h1>Copyright</h1>
         <div style="width: 501px; top left repeat-y;">
             <div style="float: left;  width: 100px;">Author</div>
@@ -101,10 +105,13 @@
                 <f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external>
             </div>
         </div>
+
 </div>
 
         <f:if condition="{announcements}">
+
 <div>
+
             <f:render
                 partial="Info/FieldsInfo"
                 arguments="{
@@ -112,11 +119,15 @@
                     infoTranslate: 'announcements'
                 }"
             />
+
 </div>
+
         </f:if>
 
         <f:if condition="{issues}">
+
 <div>
+
             <f:render
                 partial="Info/FieldsInfo"
                 arguments="{
@@ -124,7 +135,9 @@
                     infoTranslate: 'issues'
                 }"
             />
+
 </div>
+
         </f:if>
 
         <f:if condition="{todo}">
@@ -136,11 +149,15 @@
                     infoTranslate: 'todo'
                 }"
             />
+
 </div>
+
         </f:if>
 
         <f:if condition="{changeLog}">
+
 <div>
+
             <f:render
                 partial="Info/FieldsInfo"
                 arguments="{
@@ -148,7 +165,9 @@
                     infoTranslate: 'changeLog'
                 }"
             />
+
 </div>
+
         </f:if>
 
     </f:section>

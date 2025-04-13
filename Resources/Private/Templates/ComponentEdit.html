@@ -12,9 +12,12 @@
             id="component-edit-form"
         >
             <h1>
-                <f:translate
-                    key="{lllBase}.componentproperty.xlf:h1.add"
-                    arguments="{0: componentsTitle}"
+                <f:translate 
+                    key="{lllBase}.componentproperty.xlf:h1.edit"
+                    arguments="{
+                        0: '{componentTitle}',
+                        1: '{componentUid}'
+                    }"
                 />
             </h1>
 
@@ -28,7 +31,20 @@
                     fieldsDataName: '{fieldsDataName}'
                 }"
             />
+
+            <f:render
+                partial="PropertyList"
+                arguments="{
+                    lllBase: '{lllBase}',
+                    vendorName: '{vendorName}',
+                    extensionName: '{extensionName}',
+                    componentsUid: '{componentsUid}',
+                    componentUid: '{componentUid}',
+                    componentData: '{componentData}',
+                    propertysDev: '{propertysDev}'
+                }"
+            />
         </f:form>
-		
+
     </f:section>
 </html>

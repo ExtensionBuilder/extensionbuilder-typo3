@@ -8,13 +8,16 @@
 
         <f:form
             action="save"
-            controller="Component"
-            id="component-edit-form"
+            controller="Property"
+            id="property-edit-form"
         >
             <h1>
-                <f:translate
-                    key="{lllBase}.componentproperty.xlf:h1.add"
-                    arguments="{0: componentsTitle}"
+                <f:translate 
+                    key="{lllBase}.componentproperty.xlf:h1.edit"
+                    arguments="{
+                        0: componentsTitle,
+                        1: componentUid
+                    }"
                 />
             </h1>
 
@@ -28,7 +31,18 @@
                     fieldsDataName: '{fieldsDataName}'
                 }"
             />
+
+            <f:render
+                partial="BuildFields"
+                arguments="{
+                    lllBase: '{lllBase}',
+                    fields: '{propertyFields}',
+                    fieldsTabs: '{propertyFieldsTabs}',
+                    fieldsData: '{propertyFieldsData}',
+                    fieldsDataName: '{propertyFieldsDataName}'
+                }"
+            />
         </f:form>
-		
+
     </f:section>
 </html>

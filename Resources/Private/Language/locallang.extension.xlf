@@ -4,20 +4,11 @@
         source-language="en"
         datatype="plaintext"
         original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf"
-		date="2025-04-01T12:00:00Z"
+		date="2025-04-06T12:00:00Z"
         product-name="extensionbuilder_typo3"
     >
         <header />
         <body>
-
-			<trans-unit id="link.add" resname="link.add">
-				<source>Add Extension</source>
-			</trans-unit>
-
-			<trans-unit id="link.build" resname="link.build">
-				<source>Build</source>
-			</trans-unit>
-
 
             <trans-unit id="h1.list" resname="h1.list">
                 <source>Overview of extensions</source>
@@ -31,24 +22,19 @@
 				<source>Edit Extension "%s"</source>
 			</trans-unit>
 
-			<trans-unit id="h1.duplicate" resname="h1.duplicate">
-				<source>Duplicate Extension "%s"</source>
+
+			<trans-unit id="link.add" resname="link.add">
+				<source>Add Extension</source>
 			</trans-unit>
 
-			<trans-unit id="h1.rename" resname="h1.rename">
-				<source>Rename Extension "%s"</source>
+			<trans-unit id="link.build" resname="link.build">
+				<source>Build</source>
 			</trans-unit>
-
 
 
             <trans-unit id="overviewOfProjectExtensions" resname="overviewOfProjectExtensions">
                 <source>Overview of project Extensions</source>
             </trans-unit>
-
-
-
-
-
 
 
 			<trans-unit id="extension" resname="extension">
@@ -139,8 +125,6 @@
             <trans-unit id="label.enumerationsconfiguration" resname="label.enumerationsconfiguration">
                 <source>Enumerations configuration</source>
             </trans-unit>
-
-
 
 
             <trans-unit id="extensionexists" resname="extensionexists">

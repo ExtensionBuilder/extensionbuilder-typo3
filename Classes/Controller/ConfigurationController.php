@@ -33,7 +33,9 @@ final class ConfigurationController extends ExtensionBuilderController
 		}
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'configurationFields' => $this->ebService->configurator['configuration']['fields'],
             'builderLocal' => $this->ebService->builderLocal,
             'isProKey' => $this->isProKey,
         ]);

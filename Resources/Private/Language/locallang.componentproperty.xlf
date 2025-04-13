@@ -3,27 +3,27 @@
 	<file
 		source-language="en"
 		datatype="plaintext"
-		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.xlf"
-		date="2025-04-01T12:00:00Z"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.componentproperty.xlf"
+		date="2025-04-06T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
 
 			<trans-unit id="h1.add" resname="h1.add">
-				<source>Add "%s"</source>
+				<source>Add new %s</source>
 			</trans-unit>
 
 			<trans-unit id="h1.edit" resname="h1.edit">
-				<source>Edit "%s"</source>
+				<source>Edit %s "%s"</source>
 			</trans-unit>
 
 			<trans-unit id="h1.rename" resname="h1.rename">
-				<source>Reame "%s"</source>
+				<source>Reame %s "%s"</source>
 			</trans-unit>
 
 			<trans-unit id="h1.duplicate" resname="h1.duplicate">
-				<source>Duplicate "%s"</source>
+				<source>Duplicate %s "%s"</source>
 			</trans-unit>
 
 
@@ -41,6 +41,26 @@
 
 			<trans-unit id="label.todo" resname="label.todo">
 				<source>ToDo</source>
+			</trans-unit>
+
+			<trans-unit id="label.type" resname="label.type">
+				<source>Type</source>
+			</trans-unit>
+
+			<trans-unit id="label.required" resname="label.required">
+				<source>Required </source>
+			</trans-unit>
+
+			<trans-unit id="label.defaultValue" resname="label.defaultValue">
+				<source>Default value</source>
+			</trans-unit>
+
+			<trans-unit id="label.escape" resname="label.escape">
+				<source>Escape</source>
+			</trans-unit>
+
+			<trans-unit id="label." resname="label.">
+				<source></source>
 			</trans-unit>
 
 		</body>

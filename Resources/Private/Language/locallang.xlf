@@ -4,7 +4,7 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf"
-		date="2025-04-01T12:00:00Z"
+		date="2025-04-06T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
@@ -13,7 +13,6 @@
 			<trans-unit id="mlang_tabs_tab" resname="mlang_tabs_tab">
 				<source>Extension Builder</source>
 			</trans-unit>
-
 
 
 			<trans-unit id="label.name" resname="label.name">
@@ -28,14 +27,30 @@
 			<trans-unit id="edit" resname="edit">
 				<source>Edit</source>
 			</trans-unit>
+
 			<trans-unit id="duplicate" resname="duplicate">
 				<source>Duplicate</source>
 			</trans-unit>
-			<trans-unit id="rename" resname="rename">
-				<source>Rename</source>
+
+			<trans-unit id="cancel" resname="cancel">
+				<source>Cancel</source>
 			</trans-unit>
+
 			<trans-unit id="delete" resname="delete">
 				<source>Delete</source>
+			</trans-unit>
+
+			<trans-unit id="save" resname="save">
+				<source>Save</source>
+			</trans-unit>
+
+			<trans-unit id="close" resname="close">
+				<source>Close</source>
+			</trans-unit>
+
+
+			<trans-unit id="msg.delete" resname="msg.delete">
+				<source>Are you sure?</source>
 			</trans-unit>
 
 

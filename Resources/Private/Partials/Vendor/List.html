@@ -1,3 +1,5 @@
+<f:comment>ToDo</f:comment>
+
 <div class="tx_extensionbuilder_typo3_module_vendor">
     <div class="panel panel-default overflow-visible">
 
@@ -8,20 +10,14 @@
                     <thead>
                         <tr class="vendorGroup">
                             <th>
-                                <f:translate
-                                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:vendorList"
-                                />
+                                <f:translate key="{lllBase}.vendor.xlf:vendorList" />
                                 ({vendorList -> f:count()})
                             </th>
                             <th>
-                                <f:translate
-                                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:company"
-                                />
+                                <f:translate key="{lllBase}.xlf:company" />
                             </th>
                             <th>
-                                <f:translate
-                                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:description"
-                                />
+                                <f:translate key="{lllBase}.xlf:description" />
                             </th>
                             <th data-sort-method="none"></th>
                         </tr>
@@ -29,7 +25,7 @@
 
                     <tbody>
                         <f:for each="{vendorList}" as="vendor">
-                            <tr class="{vendor.vendorName}" data-task-id="{vendor.vendorName}">
+                            <tr class="{vendor.vendorName}" data-id="{vendor.vendorName}" >
 
                                 <td class="nowrap-disabled">
                                     <div class="name">
@@ -65,35 +61,15 @@
                                             arguments="{'vendorName': vendor.vendorName}"
                                             class="btn btn-default"
                                             data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:edit')}"
+                                            title="{f:translate(key:'{lllBase}.xlf:edit')}"
                                         >
-                                            <core:icon identifier="actions-open"/>
-                                        </f:link.action>
-<f:comment>
-                                        <f:comment>Duplicate</f:comment>
-                                        <f:link.action
-                                            action="duplicate"
-                                            controller="Vendor"
-                                            arguments="{'vendorName': vendor.vendorName}"
-                                            class="btn btn-default"
-                                            data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:duplicate')}"
-                                        >
-                                            <core:icon identifier="actions-duplicate"/>
+                                            <core:icon identifier="actions-open" />
                                         </f:link.action>
 
+                                        <f:comment>Duplicate</f:comment>
+
                                         <f:comment>Rename</f:comment>
-                                        <f:link.action
-                                            action="rename"
-                                            controller="Vendor"
-                                            arguments="{'vendorName': vendor.vendorName}"
-                                            class="btn btn-default"
-                                            data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:rename')}"
-                                       >
-                                            <core:icon identifier="actions-rename"/>
-                                        </f:link.action>
-</f:comment>
+
                                         <f:comment>Delete</f:comment>
                                         <f:link.action
                                             action="delete"
@@ -103,12 +79,12 @@
                                             data="{
                                                 bs-toggle: 'tooltip',
                                                 severity: 'warning',
-                                                button-close-text: '{f:translate(key: \'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel\')}',
-                                                bs-content='{f:translate(key: \'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/Language/locallang.xlf:msg.delete\')}'
+                                                button-close-text: '{f:translate(key: \'{lllBase}.xlf:cancel\')}',
+                                                bs-content='{f:translate(key: \'{lllBase}.xlf:msg.delete\')}'
                                             }"
-                                            title="{f:translate(key:'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.xlf:delete')}"
+                                            title="{f:translate(key:'{lllBase}.xlf:delete')}"
                                         >
-                                            <core:icon identifier="actions-edit-delete"/>
+                                            <core:icon identifier="actions-edit-delete" />
                                         </f:link.action>
 
                                     </div>

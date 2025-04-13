@@ -11,16 +11,22 @@
             controller="Project"
             id="project-add-form"
         >
-            <h1>
-                <f:translate
-                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf:h1.add"
-                />
-            </h1>
+            <h1><f:translate key="{lllBase}.project.xlf:h1.add" /></h1>
 
             <div class="tx_extensionbuilder_module">
                 <f:render partial="Project/FieldsName" arguments="{_all}" />
     			<f:render partial="Project/FieldsDescription" arguments="{_all}" />
             </div>
+
+            <f:render
+                partial="BuildFields"
+                arguments="{
+                    lllBase: '{lllBase}',
+                    componentData: '{componentData}',
+                    fields: '{componentFields}',
+                    fieldData: '{componentData}'
+                }"
+            />
         </f:form>
 
     </f:section>

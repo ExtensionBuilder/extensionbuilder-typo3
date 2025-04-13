@@ -9,9 +9,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use Psr\Http\Message\ResponseInterface;
 use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Page\AssetCollector;
-
 #[AsController]
 final class ExtensionController extends ExtensionBuilderController
 {
@@ -37,6 +34,34 @@ final class ExtensionController extends ExtensionBuilderController
             $this->ebService->writeDeveloper();
 		}
 
+//   $formData = [
+//        'parameterArray' => [
+//            'fieldConf' => [
+//                'config' => [
+//                    'type' => 'text',
+//                    'enableRichtext' => true,
+//                    'richtextConfiguration' => 'default',
+//                    'fieldControl' => [
+//                        'fullScreenRichtext' => [
+//                            'disabled' => false,
+//                        ],
+//                    ],
+//                ],
+//            ],
+//            'itemFormElName' => 'data[my_rte_field]',
+//            'itemFormElValue' => '',
+//        ],
+//    ];
+
+//       $rteHtml = $this->nodeFactory->create([
+//            'type' => 'text',
+//            'renderType' => 'textTable', // wichtig für RTE
+//            'name' => 'data[my_rte_field]',
+//            'data' => $formData,
+//        ])->render()['html'];
+
+//$this->view->assign('rteHtml', $rteHtml);
+
         return $this->extensionList();
     }
 
@@ -52,7 +77,9 @@ final class ExtensionController extends ExtensionBuilderController
         }
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'components' =>  $this->ebService->extensionConfiguration['components'],
             'currentProject' => $this->ebService->developer['typo3']['project'] ?? 'no',
             'currentVendor' => $this->ebService->developer['typo3']['vendor'] ?? 'all',
             'project' =>  $this->ebService->projects[($this->ebService->developer['typo3']['project'] ?? 'no')] ?? [],
@@ -124,10 +151,11 @@ final class ExtensionController extends ExtensionBuilderController
         }
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'extensionData' => $extensionData,
             'projects' => $this->ebService->projects,
 			'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
-            'extensionData' => $extensionData,
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -148,27 +176,29 @@ final class ExtensionController extends ExtensionBuilderController
 
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
-
         $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $componentsDev = $this->ebService->extensionConfiguration['components'];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                Tools\ConfigArray::arrayMerge($extensionData,$bodyParams['extensionData']);
+                Tools\ConfigArray::arrayMerge($extensionData, $bodyParams['extensionData']);
 
                 self::save(
-                    $bodyParams['vendorName'] ?? '',
-                    $bodyParams['extensionName'] ?? '',
+                    $vendorName ?? '',
+                    $extensionName ?? '',
                     $extensionData ?? [],
                 );
                 break;
 		}
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
-            'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
+            'componentsDev' =>  $componentsDev,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'extensionData' => $extensionData,
+            'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -187,20 +217,6 @@ final class ExtensionController extends ExtensionBuilderController
         );
 
         return $this->moduleTemplate->renderResponse('Extension/Edit');
-    }
-
-    public function duplicateActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-
-        return $this->moduleTemplate->renderResponse('Extension/Duplicate');
-    }
-
-    public function renameActionToDo(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-
-        return $this->moduleTemplate->renderResponse('Extension/Rename');
     }
 
     public function deleteAction(): ResponseInterface {
@@ -222,7 +238,6 @@ final class ExtensionController extends ExtensionBuilderController
 
         return $this->redirect('list', 'Extension');
     }
-
 
     public function buildAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
@@ -253,7 +268,9 @@ final class ExtensionController extends ExtensionBuilderController
         $this->ebService->writeExtension($vendorName, $extensionName);
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'components' =>  $this->ebService->extensionConfiguration['components'],
             'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
@@ -305,7 +322,9 @@ final class ExtensionController extends ExtensionBuilderController
         $this->ebService->writeExtension($vendorName, $extensionName);
 
         $this->moduleTemplate->assignMultiple([
+            'lllBase' => $this->ebService->lll,
             'configuration' => $this->ebService->configuration,
+            'components' =>  $this->ebService->extensionConfiguration['components'],
             'currentProject' => $this->ebService->developer['typo3']['project'] ?? 'no',
             'currentVendor' => $this->ebService->developer['typo3']['vendor'] ?? 'all',
             'project' =>  $this->ebService->projects[($this->ebService->developer['typo3']['project'] ?? 'no')] ?? [],

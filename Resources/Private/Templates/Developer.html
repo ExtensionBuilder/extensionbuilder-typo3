@@ -5,32 +5,37 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-        <f:comment>
-<f:debug inline="1">{_all}</f:debug>
-        </f:comment>
-
-        <h1>
-            <f:translate
-                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:developerSettings"
-            />
-        </h1>
-
         <f:form
             action="save"
             controller="Developer"
             id="developer-form"
         >
-             <div class="tx_extensionbuilder_module">
+            <h1>
+                <f:translate key="{lllBase}.developer.xlf:developerSettings" />
+            </h1>
 
+            <div class="tx_extensionbuilder_module">
                 <h1>
                     <f:translate
-                        key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf:h1"
+                        key="{lllBase}.developer.xlf:h1"
                     />
                 </h1>
 
-                <f:render partial="Developer/FieldsDeveloper" arguments="{developer: developer}" />
-                <f:render partial="Developer/FieldsDefault" arguments="{developer: developer, projects: projects, vendors: vendors}" />
-                <f:render partial="Developer/FieldsMaintenance" arguments="{developer: developer}" />
+                <f:render partial="Developer/FieldsDeveloper" arguments="{lllBase: lllBase, developer: developer}" />
+                <f:render partial="Developer/FieldsDefault" arguments="{lllBase: lllBase, developer: developer, projects: projects, vendors: vendors}" />
+                <f:render partial="Developer/FieldsMaintenance" arguments="{lllBase: lllBase, developer: developer}" />
+
+<f:comment>
+                <f:render
+                    partial="BuildFields"
+                    arguments="{
+                        lllBase: lllBase, 
+                        componentData: componentData,
+                        fields: componentFields,
+                        fieldData: 'componentData'
+                    }"
+                />
+</f:comment>
 
             </div>
         </f:form>

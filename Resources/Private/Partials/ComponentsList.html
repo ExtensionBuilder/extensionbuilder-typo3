@@ -1,75 +1,76 @@
-<f:if condition="{components -> f:count()} > 0">
-    <f:for each="{components}" as="component">
-        <f:if condition="!{extensionData.{component.uid}}">
+<f:if condition="{componentsDev -> f:count()} > 0">
+    <f:for each="{componentsDev}" as="componentsDevAs" key="componentsDevKey">
+        <f:if condition="!{extensionData.{componentsDevAs.uid}}">
             <f:variable name="showComponents">show</f:variable>
         </f:if>
     </f:for>
 </f:if>
 
 <f:if condition="{showComponents}">
-    <f:if condition="{components -> f:count()} > 0">
+    <f:if condition="{componentsDev -> f:count()} > 0">
         <div class="tx_extensionbuilder_mod1_configuration">
             <div class="panel panel-default overflow-visible">
                 <div class="btn-toolbar panel-heading">
-                    <f:for each="{components}" as="component">
-                        <f:if condition="!{extensionData.{component.uid}}">
+                    <f:for each="{componentsDev}" as="componentsDevAs" key="componentsDevKey">
+                        <f:if condition="!{extensionData.{componentsDevAs.uid}}">
                             <f:link.action
                                 action="add"
-                                 controller="{component.controller}"
-                                 arguments="{
-                                     'vendorName': vendorName,
-                                     'extensionName': extensionName,
-                                     'component': component
-                                 }"
-                                 class="btn btn-default"
-                                 data="{bs-toggle: 'tooltip'}"
-                                 title="{component.title}"
-                             >
-                                 {component.title}
+                                controller="{componentsDevAs.controller}"
+                                arguments="{
+                                    'vendorName': '{vendorName}',
+                                    'extensionName': '{extensionName}',
+                                    'componentsUid': '{componentsDevKey}'
+                                }"
+                                class="btn btn-default"
+                                data="{bs-toggle: 'tooltip'}"
+                                title="{componentsDevAs.title}"
+
+                            >
+                                 {componentsDevAs.title}
                             </f:link.action>
                         </f:if>
                     </f:for>
+
                 </div>
             </div>
         </div>
     </f:if>
 </f:if>
 
-<f:for each="{extensionData}" as="componentsData" key="componentsKey">
-    <f:for each="{components}" as="component">
-        <f:if condition="{component.uid} == {componentsKey}">
-            <f:if condition="{componentsData -> f:count()} > 0">
+<f:for each="{extensionData}" as="nodeAs" key="nodeKey">
+    <f:for each="{componentsDev}" as="componentsDevAs" key="componentsDevKey">
+        <f:if condition="{componentsDevAs.uid} == {nodeKey}">
+            <f:if condition="{nodeAs -> f:count()} > 0">
+
                 <div class="tx_extensionbuilder_mod1_configuration">
                     <div class="panel panel-default overflow-visible">
-                        <div class="panel-heading multi-record-selection-panel" data-group-id="{componentsKey}">
+                        <div class="panel-heading multi-record-selection-panel" data-group-id="{nodeKey}">
 
                             <button
                                 type="button"
-                                title="{f:translate(key: 'LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:label.group')}"
                                 class="btn btn-link fw-bold pt-1 p-0"
                                 data-bs-toggle="collapse"
-                                data-bs-target="#{component.uid}-group-tables"
-                                aria-expanded="{f:if(condition: '{component.uid}GroupCollapsed', then: 'false', else: 'true')}"
+                                data-bs-target="#{nodeKey}-group"
+                                aria-expanded="{f:if(condition: '{nodeKey}Collapsed', then: 'false', else: 'true')}"
                             >
-                                <span>{component.title}</span>
+                                <span>{componentsDevAs.title}</span>
                                 <span
                                     class="t3js-table-total-items"
-                                    title="{f:translate(key: 'LLL:EXT:scheduler/Resources/Private/Language/locallang.xlf:label.group.taskCount')}">
-                                    ({componentsData -> f:count()})
+                                    ({nodeAs -> f:count()})
                                 </span>
                             </button>
 
                             <f:link.action
                                 action="add"
-                                controller="{component.controller}"
+                                controller="{componentsDevAs.controller}"
                                 arguments="{
-                                    'vendorName': vendorName,
-                                    'extensionName': extensionName,
-                                    'component': component
+                                    'vendorName': '{vendorName}',
+                                    'extensionName': '{extensionName}',
+                                    'componentsUid': '{componentsDevKey}'
                                 }"
                                 class="btn btn-default"
                                 data="{bs-toggle: 'tooltip'}"
-                                title="Add Table"
+                                title="Add"
                             >
                                 Add
                             </f:link.action>
@@ -78,12 +79,12 @@
                                 type="button"
                                 class="btn btn-default btn-sm float-end t3js-toggle-table"
                                 data-bs-toggle="collapse"
-                                data-bs-target="#{component.uid}-group-tables"
-                                aria-expanded="{f:if(condition: '{component.uid}GroupCollapsed', then: 'false', else: 'true')}"
+                                data-bs-target="#{nodeKey}-group"
+                                aria-expanded="{f:if(condition: '{nodeKey}Collapsed', then: 'false', else: 'true')}"
                             >
                                 <span class="collapseIcon">
                                     <core:icon
-                                        identifier="{f:if(condition: '{component.uid}GroupCollapsed', then: 'actions-view-list-expand', else: 'actions-view-list-collapse')}"
+                                        identifier="{f:if(condition: '{nodeKey}Collapsed', then: 'actions-view-list-expand', else: 'actions-view-list-collapse')}"
                                         size="small"
                                     />
                                 </span>
@@ -92,105 +93,88 @@
                         </div>
 			
                         <div
-                            class="panel-collapse collapse {f:if(condition: '{component.udi}GroupCollapsed', then: 'show')}"
-                            id="{component.uid}-group-tables"
-                            data-table="task-group-{componentsName}"
+                            class="panel-collapse collapse {f:if(condition: '{nodeKey}Collapsed', then: 'show')}"
+                            id="{nodeKey}-group"
+                            data-table="group-{componentsName}"
                         >
-				
                             <div class="table-fit mb-0">
                                 <table class="table table-striped table-hover Group-table">
                                     <thead>
-                                        <tr class="taskGroup_{vendorGroupId}">
-									
-                                            <th>
-                                                <f:translate
-                                                   key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.xlf:label.uid"
-                                                />
-                                            </th>
-                                            <th>
-                                                <f:translate
-                                                key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.xlf:label.description"
-                                                />
-                                            </th>
-
+                                        <tr>
+                                            <th><f:translate key="{lllBase}.componentproperty.xlf:label.uid" /></th>
+                                            <th><f:translate key="{lllBase}.componentproperty.xlf:label.description" /></th>
                                             <th data-sort-method="none"></th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        <f:for each="{componentsData}" as="componentData" key="componentName">
+                                        <f:for each="{nodeAs}" as="componentData" key="componentUid">
                                             <tr>
                                                 <f:comment>Component name</f:comment>										
                                                 <td class="nowrap-disabled">
                                                     <div class="name">
                                                         <f:link.action
                                                             action="edit"
-                                                            controller="{component.controller}"
+                                                            controller="{componentsDevAs.controller}"
                                                             arguments="{
-                                                                'vendorName': vendorName,
-                                                                'extensionName': extensionName,
-                                                                'component': component,
-                                                                'componentName': componentName,
-                                                                'componentData': componentData
+                                                                'vendorName': '{vendorName}',
+                                                                'extensionName': '{extensionName}',
+                                                                'componentsUid': '{componentsDevKey}',
+                                                                'componentUid': '{componentUid}'
                                                             }"
                                                         >
-                                                            <strong>{componentName}</strong>
+                                                            <strong>{componentUid}</strong>
                                                         </f:link.action>
                                                     </div>
                                                 </td>
 
                                                 <f:comment>Description</f:comment>
-                                                <td>
-                								    {componentData.description.language.en}
-                                                </td>
+                                                <td>{componentData.description}</td>
 
                                                 <td class="nowrap">
                                                     <div class="btn-group" role="group">
-												
                                                         <f:comment>Edit</f:comment>
                                                         <f:link.action
                                                             action="edit"
-                                                            controller="{component.controller}"
+                                                            controller="{componentsDevAs.controller}"
                                                             arguments="{
-                                                                'vendorName': vendorName,
-                                                                'extensionName': extensionName,
-                                                                'component': component,
-                                                                'componentName': componentName,
-                                                                'componentData': componentData
+                                                                'vendorName': '{vendorName}',
+                                                                'extensionName': '{extensionName}',
+                                                                'componentsUid': '{componentsDevKey}',
+                                                                'componentUid': '{componentUid}'
                                                             }"
                                                             class="btn btn-default"
                                                             data="{bs-toggle: 'tooltip'}"
-                                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
+                                                            title="{f:translate(key:'{lllBase}.xlf:edit')}"
                                                         >
-                                                            <core:icon identifier="actions-open"/>
+                                                            <core:icon identifier="actions-open" />
                                                         </f:link.action>
 
-<f:comment>Dupliziren</f:comment>
-<f:comment>Rename</f:comment>
+                                                        <f:comment>Duplicate</f:comment>
+
+                                                        <f:comment>Rename</f:comment>
 
                                                         <f:comment>Delete</f:comment>
                                                         <f:link.action
                                                             action="delete"
-                                                            controller="{component.controller}"
+                                                            controller="{componentsDevAs.controller}"
                                                             arguments="{
-                                                                'vendorName': vendorName,
-                                                                'extensionName': extensionName,
-                                                                'component': component,
-                                                                'componentName': componentName
-
+                                                                'vendorName': '{vendorName}',
+                                                                'extensionName': '{extensionName}',
+                                                                'componentsUid': '{componentsDevKey}',
+                                                                'componentUid': '{componentUid}'
                                                             }"
                                                             class="btn btn-default t3js-modal-trigger"
                                                             data="{
                                                                 bs-toggle: 'tooltip',
                                                                 severity: 'warning',
-                                                                button-close-text: '{f:translate(key: \'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel\')}',
-                                                                bs-content='{f:translate(key: \'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/Language/locallang.xlf:msg.delete\')}'
+                                                                button-close-text: '{f:translate(key: \'{lllBase}.xlf:cancel\')}',
+                                                                bs-content='{f:translate(key: \'{lllBase}.xlf:msg.delete\')}'
                                                             }"
-                                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
+                                                            title="{f:translate(key:'{lllBase}.xlf:delete')}"
                                                         >
-                                                            <core:icon identifier="actions-edit-delete"/>
+                                                           <core:icon identifier="actions-edit-delete" />
                                                         </f:link.action>
-
                                                     </div>
                                                 </td>
                                             </tr>
@@ -199,7 +183,6 @@
                                 </table>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </f:if>

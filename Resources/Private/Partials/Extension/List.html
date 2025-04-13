@@ -1,6 +1,7 @@
+<f:comment>ToDo</f:comment>
+
 <div class="tx_t3_extensionbulder_module_table">
     <div class="panel panel-default overflow-visible">
-
         <div class="panel-heading">
 
             <button
@@ -11,19 +12,16 @@
                 aria-expanded="{f:if(condition: collapsed{groupId}, then: 'false', else: 'true')}"
             >
                 <span>
-                    <f:if condition="{headline} != ''">
-                        {headline} :
-                    </f:if>
-                    {name}
+                    {vendorName}
                 </span> 
             </button>
 
             <button
-                    type="button"
-                    class="btn btn-default btn-sm float-end t3js-toggle-table"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#extension-group-{groupId}"
-                    aria-expanded="{f:if(condition: collapsed{groupId}, then: 'false', else: 'true')}"
+                type="button"
+                class="btn btn-default btn-sm float-end t3js-toggle-table"
+                data-bs-toggle="collapse"
+                data-bs-target="#extension-group-{groupId}"
+                aria-expanded="{f:if(condition: collapsed{groupId}, then: 'false', else: 'true')}"
             >
                 <span class="collapseIcon">
                     <core:icon
@@ -45,27 +43,19 @@
                     <thead>
                         <tr class="group_{groupId}">
                             <th>
-                                <f:translate
-                                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:extension"
-                                />
+                                <f:translate key="{lllBase}.extension.xlf:extension" />
                                 <span class="t3js-table-total-items">
                                     ({extensions -> f:count()})
                                 </span>
                             </th>
                             <th>
-                                <f:translate
-                                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:info"
-                                />
+                                <f:translate key="{lllBase}.extension.xlf:info" />
                             </th>
                             <th>
-                                <f:translate
-                                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:lastBuild"
-                                />
+                                <f:translate key="{lllBase}.extension.xlf:lastBuild" />
                             </th>
                             <th>
-                                <f:translate 
-                                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf:lastUpload"
-                                />
+                                <f:translate key="{lllBase}.extension.xlf:lastUpload" />
                             </th>
                             <th data-sort-method="none"></th>
                         </tr>
@@ -160,39 +150,13 @@
                                             data="{bs-toggle: 'tooltip'}"
                                             title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:editextension')}"
                                         >
-                                            <core:icon identifier="actions-open"/>
-                                        </f:link.action>
-<f:comment>
-                                        <f:comment>Duplicate</f:comment>
-                                        <f:link.action
-                                            action="duplicate"
-                                            controller="Extension"
-                                            arguments="{
-                                                'vendorName': extensionData.extension.vendorName,
-                                                'extensionName': extensionData.extension.extensionName
-                                            }"
-                                            class="btn btn-default"
-                                            data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
-                                        >
-                                            <core:icon identifier="actions-duplicate"/>
+                                            <core:icon identifier="actions-open" />
                                         </f:link.action>
 
+                                        <f:comment>Duplicate</f:comment>
+
                                         <f:comment>Rename</f:comment>
-                                        <f:link.action
-                                            action="rename"
-                                            controller="Extension"
-                                            arguments="{
-                                                'vendorName': extensionData.extension.vendorName,
-                                                'extensionName': extensionData.extension.extensionName
-                                            }"
-                                            class="btn btn-default"
-                                            data="{bs-toggle: 'tooltip'}"
-                                            title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
-                                        >
-                                            <core:icon identifier="actions-rename"/>
-                                        </f:link.action>
-</f:comment>
+
                                         <f:comment>Delete</f:comment>
                                         <f:if condition="{extensionData.extension.noDelete} != true">
                                             <f:link.action
@@ -208,12 +172,12 @@
                                                 data="{
                                                     bs-toggle: 'tooltip',
                                                     severity: 'warning',
-                                                    button-close-text: '{f:translate(key: \'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel\')}',
-                                                    bs-content='{f:translate(key: \'LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/Language/locallang.xlf:msg.delete\')}'
+                                                    button-close-text: '{f:translate(key: \'{lllBase}.xlf:cancel\')}',
+                                                    bs-content='{f:translate(key: \'{lllBase}.xlf:msg.delete\')}'
                                                 }"
-                                                title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:delete')}"
+                                                title="{f:translate(key:'{lllBase}.xlf:delete')}"
                                             >
-                                                <core:icon identifier="actions-edit-delete"/>
+                                                <core:icon identifier="actions-edit-delete" />
                                             </f:link.action>
                                         </f:if>
                                     </div>
@@ -232,7 +196,7 @@
                                                 data="{bs-toggle: 'tooltip'}"
                                                 title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:build')}"
                                             >
-                                                <core:icon identifier="actions-play"/>
+                                                <core:icon identifier="actions-play" />
                                             </f:link.action>
                                         </div>
                                     </f:if>
@@ -251,7 +215,7 @@
                                                 data="{bs-toggle: 'tooltip'}"
                                                 title="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:upload')}"
                                             >
-                                                <core:icon identifier="actions-database-import"/>
+                                                <core:icon identifier="actions-database-import" />
                                             </f:link.action>
                                         </div>
                                     </f:if>

@@ -11,36 +11,41 @@
             controller="Vendor"
             id="vendor-add-form"
         >
-            <h1>
-                <f:translate
-                    key="LLL:EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf:add"
-                />
-            </h1>
+            <h1><f:translate key="{lllBase}.vendor.xlf:h1.add" /></h1>
 
             <div class="tx_extensionbuilder_module">
 
                 <div class="form-section">
-                    <f:render partial="Vendor/FieldsVendorName" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/FieldsCompany" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsVendorName" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
+                    <f:render partial="Vendor/FieldsCompany" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
                 </div>
 
                 <div class="form-section">
-                    <f:render partial="Vendor/FieldsDescription" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsDescription" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
                 </div>
 
                 <div class="form-section">
-                    <f:render partial="Vendor/FieldsAddress" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/FieldsPostalcode" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/FieldsCity" arguments="{vendorData: vendorData}" />
-                    <f:render partial="Vendor/FieldsCountry" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsAddress" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
+                    <f:render partial="Vendor/FieldsPostalcode" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
+                    <f:render partial="Vendor/FieldsCity" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
+                    <f:render partial="Vendor/FieldsCountry" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
                 </div>
 
                 <div class="form-section">
-                    <f:render partial="Vendor/FieldsHomepage" arguments="{vendorData: vendorData}" />
+                    <f:render partial="Vendor/FieldsHomepage" arguments="{lllBase: '{lllBase}', vendorData: '{vendorData}'}" />
                 </div>
+
+                <f:render
+                    partial="BuildFields"
+                    arguments="{
+                        lllBase: '{lllBase}',
+                        componentData: '{componentData}',
+                        fields: '{componentFields}',
+                        fieldData: '{componentData}'
+                    }"
+                />
 
             </div>
-
         </f:form>
 
     </f:section>

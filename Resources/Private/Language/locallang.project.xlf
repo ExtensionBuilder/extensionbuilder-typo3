@@ -4,16 +4,11 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:scheduler/Resources/Private/Language/locallang.project.xlf"
-		date="2025-04-01T12:00:00Z"
+		date="2025-04-06T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
-
-			<trans-unit id="link.add" resname="link.add">
-				<source>Add Project</source>
-			</trans-unit>
-
 
 			<trans-unit id="h1.list" resname="h1.list">
 				<source>Overview of Projects</source>
@@ -27,14 +22,10 @@
 				<source>Project settings "%s"</source>
 			</trans-unit>
 
-			<trans-unit id="h1.duplicate" resname="h1.duplicate">
-				<source>Duplicate project "%s"</source>
-			</trans-unit>
 
-			<trans-unit id="h1.rename" resname="h1.rename">
-				<source>Rename project "%s"</source>
+			<trans-unit id="link.add" resname="link.add">
+				<source>Add Project</source>
 			</trans-unit>
-
 
 
 			<trans-unit id="createNewProject" resname="createNewProject">

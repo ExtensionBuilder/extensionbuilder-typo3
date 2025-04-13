@@ -40,16 +40,17 @@ final class InfoController extends ExtensionBuilderController
         }
 
         $this->moduleTemplate->assignMultiple([
-              'configuration' => $this->ebService->configuration,
-              'developer' => $this->ebService->developer,
-              'coreStatus' => $this->coreStatus,
-              'builderLocal' => $this->ebService->builderLocal,
-              'isProKey' => $this->isProKey,
-              'keyStatus' => $this->keyStatus,
-              'announcements' => $announcements,
-              'issues' => $issues,
-              'todo' => $todo,
-              'changeLog' => $changeLog,
+            'lllBase' => $this->ebService->lll,
+            'configuration' => $this->ebService->configuration,
+            'developer' => $this->ebService->developer,
+            'coreStatus' => $this->coreStatus,
+            'builderLocal' => $this->ebService->builderLocal,
+            'isProKey' => $this->isProKey,
+            'keyStatus' => $this->keyStatus,
+            'announcements' => $announcements,
+            'issues' => $issues,
+            'todo' => $todo,
+            'changeLog' => $changeLog,
         ]);
 
         $this->addDocHeaderModuleDropDown(
