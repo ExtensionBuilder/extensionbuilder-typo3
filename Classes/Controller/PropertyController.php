@@ -12,6 +12,8 @@ use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
 final class PropertyController extends ExtensionBuilderController
 {
 
+// ToDo zusammen füheren der ext arrays, sonst werden die alten daten komplet überschriben!
+
     public function addAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
@@ -44,7 +46,6 @@ final class PropertyController extends ExtensionBuilderController
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-
                 $propertyUid = $fieldsData['uid'];
                 if ($this->ebService->checkUid($this, $propertyUid)) {
                     self::componentWrite(
@@ -203,14 +204,16 @@ final class PropertyController extends ExtensionBuilderController
             $componentData['propertys'][$propertysUid][$propertyUid] = [];
         }
 
-        $componentData['propertys'][$propertysUid][$propertyUid] = $fieldsData;
+//        $componentData['propertys'][$propertysUid][$propertyUid] = $fieldsData;
 
         if (!($componentData['propertys'][$propertysUid][$propertyUid]['fields'] ?? false)) {
             $componentData['propertys'][$propertysUid][$propertyUid]['fields'] = [];
         }
 
         if ($propertysData) {
-            $componentData['propertys'][$propertysUid][$propertyUid]['fields'] = $propertysData;
+            $propertyDataMerge = $componentData['propertys'][$propertysUid][$propertyUid]['fields'];
+            Tools\ConfigArray::arrayMerge($propertyDataMerge, $propertysData);
+            $componentData['propertys'][$propertysUid][$propertyUid]['fields'] = $propertyDataMerge;
 		}
 
         $this->ebService->writeExtensionComponent(

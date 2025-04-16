@@ -200,6 +200,27 @@
                                             </f:link.action>
                                         </div>
                                     </f:if>
+
+
+                                    <f:comment>ExtensionInfo</f:comment>
+
+                                        <div class="btn-group" role="group">
+                                            <f:link.action
+                                                action="info"
+                                                controller="Extensioninfo"
+                                                arguments="{
+                                                    'vendorName': extensionData.extension.vendorName,
+                                                    'extensionName': extensionData.extension.extensionName
+                                                }"
+                                                class="btn btn-default"
+                                                data="{bs-toggle: 'tooltip'}"
+                                                title="ExtensionInfo"
+                                            >
+                                                <core:icon identifier="actions-document-view" />
+                                            </f:link.action>
+                                        </div>
+
+
 <f:comment>
                                     <f:comment>Upload</f:comment>
                                     <f:if condition="{extensionData.extension.noUpload} != true">

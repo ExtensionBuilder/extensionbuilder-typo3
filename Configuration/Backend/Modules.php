@@ -42,6 +42,10 @@ return [
                 'delete',
             ],
 
+            Controller\ExtensioninfoController::class => [
+                'info',
+            ],
+
             Controller\ProjectController::class => [
                 'list',
                 'add',
@@ -49,12 +53,6 @@ return [
                 'delete',
                 'addextension',
                 'deleteextension',
-            ],
-            Controller\NotesAndIdeasController::class => [
-                'list',
-                'add',
-                'edit',
-                'delete',
             ],
             Controller\VendorController::class => [
                 'list',

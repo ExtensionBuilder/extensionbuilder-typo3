@@ -57,7 +57,6 @@ final class ComponentController extends ExtensionBuilderController
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'componentsTitle' => $componentsDev['title'],
-
             'fields' => $fields,
             'fieldsTabs' => $fieldsTabs,
             'fieldsData' => $fieldsData,
@@ -101,6 +100,7 @@ final class ComponentController extends ExtensionBuilderController
 		
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
+
                 $this->ebService->writeExtensionComponent(
                     $this,
                     $vendorName,

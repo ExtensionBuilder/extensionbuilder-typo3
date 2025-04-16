@@ -45,6 +45,7 @@ final class InfoController extends ExtensionBuilderController
             'developer' => $this->ebService->developer,
             'coreStatus' => $this->coreStatus,
             'builderLocal' => $this->ebService->builderLocal,
+            'builderLocalversion' => $this->ebService->builderLocalversion,
             'isProKey' => $this->isProKey,
             'keyStatus' => $this->keyStatus,
             'announcements' => $announcements,

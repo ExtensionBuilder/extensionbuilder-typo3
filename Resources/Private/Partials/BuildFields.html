@@ -1,3 +1,6 @@
+<f:if condition="{fieldsDataName}">
+    <f:variable name="{fieldsDataName}">{fieldsData}</f:variable>
+</f:if>
 <f:for each="{fields}" as="fieldsAs" key="fieldsKey">
     <div class="form-group">
 
@@ -28,6 +31,26 @@
                     id="{fieldsKey}"
                     name="{fieldsDataName}[{fieldsKey}]"
                     value="{{fieldsDataName}.{fieldsKey}}"
+                />
+            </div>
+        </f:if>
+
+        <f:if condition="{fieldsAs.type} == 'int'">
+            <div class="form-control-wrap">
+                <f:form.textfield
+                    id="{fieldsKey}"
+                    name="{fieldsDataName}[{fieldsKey}]"
+                    value="{fieldsData.{fieldsKey}}"
+                    type="number"
+                />
+            </div>
+        </f:if>
+        <f:if condition="{fieldsAs.type} == 'lll'">
+            <div class="form-control-wrap">
+                <f:form.textarea
+                    id="{fieldsKey}"
+                    name="{fieldsDataName}[{fieldsKey}][en]"
+                    value="{{fieldsDataName}.{fieldsKey}.en}"
                 />
             </div>
         </f:if>

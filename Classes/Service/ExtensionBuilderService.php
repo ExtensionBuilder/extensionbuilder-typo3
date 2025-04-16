@@ -36,6 +36,7 @@ class ExtensionBuilderService
     public bool $noVendors = true;
 
     public bool $builderLocal = false;
+    public string $builderLocalversion = '';
     public bool $isProKey = false;
 
     public array $configurator = [];
@@ -49,13 +50,13 @@ class ExtensionBuilderService
     private string $buildPath;
     private string $projectPath;
 
-
-
     public function __construct()
     {
         $this->isComposerMode = Environment::isComposerMode();
         $this->builderLocal = ExtensionManagementUtility::isLoaded('extensionbuilder_typo3_core');
-
+        if ($this->builderLocal) {
+            $this->builderLocalversion = ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3_core');
+        }
         self::readConfiguration();
         self::readDeveloper();
         self::readVendor();
@@ -251,6 +252,7 @@ class ExtensionBuilderService
     final function readDeveloper(): void
     {
         $fileName = $this->dataPath . 'developer.' . $GLOBALS['BE_USER']->user['username'] . '.json';
+        $updateDeveloper = false;
 
         if (file_exists($fileName)) {
             $developerJson = Tools\Json::read($fileName);
@@ -262,13 +264,23 @@ class ExtensionBuilderService
             $this->developer['author'] = $GLOBALS['BE_USER']->user['realName'] ?? '';
             $this->developer['author_email'] = $GLOBALS['BE_USER']->user['email'] ?? '';
             $this->developer['author_company'] = $GLOBALS['BE_USER']->user['company'] ?? '';
+            $updateDeveloper = true;
 		}
 
         if (!($this->developer['developerId'] ?? false)) {
             $this->developer['developerId'] = Tools\Uuid::uuid();
+            $updateDeveloper = true;
+        }
+
+        if (!($this->developer['typo3'] ?? false)) {
+            $this->developer['typo3'] = [];
+            $updateDeveloper = true;
+        }
+
+        if ($updateDeveloper) {
             self::writeDeveloper();
-		}
-	}
+        }
+    }
 
     final function writeDeveloper(): void
     {
@@ -623,6 +635,7 @@ class ExtensionBuilderService
             }
         }
 
+        // Remove “ExampleVendor” with too low a version
         if (
             ($vendorsAndExtensions['ExampleVendor'] ?? false) &&
             (
@@ -953,6 +966,7 @@ class ExtensionBuilderService
             return false;
         }
 
+//debug($actionController);
         return true;
 	}
 
@@ -1895,10 +1909,16 @@ $composerExtensionName = strtolower($extensionName);
             'controller' => 'Component',
             'add' => 'ComponentAdd',
             'edit' => 'ComponentEdit',
-            'fields' => $standardFields ?? [],
-            'configuration' => [],
+            'fields' => $standardFields,
+            'fieldsTabs' => ['general'],
             'propertys' => [],
         ] ;
+
+// ToDo
+        $fields = [];
+        $fields['title'] = ['type' => 'textarea', 'lllPath' => $lllPath];
+        $fields['description'] = ['type' => 'string', 'lllPath' => $lllPath];
+        $fields['todo'] = ['type' => 'textarea', 'lllPath' => $lllPath];
 
         $extensionConfiguration['components']['schedulers'] = [
             'uid' => 'schedulers',
@@ -1907,8 +1927,8 @@ $composerExtensionName = strtolower($extensionName);
             'controller' => 'Component',
             'add' => 'ComponentAdd',
             'edit' => 'ComponentEdit',
-            'fields' => $standardFields ?? [],
-            'configuration' => [],
+            'fields' => $fields,
+            'fieldsTabs' => ['general'],
             'propertys' => [],
         ] ;
 
@@ -1948,7 +1968,7 @@ $composerExtensionName = strtolower($extensionName);
         ];
 
 
-        $extensionConfiguration['components']['plugin'] = [
+        $extensionConfiguration['components']['plugins'] = [
             'uid' => 'plugins',
             'disable' => true,
             'title' => 'Plugin',
@@ -1960,7 +1980,7 @@ $composerExtensionName = strtolower($extensionName);
             'propertys' => [],
         ];
 
-        $extensionConfiguration['components']['table'] = [
+        $extensionConfiguration['components']['tables'] = [
             'uid' => 'tables',
             'disable' => true,
             'title' => 'Table',
@@ -1972,7 +1992,7 @@ $composerExtensionName = strtolower($extensionName);
             'propertys' => [],
         ];
 
-        $extensionConfiguration['components']['eventListener'] = [
+        $extensionConfiguration['components']['eventListeners'] = [
             'uid' => 'eventListeners',
             'disable' => true,
             'title' => 'EventListener',
@@ -1984,7 +2004,7 @@ $composerExtensionName = strtolower($extensionName);
             'propertys' => [],
         ];
 
-        $extensionConfiguration['components']['contentElement'] = [
+        $extensionConfiguration['components']['contentElements'] = [
             'uid' => 'contentElements',
             'disable' => true,
             'title' => 'ContentElement',
@@ -1992,21 +2012,78 @@ $composerExtensionName = strtolower($extensionName);
             'add' => 'ComponentAdd',
             'edit' => 'ComponentEdit',
             'fields' => $standardFields ?? [],
-            'configuration' => [],
-            'propertys' => [],
         ];
 
-        $extensionConfiguration['components']['enumeration'] = [
+        $propertysFields = [];
+        $propertysFields['enum'] = ['type' => 'string', 'lllPath' => $lllPath];
+        $propertysFields['language'] = ['type' => 'lll', 'lllPath' => $lllPath];
+
+        $extensionConfiguration['components']['enumerations'] = [
             'uid' => 'enumerations',
-            'disable' => true,
+            'disable' => false,
             'title' => 'Enumeration',
             'controller' => 'Component',
             'add' => 'ComponentAdd',
             'edit' => 'ComponentEdit',
-            'fields' => $standardFields ?? [],
-            'configuration' => [],
-            'propertys' => [],
+            'fields' => $standardFields,
+            'fieldsTabs' => ['general'],
+
+            'propertys' => [
+                'enumeration' => [
+                    'uid' => 'enumeration',
+                    'disable' => false,
+                    'title' => 'Enumeration',
+                    'controller' => 'Property',
+                    'add' => 'PropertyAdd',
+                    'edit' => 'PropertyEdit',
+                    'fields' => [],
+                    'fieldsTabs' => ['general'],
+                    'propertyFields' => $propertysFields,
+                    'propertyFieldsTabs' => ['general'],
+                ],
+            ],
+
         ];
+
+
+//            "dateTime": {
+//                "priority": 20,
+//                "target": "DateTime",
+//                "sources": "string,integer,array"
+//            }
+
+        $propertysFields = [];
+        $propertysFields['priority'] = ['type' => 'int', 'lllPath' => $lllPath];
+        $propertysFields['target'] = ['type' => 'string', 'lllPath' => $lllPath];
+        $propertysFields['sources'] = ['type' => 'string', 'lllPath' => $lllPath];
+
+        $extensionConfiguration['components']['propertys'] = [
+            'uid' => 'propertys',
+            'disable' => false,
+            'title' => 'Propertys',
+            'controller' => 'Component',
+            'add' => 'ComponentAdd',
+            'edit' => 'ComponentEdit',
+            'fields' => $standardFields ?? [],
+
+            'propertys' => [
+                'typeConverter' => [
+                    'uid' => 'typeConverter',
+                    'disable' => false,
+                    'title' => 'Type Converter',
+                    'controller' => 'Property',
+                    'add' => 'PropertyAdd',
+                    'edit' => 'PropertyEdit',
+                    'fields' => [],
+                    'fieldsTabs' => ['general'],
+                    'propertyFields' => $propertysFields,
+                    'propertyFieldsTabs' => ['general'],
+                ],
+            ],
+
+        ];
+
+
 
         $extensionConfiguration['components'][''] = [
             'uid' => '',

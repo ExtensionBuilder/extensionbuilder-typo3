@@ -6,17 +6,23 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-        <div>
+        <style>
+            .info {
+                margin-bottom: 50px;
+            }
+        </style>
+
+
+        <div class="info">
             <h1><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3" /></h1>
 
             <div style="width: 501px; top left repeat-y;">
                 <div style="float: left;  width: 100px;">Version</div>
                 <div style="float: right; width: 400px;">{configuration.version}</div>
             </div>
-
         </div>
 
-        <div>
+        <div class="info">
             <h1><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3Core" /></h1>
 
             <div style="width: 501px; top left repeat-y;">
@@ -37,13 +43,12 @@
                     <div style="float: left;  width: 100px;">Local builder</div>
                     <div style="float: right; width: 400px;">Online</div>
                     <div style="float: left;  width: 100px;">Version</div>
-                    <div style="float: right; width: 400px;">{coreStatus.version}</div>
+                    <div style="float: right; width: 400px;">{builderLocalversion}</div>
                 </f:if>
             </div>
         </div>
-        <br /><br />
 
-        <div>
+        <div class="info">
             <h1>ID´s</h1>
             <div style="width: 501px; top left repeat-y;">
                 <div style="float: left;  width: 100px;">System ID </div>
@@ -54,7 +59,7 @@
             </div>
         </div>
 
-        <div>
+        <div class="info">
             <h1>Info</h1>
             <div style="width: 501px; top left repeat-y;">
                 <div style="float: left;  width: 100px;">Develpers</div>
@@ -71,7 +76,7 @@
             </div>
         </div>
 
-        <div>
+        <div class="info">
             <h1>Copyright</h1>
             <div style="width: 501px; top left repeat-y;">
                 <div style="float: left;  width: 100px;">Author</div>
@@ -86,7 +91,7 @@
         </div>
 
         <f:if condition="{announcements}">
-            <div>
+            <div class="info">
                 <f:render
                     partial="Info/FieldsInfo"
                     arguments="{
@@ -99,7 +104,7 @@
         </f:if>
 
         <f:if condition="{issues}">
-            <div>
+            <div class="info">
                 <f:render
                     partial="Info/FieldsInfo"
                     arguments="{
@@ -112,7 +117,7 @@
         </f:if>
 
         <f:if condition="{todo}">
-            <div>
+            <div class="info">
                 <f:render
                     partial="Info/FieldsInfo"
                     arguments="{
@@ -125,7 +130,7 @@
         </f:if>
 
         <f:if condition="{changeLog}">
-            <div>
+            <div class="info">
                 <f:render
                     partial="Info/FieldsInfo"
                     arguments="{
