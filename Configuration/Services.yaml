@@ -4,8 +4,27 @@ services:
     autoconfigure: true
     public: false
 
-  ExtensionBuilder\ExtensionbuilderTypo3\:
+  ExtensionBuilder\ExtensionBuilderTypo3\:
     resource: '../Classes/*'
 
-  ExtensionBuilder\ExtensionbuilderTypo3\Service\ExtensionBuilderService:
-    shared: true
+  ExtensionBuilder\ExtensionBuilderTypo3\Command\ExtensionBuilderTypo3:
+    tags:
+      - name: console.command
+        command: 'extensionbuilder:typo3'
+        description: 'Extension Builder - Build TYPO3 Extension'
+        schedulable: false
+
+  dashboard.widget.extension_builder.typo3.contactOverview:
+    class: ExtensionBuilder\ExtensionBuilderTypo3\Widgets\Typo3OverviewWidget
+    arguments:
+      $options:
+        template: 'Widget/Typo3OverviewWidget'
+    tags:
+      - name: dashboard.widget
+        identifier: 'typo3OverviewWidget'
+        groupNames: 'general'
+        title: 'Extension Builder TYPO3'
+        description: 'Extension Builder TYPO3'
+        iconIdentifier: 'content-widget-list'
+        height: 'medium'
+        width: 'medium'

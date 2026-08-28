@@ -6,17 +6,26 @@
     <f:layout name="Module" />
     <f:section name="Content">
 
-        <f:asset.css identifier="litegraph" href="EXT:extensionbuilder_typo3/Resources/Public/Css/litegraph.css"/>
+        <f:asset.css
+            identifier="litegraph"
+            href="EXT:extensionbuilder_typo3/Resources/Public/Css/litegraph.css"
+        />
 
-        <f:asset.script identifier="litegraph" src="EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Contrib/Litegraph/litegraph.min.js"/>
-        <f:asset.script identifier="ext-kickstarter" src="EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Extensioninfo.js"/>
-<f:comment>
-        <f:be.pageRenderer includeJavaScriptModules="{0: '@extensionbuilder/extensionbuildertypo3/ExtensioninfoModule.js'}"/>
-</f:comment>
+        <f:asset.script 
+            identifier="litegraph"
+            src="EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Contrib/Litegraph/litegraph.min.js"
+        />
+        <f:asset.script
+            identifier="ext-kickstarter"
+            src="EXT:extensionbuilder_typo3/Resources/Public/JavaScript/extensioninfo.js"
+        />
+
         <div id="graph-container" data-extension="{extension}" data-components="{components}">
+
 <f:comment>
-            <button id="buildExtension" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%);">Build Extension</button>
+            <button id="buildExtension" class="eb-build-extension-button">Build Extension</button>
 </f:comment>
+
         </div>
 
     </f:section>

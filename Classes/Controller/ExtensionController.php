@@ -1,162 +1,276 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use Psr\Http\Message\ResponseInterface;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use ExtensionBuilder\ExtensionBuilderTypo3\Service\ExtensionLockService;
+
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 #[AsController]
 final class ExtensionController extends ExtensionBuilderController
 {
 
+    /**
+     * @since 0.12
+     */
     public function listAction(): ResponseInterface
     {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+// ToDo maintenance mode
+        $maintenanceActive = false;
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/maintenancemodal.js');
+
+        $this->pageRenderer->addInlineSettingArray('myext', [
+            'maintenance' => [
+                'active' => $maintenanceActive,
+                'message' => 'Wartung aktiv: Bitte gerade nichts Kritisches ändern.',
+            ],
+        ]);
+
+        $this->moduleTemplate->assignMultiple([
+            'maintenanceActive' => $maintenanceActive,
+        ]);
 
         if (
             ($bodyParams['currentProject'] ?? false) &&
-            !($bodyParams['currentProject'] == $this->ebService->developer['typo3']['project'])
+            !($bodyParams['currentProject'] == ($this->ebBackendService->developer['typo3']['currentProject'] ?? ''))
         ) {
-            $this->ebService->developer['typo3']['project'] = $bodyParams['currentProject'];
-            $this->ebService->writeDeveloper();
+            $this->ebBackendService->developer['typo3']['currentProject'] = $bodyParams['currentProject'];
+            $this->ebBackendService->writeDeveloper();
 		}
 
         if (
             ($bodyParams['currentVendor'] ?? false) &&
-            !($bodyParams['currentVendor'] == $this->ebService->developer['typo3']['vendor'])
+            !($bodyParams['currentVendor'] == ($this->ebBackendService->developer['typo3']['currentVendor'] ?? ''))
         ) {
-            $this->ebService->developer['typo3']['vendor'] = $bodyParams['currentVendor'];
-            $this->ebService->writeDeveloper();
+            $this->ebBackendService->developer['typo3']['currentVendor'] = $bodyParams['currentVendor'];
+            $this->ebBackendService->writeDeveloper();
 		}
-
-//   $formData = [
-//        'parameterArray' => [
-//            'fieldConf' => [
-//                'config' => [
-//                    'type' => 'text',
-//                    'enableRichtext' => true,
-//                    'richtextConfiguration' => 'default',
-//                    'fieldControl' => [
-//                        'fullScreenRichtext' => [
-//                            'disabled' => false,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            'itemFormElName' => 'data[my_rte_field]',
-//            'itemFormElValue' => '',
-//        ],
-//    ];
-
-//       $rteHtml = $this->nodeFactory->create([
-//            'type' => 'text',
-//            'renderType' => 'textTable', // wichtig für RTE
-//            'name' => 'data[my_rte_field]',
-//            'data' => $formData,
-//        ])->render()['html'];
-
-//$this->view->assign('rteHtml', $rteHtml);
 
         return $this->extensionList();
     }
 
+    /**
+     * @since 0.12
+     */
     private function extensionList(): ResponseInterface
     {
-        // No developer exists ToDo 
-        if ($this->ebService->noDeveloper) {
+        // There is no developer forwarding to create this
+        if ($this->ebBackendService->noDeveloper) {
             return $this->redirect('edit', 'Developer');
         }
-        // No vendor exists ToDo
-        if (!($this->ebService->vendors)) {
+
+        // There is no vendor forwarding to create this
+        if ($this->ebBackendService->noVendors) {
             return $this->redirect('list', 'Vendor');
         }
 
+        $projects = [];
+        $currentProject = '';
+        $vendors = [];
+        $currentVendor = '';
+
+$projects = $this->ebBackendService->projects;
+
+        //
+		if ($this->ebBackendService->beUserIsAdmin) {
+
+//echo "beUserIsAdmin<br />";
+
+
+$project          = $this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['currentProject'] ?? 'no')] ?? [];
+//            $projects = $this->ebBackendService->projects[(
+//                $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no'
+//            )] ?? [];
+
+            $currentProject = $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no';
+
+            $vendors = $this->ebBackendService->vendorsAndExtensions ?? [];
+            $currentVendor = $this->ebBackendService->developer['typo3']['currentVendor'] ?? 'all';
+
+//debug($projects,"Project:".$currentProject." - ExtensionController.php");
+//debug($vendors,"Vendor: ".$currentVendor." - ExtensionController.php");
+
+        } else {
+            $currentProject = $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no';
+            $currentVendor = $this->ebBackendService->developer['typo3']['currentVendor'] ?? 'all';
+
+//            $projects = ['no'];
+            $project = $this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['currentProject'] ?? 'no')] ?? [];
+
+// ToDo $project 
+            foreach ($this->ebBackendService->vendors as $vendorKey => $vendorValue) {
+                if ($this->ebBackendService->userHasBackendGroup((int)($vendorValue['backendGroupId'] ?? 0))) {
+// ToDo
+                }
+            }
+//            foreach ($this->ebBackendService->vendors as $vendorKey => $vendorValue) {
+//                if (strpos($this->ebBackendService->beUserGroup, ((string)$vendorValue['backendGroupId'] ?? ''))) {
+//                    $vendors[$vendorKey] = $this->ebBackendService->vendorsAndExtensions[$vendorKey];
+//				}
+//            }
+
+        }
+
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'isProKey' => $this->isProKey,
-            'components' =>  $this->ebService->extensionConfiguration['components'],
-            'currentProject' => $this->ebService->developer['typo3']['project'] ?? 'no',
-            'currentVendor' => $this->ebService->developer['typo3']['vendor'] ?? 'all',
-            'project' =>  $this->ebService->projects[($this->ebService->developer['typo3']['project'] ?? 'no')] ?? [],
-            'vendors' => $this->ebService->vendorsAndExtensions ?? ['no'],
+            'components' =>  $this->ebBackendService->extensionConfiguration['components'],
+            'projects' =>  $projects,
+            'project' =>  $project,
+            'currentProject' => $currentProject,
+            'vendors' => $vendors,
+            'currentVendor' => $currentVendor,
         ]);
 
         $this->addDocHeaderModuleDropDown(
             'Extension',
-            activeProjcet: $this->ebService->developer['typo3']['project'] ?? 'no',
-            activeVendor: $this->ebService->developer['typo3']['vendor'] ?? 'all',
+            activeProject: $currentProject,
+            activeVendor: $currentVendor,
         );
         $this->addDocHeaderAddButton(
             'add',
             'Extension',
         );
-
-        return $this->moduleTemplate->renderResponse('Extension/List');
+        return $this->moduleTemplate->renderResponse('ExtensionList');
 	}
 
+    /**
+     * @since 0.12
+     */
     public function addAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfieldschanged.js');
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                $vendorName = $bodyParams['extensionData']['extension']['vendorName'];
-                $extensionName = $bodyParams['extensionData']['extension']['extensionName'];
                 $extensionData = $bodyParams['extensionData'] ?? [];
 
+                $vendorName = (string)($extensionData['vendorName'] ?? '');
+                $extensionName = (string)($extensionData['extensionNamespace'] ?? '');
+
+// ToDo: Move to JSA
+// ToDo:check vendorComposerName already exists
+
                 if ($vendorName && $extensionName) {
-                    if (!($this->ebService->localExtensions[$extensionName] ?? false)) {
+//ToDo
+                    if (!($this->ebBackendService->localExtensions[$extensionName] ?? false)) {
+// ToDo
+//                        $extensionNamespace = str_replace([' ','-'], '_', $extensionData['extensionNamespace']);
+//                        $extensionNamespace = ltrim($extensionNamespace, '1234567890');
+//                        $extensionNamespace = GeneralUtility::underscoredToUpperCamelCase(trim($extensionNamespace));
+// ToDo
+//                        $extensionData['vendorComposerName'] = $this->ebBackendService->configuration['vendorComposerName'];
 
-                        $extensionData['extension']['versionMajor'] = 0;
-                        $extensionData['extension']['versionMinor'] = 1;
-                        $extensionData['extension']['versionRevision'] = 0;
+                        $extensionData['ebDevSystemId'] = $this->ebBackendService->configuration['systemId'] ?? '';
+                        $extensionData['ebDevVendorId'] = $this->ebBackendService->vendors[$vendorName]['vendorId' ?? ''];
 
-                        self::save(
-                            $vendorName,
-                            $extensionName,
-                            $extensionData,
-                        );
+                        $extensionData['ebDevDeveloperId'] = [];
+                        $extensionData['ebDevDeveloperId'][$this->ebBackendService->developer['developerId']] = [];
+
+                        $extensionData['ebDevExtensionId'] = Tools\Uuid::uuid();
+                        $extensionData['ebDevJsonVersion'] = '1';
+
+                        $extensionData['versionMajor'] = 0;
+                        $extensionData['versionMinor'] = 1;
+                        $extensionData['versionRevision'] = 0;
+
+                        $this->ebBackendService->extension['extension'] = $extensionData;
+// 8888
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->extensionConfiguration['fieldsEdit'],
+                    $this->ebBackendService->extension['extension'],
+                );
+
+                        $this->ebBackendService->writeExtension($vendorName, $extensionName);
+
+                        $this->ebBackendService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension'] = [];
+                        $this->ebBackendService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName]['extension'] = $extensionData;
+
+                        $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
 
                         return $this->extensionList();
                     } else {
-                        if ($this->ebService->isComposerMode) {
-                            $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:extensionexists'));
-						} else {
-                            $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:extensionexists'));
+                        if ($this->ebBackendService->isComposerMode) {
+                            $this->flashMessage(
+                                '',
+                                LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:extensionexists')
+                            );
+                        } else {
+                            $this->flashMessage(
+                                '',
+                                LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:extensionexists')
+                            );
 						}
                     }
                 } else {
                     if ($vendorName) {
                         $this->flashMessage(
                             '',
-                            LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:specifyextensionname')
+                            LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:specifyextensionname')
                         );
-					} else {
+                    } else {
                         $this->flashMessage(
                             '',
-                            LocalizationUtility::translate($this->ebService->lll .'.extension.xlf:specifyvendorname')
+                            LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:specifyvendorname')
                         );
-					}
+                    }
 			    }
                 break;
 		}
 	
-        if (!($extensionData ?? false)) {
-            $extensionData = [];
+
+        if (!($extension ?? false)) {
+            $extension = [];
         }
 
+        $selects = $this->ebBackendService->extensionConfiguration['selects'];
+        $selects['vendors'] = $this->ebBackendService->getVendors();
+
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
-            'extensionData' => $extensionData,
-            'projects' => $this->ebService->projects,
-			'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
+            'extension' => $extension,
+            'extensionConfiguration' => $this->ebBackendService->extensionConfiguration,
+            'extensionSelects' => $selects,
+            'selections' => $this->ebBackendService->extension['selections'] ?? [], // ToDo warum leer?
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -168,38 +282,119 @@ final class ExtensionController extends ExtensionBuilderController
             'Extension',
         );
 
-    	return $this->moduleTemplate->renderResponse('Extension/Add');
+    	return $this->moduleTemplate->renderResponse('ExtensionAdd');
     }
 
+    /**
+     * @since 0.12
+     */
     public function editAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'];
-        $extensionName = $bodyParams['extensionName'];
-        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
-        $componentsDev = $this->ebService->extensionConfiguration['components'];
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
+
+        try {
+            $this->ebBackendService->assertCanAccessVendor($vendorName);
+        } catch (\RuntimeException $exception) {
+            $this->flashMessage(
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.extension.xlf:noAccess.info1'
+                ),
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.extension.xlf:noAccess.info2'
+                ) . $extensionName,
+                ContextualFeedbackSeverity::ERROR,
+            );
+
+            return $this->extensionList();
+        }
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildmodal.js');
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
+
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
+
+        $extensionData = &$this->ebBackendService->extension;
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'];
+
+        if (($extensionData['extension']['type'] ?? '') === 'sitepackage') {
+            foreach ($componentsDev ?? [] as $componentsDevKey => $componentsDevValue) {
+                if (!($componentsDevValue['sitePackage'] ?? false)) {
+                    unset($componentsDev[$componentsDevKey]);
+                }
+            }
+        }
+
+
+//$lock = $this->extensionLockService->acquire(
+//    $vendorName,
+//    $extensionName,
+//    (int)$GLOBALS['BE_USER']->user['uid'],
+//    (string)$GLOBALS['BE_USER']->user['username']
+//);
+
+//$readOnly = !$lock['acquired'] && !$GLOBALS['BE_USER']->isAdmin();
+
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                Tools\ConfigArray::arrayMerge($extensionData, $bodyParams['extensionData']);
-
-                self::save(
-                    $vendorName ?? '',
-                    $extensionName ?? '',
-                    $extensionData ?? [],
+                Tools\ConfigArray::arrayMerge(
+                    $this->ebBackendService->extension['extension'],
+                    $bodyParams['extensionData']
                 );
+
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->extensionConfiguration['fieldsEdit'],
+                    $this->ebBackendService->extension['extension'],
+                );
+
+                $this->ebBackendService->extension['extension']['version']  = 
+                    (string)($extensionData['versionMajor'] ?? '0') . '.'
+                    . (string)($extensionData['versionMinor'] ?? '0') . '.'
+                    . (string)($extensionData['versionRevision'] ?? '0');
+
+                $this->ebBackendService->writeExtension($vendorName, $extensionName);
+
+                $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
+
                 break;
 		}
 
+// ToDo Arra in fluid
+unset($extensionData['authors']);
+unset($extensionData['support']);
+unset($extensionData['keywords']);
+unset($extensionData['depends']);
+
+
+
+ //       $javaScriptRenderer = $this->pageRenderer->getJavaScriptRenderer();
+ //       $javaScriptRenderer->addJavaScriptModuleInstruction(
+ //           JavaScriptModuleInstruction::create('@typo3/filelist/file-list.js')->instance()
+ //       );
+
+//$this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/tree-init.js');
+
+//$this->initializeModule($this->request);
+
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
-            'componentsDev' =>  $componentsDev,
+            'lllBase' => $this->ebBackendService->lll,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'extensionData' => $extensionData,
-            'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
+            'extensionConfiguration' => $this->ebBackendService->extensionConfiguration,
+            'configuration' => $this->ebBackendService->configuration,
+            'componentsDev' =>  $componentsDev,
+            'vendors' => $this->ebBackendService->getVendors(),
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -217,22 +412,46 @@ final class ExtensionController extends ExtensionBuilderController
             $extensionName,
         );
 
-        return $this->moduleTemplate->renderResponse('Extension/Edit');
+        return $this->moduleTemplate->renderResponse('ExtensionEdit');
     }
 
+    /**
+     * @since 0.12
+     */
     public function deleteAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'] ?? '';
-        $extensionName = $bodyParams['extensionName'] ?? '';
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
-        $this->ebService->deleteExtension($vendorName, $extensionName);
+        try {
+            $this->ebBackendService->assertCanAccessVendor($vendorName);
+        } catch (\RuntimeException $exception) {
+            $this->flashMessage(
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.extension.xlf:noAccess.info1'
+                ),
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.extension.xlf:noAccess.info2'
+                ) . $extensionName,
+                ContextualFeedbackSeverity::ERROR,
+            );
 
-        if ($this->ebService->projects[($this->developer['typo3']['project'] ?? 'no')] ?? false) {
-            unset($this->ebService->projects[$this->developer['typo3']['project']]['extensions'][$extensionName]);
-            $this->ebService->writeProject();
-            $this->ebService->readProject();
+            return $this->extensionList();
+        }
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+
+        $this->ebBackendService->deleteExtension($vendorName, $extensionName);
+
+        if ($this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['project'] ?? 'no')] ?? false) {
+            unset($this->ebBackendService->projects[$this->ebBackendService->developer['typo3']['project']]['extensions'][$extensionName]);
+            $this->ebBackendService->writeProjects();
+            $this->ebBackendService->readProjects();
         }
 
         $this->flashMessage('', 'Extension: ' . $extensionName . ' is deleted'); // ToDo LLL
@@ -240,42 +459,68 @@ final class ExtensionController extends ExtensionBuilderController
         return $this->redirect('list', 'Extension');
     }
 
+    /**
+     * @since 0.12
+     */
     public function buildAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'] ?? '';
-        $extensionName = $bodyParams['extensionName'] ?? '';
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
-        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        try {
+            $this->ebBackendService->assertCanAccessVendor($vendorName);
+        } catch (\RuntimeException $exception) {
+            $this->flashMessage(
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.extension.xlf:noAccess.info1'
+                ),
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.extension.xlf:noAccess.info2'
+                ) . $extensionName,
+                ContextualFeedbackSeverity::ERROR,
+            );
 
-        $builderUri = $this->ebService->configuration['typo3']['builderUrl'];
+            return $this->extensionList();
+        }
 
-        $copyInExtension = true;
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
 
-        $flushT3andPhpCache = $this->ebService->developer['typo3']['flushT3andPhpCache'] ?? false;
-        $analyzeDatabaseStructure = $this->ebService->developer['typo3']['analyzeDatabaseStructure'] ?? false;
-        $rebuildPhpAutoload = $this->ebService->developer['typo3']['rebuildPhpAutoload'] ?? false;
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
 
-        $this->ebService->build(
+        $extensionData = &$this->ebBackendService->extension;
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'];
+
+        $builderUri = $this->ebBackendService->configuration['typo3']['builderUrl'];
+
+        $flushT3andPhpCache = $this->ebBackendService->developer['typo3']['flushT3andPhpCache'] ?? false;
+        $analyzeDatabaseStructure = $this->ebBackendService->developer['typo3']['analyzeDatabaseStructure'] ?? false;
+        $rebuildPhpAutoload = $this->ebBackendService->developer['typo3']['rebuildPhpAutoload'] ?? false;
+
+        $this->ebBackendService->build(
+            '',
             $vendorName,
             $extensionName,
-            $this->ebService->configuration,
-            $this->ebService->developer,
         );
 
-        $this->ebService->vendorsAndExtensions
-            [$vendorName]['extensions'][$extensionName]['extensionBuild']['lastBuild'] = date('d-m-Y  h:i:m');
-        $this->ebService->writeExtension($vendorName, $extensionName);
+        $this->ebBackendService->vendorsAndExtensions
+            [$vendorName]['extensions'][$extensionName]['extensionBuild']['lastBuild'] = date('d-m-Y  h:i:s');
+
+        $this->ebBackendService->writeExtension($vendorName, $extensionName);
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
-            'components' =>  $this->ebService->extensionConfiguration['components'],
-            'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
+            'lllBase' => $this->ebBackendService->lll,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'extensionData' => $extensionData,
+            'extensionConfiguration' => $this->ebBackendService->extensionConfiguration,
+            'configuration' => $this->ebBackendService->configuration,
+            'componentsDev' =>  $componentsDev,
+            'vendors' => $this->ebBackendService->getVendors(),
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -293,71 +538,60 @@ final class ExtensionController extends ExtensionBuilderController
             $extensionName,
         );
 
-        return $this->moduleTemplate->renderResponse('Extension/Edit');
+        return $this->moduleTemplate->renderResponse('ExtensionEdit');
     }
 
-    public function listbuildAction(): ResponseInterface {
+// ToDo Build zeite wird nich korrekt angezeigt
+
+    /**
+     * @since 0.12
+     */
+    public function listBuildAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'] ?? '';
-        $extensionName = $bodyParams['extensionName'] ?? '';
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
-        $builderUri = $this->ebService->configuration['typo3']['builderUrl'];
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
 
-        $copyInExtension = true;
+        $builderUri = $this->ebBackendService->configuration['typo3']['builderUrl'];
 
-        $flushT3andPhpCache = $this->ebService->developer['typo3']['flushT3andPhpCache'] ?? false;
-        $analyzeDatabaseStructure = $this->ebService->developer['typo3']['analyzeDatabaseStructure'] ?? false;
-        $rebuildPhpAutoload = $this->ebService->developer['typo3']['rebuildPhpAutoload'] ?? false;
+        $flushT3andPhpCache = $this->ebBackendService->developer['typo3']['flushT3andPhpCache'] ?? false;
+        $analyzeDatabaseStructure = $this->ebBackendService->developer['typo3']['analyzeDatabaseStructure'] ?? false;
+        $rebuildPhpAutoload = $this->ebBackendService->developer['typo3']['rebuildPhpAutoload'] ?? false;
 
-        $this->ebService->build(
+        $this->ebBackendService->build(
+            '',
             $vendorName,
             $extensionName,
-            $this->ebService->configuration,
-            $this->ebService->developer,
         );
 
-        $this->ebService->vendorsAndExtensions
-            [$vendorName]['extensions'][$extensionName]['extensionBuild']['lastBuild'] = date('d-m-Y  h:i:m');
-        $this->ebService->writeExtension($vendorName, $extensionName);
+        $this->ebBackendService->extension['extensionBuild']['lastBuild'] = date('d-m-Y  H:i:s');
+        $this->ebBackendService->writeExtension($vendorName, $extensionName);
 
-        $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
-            'components' =>  $this->ebService->extensionConfiguration['components'],
-            'currentProject' => $this->ebService->developer['typo3']['project'] ?? 'no',
-            'currentVendor' => $this->ebService->developer['typo3']['vendor'] ?? 'all',
-            'project' =>  $this->ebService->projects[($this->ebService->developer['typo3']['project'] ?? 'no')] ?? [],
-            'vendors' => $this->ebService->vendorsAndExtensions ?? ['no'],
-        ]);
-
-        $this->addDocHeaderModuleDropDown(
-            'Extension',
-            activeProjcet: $this->ebService->developer['typo3']['project'] ?? 'no',
-            activeVendor: $this->ebService->developer['typo3']['vendor'] ?? 'all',
-        );
-        $this->addDocHeaderAddButton(
-            'add',
-            'Extension',
-        );
-
-        return $this->moduleTemplate->renderResponse('Extension/List');
+        return $this->extensionList();
     }
 
-    public function uploadActionToDo(): ResponseInterface {
+    /**
+     * @since 0.12
+     */
+// ToDo Refactory
+    public function uploadAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'] ?? '';
-        $extensionName = $bodyParams['extensionName'] ?? '';
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
         $this->addDocHeaderModuleDropDown(
             'Extension',
         );
 
-        $vendorData = $this->ebService->vendorsAndExtensions[$vendorName];
-        $extensionData = $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $vendorData = $this->ebBackendService->vendorsAndExtensions[$vendorName];
+        $extensionData = $this->ebBackendService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
 
         // GtiHub
         if ($extensionData['extensionBuild']['gitHubCom'] ?? false) {
@@ -383,30 +617,6 @@ final class ExtensionController extends ExtensionBuilderController
 		}
 
         return $this->redirect('list', 'Extension');
-
-    }
-
-    // ------------------------------------------------------------------
-
-// ToDO move to serice
-	
-    final function save(
-        string $vendorName,
-        string $extensionName,
-        array $extensionData,
-    ): void {
-
-        $extensionData['extension']['version']  = (string)($extensionData['extension']['versionMajor'] ?? '0');
-        $extensionData['extension']['version'] .= '.';
-        $extensionData['extension']['version'] .= (string)($extensionData['extension']['versionMinor'] ?? '0');
-        $extensionData['extension']['version'] .= '.';
-        $extensionData['extension']['version'] .= (string)($extensionData['extension']['versionRevision'] ?? '0');
-
-        $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName] = $extensionData;
-
-        $this->ebService->writeExtension($vendorName, $extensionName, $extensionData);
-
-        $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
     }
 
 }

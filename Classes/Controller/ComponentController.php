@@ -1,66 +1,124 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
 use Psr\Http\Message\ResponseInterface;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 #[AsController]
 final class ComponentController extends ExtensionBuilderController
 {
 
+    /**
+     * @since 0.12
+     */
     public function addAction(): ResponseInterface {
-		$bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 
-        $vendorName = $bodyParams['vendorName'];
-        $extensionName = $bodyParams['extensionName'];
-        $componentsUid = $bodyParams['componentsUid'];
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $componentsDev = $this->ebService->extensionConfiguration['components'][$componentsUid];
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
+
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
+
+        $componentsName = (string)($bodyParams['componentsName'] ?? '');
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'][$componentsName];
+
+        $componentName = [
+            'componentName' => [
+                'type' => 'input',
+                'lllPath' => '.component',
+                'tab' => 'general',
+                'required' => true,
+            ],
+        ];
 
         $fields = array_merge(
-            ['uid' => [
-                'type' => 'string',
-                'lllPath' => '.componentproperty'
-            ]],
+            [
+                'componentName' => [
+                   'type' => 'input',
+                    'lllPath' => '.component',
+                    'tab' => 'general',
+                    'required' => true,
+                ],
+            ],
             $componentsDev['fields']
         );
-        $fieldsTabs = $componentsDev['fieldsTabs'] ?? ['general'];
+
+        if ($fields['componentName']['type'] == 'select') {
+            // Remove an existing selection from the selection options.
+            // So that each component is only used once.
+            foreach ($this->ebBackendService->extension['components'][$componentsName] ?? [] as $componentsKey => $componentsValue) {
+                if ($fields['componentName']['selects'][$componentsKey] ?? false) {
+                    unset($fields['componentName']['selects'][$componentsKey]);
+                }
+            }
+        }
+
+        $fieldsTabs = $componentsDev['fieldsTabs'] ?? ['general' => [ 'lllPath' => '.component']];
         $fieldsData = $bodyParams['fieldsData'] ?? [];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                $componentUid = $fieldsData['uid'];
-                if ($this->ebService->checkUid($this, $componentUid)) {
-                    unset($fieldsData['uid']);
-                    $this->ebService->writeExtensionComponent(
-                        $this,
-                        $vendorName,
-                        $extensionName,
-                        $componentUid,
-                        $fieldsData,
-                        $componentsDev['uid'],
-                        $componentsDev['title'],
-                    );
-                    $fieldsData['uid'] = $componentUid;
-                }
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->extensionConfiguration['components'][$componentsName]['fields'],
+                    $fieldsData,
+                );
+
+// ToDo Duplette über JavaScript
+
+                $componentName = $fieldsData['componentName'];
+
+                $this->ebBackendService->writeExtensionComponent(
+                    $this,
+                    $vendorName,
+                    $extensionName,
+                    $componentsName,
+                    $componentName,
+                    $fieldsData,
+                );
+
+                $fieldsData['componentName'] = $componentName; // ToDo ???
                 break;
 		}
 
+// ToDo ???
+        $this->ebBackendService->getLocalExtensions($this->ebBackendService->extension['components']['extensions'] ?? []);
+
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
+            'action' => 'add',
             'componentsTitle' => $componentsDev['title'],
             'fields' => $fields,
             'fieldsTabs' => $fieldsTabs,
             'fieldsData' => $fieldsData,
             'fieldsDataName' => 'fieldsData',
+            'selections' => $this->ebBackendService->extension['selections'],
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -77,50 +135,72 @@ final class ComponentController extends ExtensionBuilderController
         return $this->moduleTemplate->renderResponse($componentsDev['add']);
     }
 
+    /**
+     * @since 0.12
+     */
     public function editAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'];
-        $extensionName = $bodyParams['extensionName'];
-        $componentsUid = $bodyParams['componentsUid'];
-        $componentUid = $bodyParams['componentUid'];
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $componentsDev = $this->ebService->extensionConfiguration['components'][$componentsUid];
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
+
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
+
+        $componentsName = (string)($bodyParams['componentsName'] ?? '');
+        $componentName = (string)($bodyParams['componentName'] ?? '');
+
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'][$componentsName];
         $componentsFields = $componentsDev['fields'];
-        $propertysDev = $componentsDev['propertys'];
+        $fields = $componentsDev['fields'];
+        $propertysDev = $componentsDev['propertys'] ?? [];
 
-        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
-        $componentData = $extensionData[$componentsUid][$componentUid];
+        $extensionData = &$this->ebBackendService->extension['components'];
+        $componentData = $extensionData[$componentsName][$componentName];
 
         $fields = $componentsDev['fields'];
+        unset($fields['componentName']);
+
         $fieldsTabs = $componentsDev['fieldsTabs'] ?? ['general'];
-        $fieldsData = $bodyParams['fieldsData'] ?? $extensionData[$componentsUid][$componentUid];
+
+        $fieldsData = $bodyParams['fieldsData'] ?? $extensionData[$componentsName][$componentName];
         unset($fieldsData['propertys']);
-		
+
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->extensionConfiguration['components'][$componentsName]['fields'],
+                    $fieldsData,
+                );
 
-                $this->ebService->writeExtensionComponent(
+                $this->ebBackendService->writeExtensionComponent(
                     $this,
                     $vendorName,
                     $extensionName,
-                    $componentUid,
+                    $componentsName,
+                    $componentName,
                     $fieldsData,
-                    $componentsDev['uid'],
-                    $componentsDev['title'],
                 );
                 break;
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
-            'extensionData' =>$extensionData,
-            'componentsUid' => $componentsUid,
-            'componentUid' => $componentUid,
+            'componentName' => $componentName,
+            'extensionData' => $extensionData,
+            'componentsName' => $componentsName,
+            'action' => 'edit',
+            'componentsTitle' => $componentsDev['title'],
             'componentData' =>$componentData,
             'propertysDev' => $propertysDev,
             'fields' => $fields,
@@ -134,44 +214,66 @@ final class ComponentController extends ExtensionBuilderController
             'Extension',
             $vendorName,
             $extensionName,
-            componentsUid: $componentsUid,
+            componentsName: $componentsName,
         );
         $this->addDocHeaderSaveButton(
             'component-edit-form',
             'Component',
+        );
 
+// ToDo
+        $this->addDocHeaderBuildButton(
+            'build',
+            'Extension',
+            $vendorName,
+            $extensionName,
         );
 
         return $this->moduleTemplate->renderResponse($componentsDev['edit']);
     }
 
+
+// error
+    /**
+     * @since 0.12
+     */
     public function deleteAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'];
-        $extensionName = $bodyParams['extensionName'];
-        $componentsUid = $bodyParams['componentsUid'];
-        $componentUid = $bodyParams['componentUid'];
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
-        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
 
-        $this->ebService->deleteExtensionComponent(
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
+
+        $componentsName = (string)($bodyParams['componentsName'] ?? '');
+        $componentName = (string)($bodyParams['componentName'] ?? '');
+
+        $this->ebBackendService->deleteExtensionComponent(
             $this,
             $vendorName,
             $extensionName,
-            $componentsUid,
-            $componentUid,
+            $componentsName,
+            $componentName,
         );
 
+        $extensionData = &$this->ebBackendService->extension;
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'];
+
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
-            'componentsDev' =>  $this->ebService->extensionConfiguration['components'],
-            'registeredVendorGroups' => $this->ebService->getRegisteredVendorGroups(),
+            'lllBase' => $this->ebBackendService->lll,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'extensionData' => $extensionData,
+            'extensionConfiguration' => $this->ebBackendService->extensionConfiguration,
+            'configuration' => $this->ebBackendService->configuration,
+            'componentsDev' =>  $componentsDev,
+            'vendors' => $this->ebBackendService->getVendors(),
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -189,7 +291,7 @@ final class ComponentController extends ExtensionBuilderController
             $extensionName,
         );
 
-        return $this->moduleTemplate->renderResponse('Extension/Edit');
+        return $this->moduleTemplate->renderResponse('ExtensionEdit');
     }
 
 }

@@ -1,39 +1,53 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
 use Psr\Http\Message\ResponseInterface;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 #[AsController]
-final class ExtensioninfoController extends ExtensionBuilderController
+final class ExtensionInfoController extends ExtensionBuilderController
 {
 
+    /**
+     * @since 0.12
+     */
     public function infoAction(): ResponseInterface {
 		$bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
-//        $componentsUid = $bodyParams['componentsUid'] ?? '';
-//        $componentUid = $bodyParams['componentUid'] ?? '';
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
 
-        $componentsDev = $this->ebService->extensionConfiguration['components'];
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'];
+        $extensionData = &$this->ebBackendService->extension;
 
-        $extensionData = $this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
         $extension = $extensionData['extension'];
         $components = [];
         foreach ($componentsDev ?? [] as $componentName => $componentData ) {
-            if ($extensionData[$componentName] ?? false) {
-                $components[$componentName] = $extensionData[$componentName];
+            if ($extensionData['components'][$componentName] ?? false) {
+                $components[$componentName] = $extensionData['components'][$componentName];
             }
         }
-
-//debug($extension);
-//debug($components);
 
         $this->moduleTemplate->assignMultiple([
             'vendorName' => $vendorName,
@@ -42,19 +56,12 @@ final class ExtensioninfoController extends ExtensionBuilderController
             'components' => json_encode($components),
         ]);
 
-// ToDo 
         $this->addDocHeaderCloseButton(
             'list',
             'Extension',
-//            $vendorName,
-//            $extensionName,
         );
-//        $this->addDocHeaderSaveButton(
-//            'component-edit-form',
-//            'Component',
-//        );
 
-        return $this->moduleTemplate->renderResponse('ExtensionInfo/Extension.html');
+        return $this->moduleTemplate->renderResponse('ExtensionInfo/Extension');
     }
 
 }

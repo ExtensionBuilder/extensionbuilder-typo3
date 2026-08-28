@@ -1,59 +1,471 @@
-<f:if condition="{fieldsDataName}">
-    <f:variable name="{fieldsDataName}">{fieldsData}</f:variable>
-</f:if>
-<f:for each="{fields}" as="fieldsAs" key="fieldsKey">
-    <div class="form-group">
+<f:comment>
 
-        <label>
-            <f:if condition="{fieldsAs.lllPath}">
+This Fluid template does the following:
+- It checks whether tabs are available.
+- If no tabs are passed, it creates a default general tab.
+- It builds a Bootstrap/TYPO3 tab navigation at the top.
+- For each tab, it loops through all fields from {fields}.
+- It only renders fields that belong to the current tab and are not disabled.
+- Depending on the field type, it creates the appropriate form element.
+- It reads existing values from {fieldsData}.
+- It builds nested field names for array-based data structures.
+- It handles labels, tooltips, required fields, readonly fields, and related field settings.
+
+    <f:render
+        partial="BuildFields"
+        arguments="{
+            lllBase: '{lllBase}',
+            action: '{action}',
+            fields: '{fields}',
+            fieldsTabs: '{fieldsTabs}',
+            fieldsData: '{fieldsData}',
+            fieldsDataName: '{fieldsDataName}',
+            selectFields:  'selectFields'
+        }"
+    />
+
+ToDo
+	hidden
+	showBy
+
+valueArray
+
+Docu
+    'disable' => true
+	'group' => 'id'
+	'type' => 'select'
+    'selectKey' => 'vendors'
+    'tab' => 'general'
+    'required' => true
+    'disable' => true
+
+   ToDo description
+</f:comment>
+<f:if condition="!{fieldsTabs}">
+   <f:variable
+       name="fieldsTabs"
+       value="{'general':{lllPath:'.configuration'}}"
+   />
+</f:if>
+
+
+<f:comment>
+ h3 über feld
+
+ fieldset
+
+
+</f:comment>
+
+<div class="typo3-TCEforms eb-build-fields">
+    <div class="card eb-build-fields-card">
+
+        <f:comment>Create the tabs.</f:comment>
+        <div class="card-header eb-build-fields-card-header">
+            <ul class="nav nav-tabs t3js-tabs" role="tablist">
+
+                <f:for
+                    each="{fieldsTabs}"
+                    as="fieldsTabsAs"
+                    key="fieldsTabsKey"
+                    iteration="tabIteration"
+                >
+                    <li role="presentation" class="t3js-tabmenu-item nav-item">
+                        <button
+                            type="button"
+                            id="tab-{fieldsDataName}-{tabIteration.index}"
+                            class="nav-link{f:if(condition: tabIteration.isFirst, then: ' active')}"
+                            title=""
+                            data-bs-toggle="tab"
+                            data-bs-target="#tabpane-{fieldsDataName}-{tabIteration.index}"
+                            role="tab"
+                            aria-controls="tabpane-{fieldsDataName}-{tabIteration.index}"
+                            aria-selected="{f:if(condition: tabIteration.isFirst, then: 'true', else: 'false')}"
+                            data-tab="{fieldsTabsKey}"
+                        >
+                            <f:if condition="{f:translate(key: '{lllBase}{fieldsTabsAs.lllPath}.xlf:tab.{fieldsTabsKey}')} != ''">
+                                <f:then>
+                                    {f:translate(key: '{lllBase}{fieldsTabsAs.lllPath}.xlf:tab.{fieldsTabsKey}')}
+                                </f:then>
+                                <f:else>
+                                    {fieldsTabsKey -> f:format.case(mode: 'capital')}
+                                </f:else>
+                            </f:if>       
+                        </button>
+                    </li>
+                </f:for>
+            </ul>
+		</div>
+
+        <f:comment>Create the fields</f:comment>
+        <div class="card-body eb-build-fields-card-body eb-build-fields-card-body-open-top">
+        	<div class="tab-content">
+   	        	<f:for
+                    each="{fieldsTabs}"
+                    as="fieldsTabsAs"
+                    key="fieldsTabsKey"
+                    iteration="tabIteration"
+                >
+                    <div
+                        role="tabpanel"
+                        class="tab-pane{f:if(condition: tabIteration.isFirst, then: ' active')}"
+                        id="tabpane-{fieldsDataName}-{tabIteration.index}"
+                        aria-labelledby="tab-{fieldsDataName}-{tabIteration.index}"
+                        tabindex="0"
+                    >
+
+            	        <f:variable name="row"></f:variable>
+            	        <f:variable name="rowClass"></f:variable>
+
+               	        <f:for
+                            each="{fields}"
+                            as="fieldsAs"
+                            key="fieldsKey"
+                        >
+                            <f:if condition="!{fieldsAs.disable}">
+                                <f:if condition="{fieldsTabsKey} == {fieldsAs.tab}">
+                                    <f:if condition="{fieldsAs.type} == 'array'">
+                                        <f:then>
+<f:comment>
+ToDo Type = Array - BuildFields.html
+                                            <f:render partial="ComponentsAdd" arguments="{_all}" />
+</f:comment>
+    	                                </f:then>
+                                        <f:else>
+<f:if condition="({fieldsAs.row} !== null && {fieldsAs.row} !== '') || {row}">
+                                                <f:if condition="{row} == ''">
+                                                    <f:then>
+                                                        <f:variable name="row">{fieldsAs.row}</f:variable>
+                                                        <f:variable name="rowClass"> col col-sm</f:variable>
+
+                                                        <div class="card eb-build-fields-row-card mb-3">
+                                                            <div class="card-body eb-build-fields-row-card-body">
+                                                                <div class="row eb-build-fields-row">
+<f:comment></div></div></div></f:comment>
+                                                    </f:then>
+                                                    <f:else>
+                                                        <f:if condition="{row} !== {fieldsAs.row}">
+                                                            <f:variable name="row">{fieldsAs.row}</f:variable>
+<f:comment><div><div><div><div></f:comment>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="card eb-build-fields-row-card mb-3">
+                                                                <div class="card-body eb-build-fields-row-card-body">
+                                                                    <div class="row eb-build-fields-row">
+<f:comment></div></div></div></div></f:comment>                                                                        
+                                                        </f:if>
+                                                    </f:else>
+                                                </f:if>
+                                            </f:if>
+
+                	                        <f:render section="fields" arguments="{_all}" />
+
+                                            <f:if condition="({fieldsAs.row} !== null && {fieldsAs.row} !== '') || {row}">
+                                                <f:if condition="{row} == ''">
+<f:comment><div><div><div></f:comment>
+                                                             </div>
+                                                         </div>
+                                                    </div>                                                    
+
+                                                    <f:variable name="row"></f:variable>
+                                                    <f:variable name="rowClass"></f:variable>
+                                                </f:if>
+                                            </f:if>
+
+
+                        	                </f:else>
+                               	        </f:if>
+
+     	                           </f:if>
+                                </f:if>
+        	                </f:for>
+
+                            <f:if condition="{row}">
+
+                                <f:comment><div><div><div></f:comment>
+                                </div>
+                                </div>
+                                </div>
+
+                                <f:variable name="row"></f:variable>
+                                <f:variable name="rowClass"></f:variable>
+
+                            </f:if>
+
+        	        </div>
+        	    </f:for>
+	    	</div>
+		</div>
+
+    </div>
+</div>
+
+
+
+
+
+
+<f:comment><br />ToDo: Goto DIV</f:comment>
+
+
+<f:section name="fieldsX">
+</f:section>
+
+<f:comment>Section to build fields</f:comment>
+<f:section name="fields">
+<f:variable name="nameArray"></f:variable>
+    <f:variable name="valueArray"></f:variable>
+    <f:if condition="{fields.{fieldsKey}.array}">
+        <f:for
+            each="{fields.{fieldsKey}.array}"
+            as="arrayAs"
+            key="arrayKey"
+        >
+            <f:variable name="nameArray">{nameArray}[{arrayAs}]</f:variable>
+            <f:variable name="valueArray">{valueArray}{arrayAs}.</f:variable>
+        </f:for>
+    </f:if>
+<f:if condition="{valueArray}">
+        <f:then>
+            <f:variable name="value">{fieldsData.{valueArray}{fieldsKey}}</f:variable>
+        </f:then>
+        <f:else> 
+            <f:variable name="value">{fieldsData.{fieldsKey}}</f:variable>
+        </f:else> 
+	</f:if>
+<f:if condition="{action} == 'add'">
+        <f:variable name="value">{fieldsAs.default}</f:variable>
+    </f:if>
+<f:variable name="required"></f:variable>
+    <f:if condition="{fieldsAs.required}">
+        <f:variable name="required">true</f:variable>
+    </f:if>
+<f:variable name="readonly"></f:variable>
+    <f:if condition="{fieldsAs.readonly}">
+        <f:variable name="readonly">true</f:variable>
+    </f:if>
+<f:variable name="hidden"></f:variable>
+    <f:if condition="{fieldsAs.hidden}">
+        <f:variable name="hidden">true</f:variable>
+    </f:if>
+<f:variable name="showByKey"></f:variable>
+    <f:if condition="{fieldsAs.showByKey}">
+        <f:variable name="showByKey">true</f:variable>
+    </f:if>
+<f:if condition="{f:translate(key: '{lllBase}{fieldsAs.lllPath}.xlf:tooltip.{fieldsKey}')} != ''">
+        <f:then>
+            <f:variable name="tooltip">tooltip</f:variable>
+            <f:variable name="title">{f:translate(key: '{lllBase}{fieldsAs.lllPath}.xlf:tooltip.{fieldsKey}')}</f:variable>
+        </f:then>
+        <f:else>
+            <f:variable name="tooltip"></f:variable>
+            <f:variable name="title"></f:variable>
+        </f:else>
+    </f:if>
+
+
+    <div class="form-group t3js-formengine-validation-marker t3js-formengine-palette-field eb-build-field{rowClass}">
+        <label
+            class="form-label t3js-formengine-label"
+            data-bs-toggle="{tooltip}"
+            title="{title}"
+        >
+            <f:if condition="{f:translate(key: '{lllBase}{fieldsAs.lllPath}.xlf:label.{fieldsKey}')} != ''">
                 <f:then>
-                    <f:translate key="{lllBase}{fieldsAs.lllPath}.xlf:label.{fieldsKey}" /> ({fieldsAs.type})
+                    {f:translate(key: '{lllBase}{fieldsAs.lllPath}.xlf:label.{fieldsKey}')}
                 </f:then>
                 <f:else>
-                    {fieldsKey} ({fieldsAs.type})
+                    {fieldsKey -> f:format.case(mode: 'capital')} <code>(No LLL - label.{fieldsKey})</code>
                 </f:else>
             </f:if>
+
+            <f:if condition="{required}">
+                <code>Required</code>
+			</f:if>
         </label>
 
-        <f:if condition="{fieldsAs.type} == 'string'">
+
+        <f:if condition="{fieldsAs.type} == 'array'">
+Array<br />
+        </f:if>
+
+        <f:if condition="{fieldsAs.type} == 'devCode'">
+
             <div class="form-control-wrap">
+
+            <f:render
+                partial="MonacoEditor"
+                arguments="{
+                    vendorName: '{vendorName}',
+                    extensionName: '{extensionName}',
+                    fileName: '{fileName}',
+                    language: '{language}'
+                }"
+            />
+
+            </div>
+        </f:if>
+<f:if condition="{fieldsAs.type} == 'input'">
+<div class="form-control-wrap">
                 <f:form.textfield
-                    id="{fieldsKey}"
-                    name="{fieldsDataName}[{fieldsKey}]"
-                    value="{fieldsData.{fieldsKey}}"
+                    id="{fieldsDataName}.{valueArray}{fieldsKey}"
+                    class="form-control form-control-clearable t3js-clearable"
+                    required="{required}"
+                    readonly="{readonly}"
+                    data-bs-toggle="{tooltip}"
+                    title="{title}"
+                    name="{fieldsDataName}{nameArray}[{fieldsKey}]"
+                    value="{value}"
                 />
             </div>
         </f:if>
+
 
         <f:if condition="{fieldsAs.type} == 'textarea'">
             <div class="form-control-wrap">
                 <f:form.textarea
-                    id="{fieldsKey}"
-                    name="{fieldsDataName}[{fieldsKey}]"
-                    value="{{fieldsDataName}.{fieldsKey}}"
+                    id="{fieldsDataName}.{valueArray}{fieldsKey}"
+                    class="form-control form-control-clearable t3js-clearable"
+                    required="{required}"
+                    readonly="{readonly}"
+                    data-bs-toggle="{tooltip}"
+                    title="{title}"
+                    name="{fieldsDataName}{nameArray}[{fieldsKey}]"
+                    value="{value}"
                 />
             </div>
         </f:if>
 
-        <f:if condition="{fieldsAs.type} == 'int'">
-            <div class="form-control-wrap">
-                <f:form.textfield
-                    id="{fieldsKey}"
-                    name="{fieldsDataName}[{fieldsKey}]"
-                    value="{fieldsData.{fieldsKey}}"
-                    type="number"
+
+        <f:if condition="{fieldsAs.type} == 'check'">
+            <div class="form-check form-switch">
+                <f:form.hidden name="{fieldsDataName}{nameArray}[{fieldsKey}]" value="0" />
+                <f:form.checkbox
+                    id="{fieldsDataName}.{valueArray}{fieldsKey}"
+                    class="form-check-input"
+                    required="{required}"
+                    data-bs-toggle="{tooltip}" 
+                    title="{title}"
+                    name="{fieldsDataName}{nameArray}[{fieldsKey}]"
+                    value="1"
+                    checked="{value}"
                 />
             </div>
         </f:if>
+
+        <f:if condition="{fieldsAs.type} == 'number'">
+            <div class="form-control-clearable-wrapper">
+                <f:form.textfield
+                    id="{fieldsDataName}.{valueArray}{fieldsKey}"
+                    class="form-control form-control-clearable t3js-clearable"
+                    required="{required}"
+                    readonly="{readonly}"
+                    data-bs-toggle="{tooltip}"
+                    title="{title}"
+                    type="number"
+                    name="{fieldsDataName}{nameArray}[{fieldsKey}]"
+                    value="{value}"
+
+                />
+            </div>
+        </f:if>
+
+        <f:if condition="{fieldsAs.type} == 'select'">
+            <f:if condition="{fieldsAs.selects}">
+                <f:then>
+                    <f:variable name="options">{fieldsAs.selects}</f:variable>
+                </f:then>
+                <f:else>
+                    <f:variable name="selectKey">{fieldsKey}</f:variable>
+                    <f:if condition="{fieldsAs.selectKey}">
+                        <f:variable name="selectKey">{fieldsAs.selectKey}</f:variable>
+                    </f:if>
+
+                    <f:variable name="options" value="{'no': 'Do not specify a select field!'}" />
+                    <f:if condition="{selectFields.{selectKey}}">
+                        <f:variable name="options">{selectFields.{selectKey}}</f:variable>
+                    </f:if>
+                </f:else>
+            </f:if>
+
+            <f:if condition="{readonly} == true">
+                <f:then>
+                    <f:form.textfield
+                        id="{fieldsDataName}.{valueArray}{fieldsKey}"
+                        class="form-control form-control-clearable t3js-clearable"
+                        readonly="{readonly}"
+                        data-bs-toggle="{tooltip}"
+                        title="{title}"
+                        value="{options.{value}}"
+                    />
+                </f:then>
+                <f:else>
+                    <f:form.select
+                        id="{fieldsDataName}.{valueArray}{fieldsKey}"
+                        class="form-select form-control-adapt js-change-buildfields"
+                        required="{required}"
+                        data-bs-toggle="{tooltip}"
+                        title="{title}"
+                        name="{fieldsDataName}{nameArray}[{fieldsKey}]"
+                        options="{options}"
+                        value="{value}"
+                        additionalAttributes="{
+                            data-config: '{fieldsAs.copy.config}',
+                            data-key: '{fieldsAs.copy.key}',
+                            data-base: '{fieldsDataName}',
+                            data-fields: '{fieldsAs.copy.fields -> f:format.json()}',
+                            data-other-value: '__other__',
+                            data-other-wrapper: '#{fieldsDataName}-{fieldsKey}-other-wrapper'
+                        }"
+                    />
+
+  <div id="{fieldsDataName}-{fieldsKey}-other-wrapper" class="mt-2 eb-hidden">
+        <label class="form-label" for="{fieldsDataName}-{fieldsKey}-other">Eigenes Thema</label>
+        <f:form.textfield
+            id="{fieldsDataName}-{fieldsKey}-other"
+            name="topicOther"
+            value="{form.topicOther}"
+            class="form-control"
+        />
+    </div>
+
+                </f:else>
+            </f:if>
+        </f:if>
+
+
+
+
+
+
+        <f:comment>ToDo: Tooltip usw.</f:comment>
         <f:if condition="{fieldsAs.type} == 'lll'">
             <div class="form-control-wrap">
                 <f:form.textarea
-                    id="{fieldsKey}"
-                    name="{fieldsDataName}[{fieldsKey}][en]"
-                    value="{{fieldsDataName}.{fieldsKey}.en}"
+                    id="{fieldsDataName}.{valueArray}{fieldsKey}"
+                    name="{fieldsDataName}{nameArray}[{fieldsKey}][en]"
+                    value="{{fieldsDataName}.{valueArray}{fieldsKey}.en}"
                 />
             </div>
+
+            <f:for
+                each="{{fieldsDataName}.{fieldsKey}}"
+                as="lllAs"
+                key="lllKey"
+            >
+                <f:if condition="{lllKey} != 'en'">
+                    <div class="form-control-wrap">
+                        <f:form.textarea
+                            id="{fieldsDataName}.{valueArray}{fieldsKey}{lllKey}"
+                            name="{fieldsDataName}{nameArray}[{fieldsKey}][{lllKey}]"
+                            value="{{fieldsDataName}.{valueArray}{fieldsKey}.{lllKey}}"
+                        />
+                    </div>
+                </f:if>
+            </f:for>
         </f:if>
 
     </div>
-</f:for>
+</f:section>

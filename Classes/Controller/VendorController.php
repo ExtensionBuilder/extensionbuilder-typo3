@@ -1,37 +1,81 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use Psr\Http\Message\ResponseInterface;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 #[AsController]
 final class VendorController extends ExtensionBuilderController
 {
 
+    /**
+     * @since 0.12
+     */
     final function listAction(): ResponseInterface
     {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+
         return $this->vendorList();
     }
 
+    /**
+     * @since 0.12
+     */
     private function vendorList(): ResponseInterface {
-        if (!($this->ebService->vendors ?? false)) { $this->ebService->noVendors = true; }
+
+        if ($this->ebBackendService->noVendors) {
+            $this->moduleTemplate->addFlashMessage(
+                '', // ToDo LLL
+                'To create your first extension, you must create a vendor.', // ToDo LLL
+                ContextualFeedbackSeverity::INFO,
+                true
+            );
+        }
+
+        if ($this->ebBackendService->beUserIsAdmin) {
+            $vendors = $this->ebBackendService->vendors;
+        } else {
+            $vendors = [];
+
+            foreach ($this->ebBackendService->vendors as $vendorKey => $vendorValue) {
+                if ($this->ebBackendService->userHasBackendGroup((int)($vendorValue['backendGroupId'] ?? 0))) {
+                    $vendors[$vendorKey] = $vendorValue;
+                }
+            }
+        }
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
-            'vendorList' => $this->ebService->vendors,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
+            'vendorList' => $vendors,
         ]);
 
         $this->addDocHeaderModuleDropDown('Vendor');
-        if (($this->ebService->vendors ?? false) && ($this->ebService->vendorsAndExtensions ?? false)) {
+        if (($this->ebBackendService->vendors ?? false) && ($this->ebBackendService->vendorsAndExtensions ?? false)) {
             $this->addDocHeaderCloseButton(
                 'list',
                 'Extension',
@@ -42,47 +86,78 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-        if (
-            ($this->ebService->configuration['importExample'] ?? false) &&
-            (!($this->ebService->vendors['ExampleVendor'] ?? false))
-        ) {
-            $this->addDocHeaderImportExampleVendor(
-                'importExampleVendor',
-                'Vendor',
-            );
-		}
-
-        return $this->moduleTemplate->renderResponse('Vendor/List');
+        return $this->moduleTemplate->renderResponse('VendorList');
 	}
 
+    /**
+     * @since 0.12
+     */
     final function addAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
+
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                $vendorName = $bodyParams['vendorData']['vendorName'] ?? '';
                 $vendorData = $bodyParams['vendorData'];
 
-                if ($vendorName) {
-                    if (!($this->vendors[$vendorName] ?? false)) {
-                        $this->ebService->vendors[$vendorName] = $vendorData;
-                        $this->ebService->noVendors = false;
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->vendorConfiguration['fieldsEdit'],
+                    $vendorData,
+                );
 
-                        $this->ebService->writeVendor($vendorName);
-                        $this->ebService->readVendor();
+                $vendorData['vendorName'] = preg_replace("/[^a-zA-Z0-9]/", '', trim($vendorData['vendorName'] ?? ''));
+
+                $vendorName = $vendorData['vendorName'];
+
+                if ($vendorName) {
+                    if ($this->ebBackendService->vendors[$vendorName] ?? false) {
                         $this->flashMessage(
                             '',
-                            $this->getTranslatedLabel(
-                                $this->request,
-                                $this->ebService->lll . '.vendor.xlf:savingVendor'
-                            ) . $vendorName,
+                            LocalizationUtility::translate($this->ebBackendService->lll . '.vendor.xlf:vendornameexists')
                         );
-                    } else {
-                        $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll . '.vendor.xlf:vendornameexists'));
+                        break;
                     }
+
+                    if (!($vendorData['vendorComposerName'] ?? false)) {
+                        $vendorData['vendorComposerName'] = $vendorName;
+                    }
+
+// ToDo: Move to JS?
+// ToDo: Check vendorComposerName already exists
+
+                    $vendorComposerName = str_replace([' ','-'], '_', $vendorData['vendorComposerName']);
+                    $vendorComposerName = ltrim($vendorComposerName, '1234567890');
+                    $vendorComposerName = GeneralUtility::underscoredToUpperCamelCase(trim($vendorComposerName));
+                    $vendorData['vendorComposerName'] = $vendorComposerName;
+ 
+                    $vendorData['vendorId'] = Tools\Uuid::uuid();
+
+                    $this->ebBackendService->vendors[$vendorName] = $vendorData;
+                    $this->ebBackendService->noVendors = false;
+
+                    $this->ebBackendService->writeVendor($vendorName);
+                    $this->ebBackendService->readVendors();
+                    $this->ebBackendService->addVednorIdToBackendUser(
+                        (int)($this->ebBackendService->vendors[$vendorName]['backendGroupId'] ?? '')
+                    );
+
+                    $this->flashMessage(
+                        '',
+                        $this->getTranslatedLabel(
+                            $this->request,
+                            $this->ebBackendService->lll . '.vendor.xlf:savingVendor'
+                         ) . $vendorName,
+                    );
                 } else {
-                    $this->flashMessage('', LocalizationUtility::translate($this->ebService->lll . '.vendor.xlf:specifyvendorname'));
+                    $this->flashMessage(
+                        '',
+                        LocalizationUtility::translate($this->ebBackendService->lll . '.vendor.xlf:specifyvendorname')
+                    );
 			    }
                 break;
 		}
@@ -90,9 +165,10 @@ final class VendorController extends ExtensionBuilderController
         if (!($vendorData ?? false)) { $vendorData = []; }
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'vendorData' => $vendorData,
+            'vendorConfiguration' => $this->ebBackendService->vendorConfiguration,
         ]);
 
         $this->addDocHeaderModuleDropDown(
@@ -107,36 +183,73 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-        return $this->moduleTemplate->renderResponse('Vendor/Add');
+        return $this->moduleTemplate->renderResponse('VendorAdd');
     }
 
+    /**
+     * @since 0.12
+     */
     final function editAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
+
         $vendorName = $bodyParams['vendorName'] ?? '';
-        $vendorData = $this->ebService->vendors[$vendorName];
+
+        try {
+            $this->ebBackendService->assertCanAccessVendor($vendorName);
+        } catch (\RuntimeException $exception) {
+            $this->flashMessage(
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.vendor.xlf:noAccess.info1'
+                ),
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.vendor.xlf:noAccess.info2'
+                ) . $vendorName,
+                ContextualFeedbackSeverity::ERROR,
+            );
+
+            return $this->vendorList();
+        }
+
+        $vendorData = $this->ebBackendService->vendors[$vendorName];
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->vendorConfiguration['fieldsEdit'],
+                    $bodyParams['vendorData'],
+                );
+
                 Tools\ConfigArray::arrayMerge($vendorData, $bodyParams['vendorData']);
-                $this->ebService->vendors[$vendorName] = $vendorData;
-                $this->ebService->writeVendor($vendorName);
+
+                $this->ebBackendService->vendors[$vendorName] = $vendorData;
+                $this->ebBackendService->writeVendor($vendorName);
 
                 $this->flashMessage(
                     '',
                     $this->getTranslatedLabel(
                         $this->request,
-                        $this->ebService->lll . '.vendor.xlf:savingVendor'
+                        $this->ebBackendService->lll . '.vendor.xlf:savingVendor'
                     ) . $vendorName,
                 );
                 break;
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'vendorData' => $vendorData,
+            'vendorConfiguration' => $this->ebBackendService->vendorConfiguration,
         ]);
 
         $this->addDocHeaderModuleDropDown(
@@ -151,37 +264,43 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-    	return $this->moduleTemplate->renderResponse('Vendor/Edit');
+    	return $this->moduleTemplate->renderResponse('VendorEdit');
     }
 
+    /**
+     * @since 0.12
+     */
     final function deleteAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $this->ebService->deleteVendor($bodyParams['vendorName']);
-        $this->ebService->readVendor();
+        $vendorName = $bodyParams['vendorName'] ?? '';
 
-        // Delete ExampleVendor project entry
-        if ($bodyParams['vendorName'] == 'ExampleVendor') {
-            foreach($this->ebService->projects ?? [] as $projectUi => $projectData) {
-                if ($projectData['name'] == 'Example Vendor') {
-                    unset($this->ebService->projects[$projectUi]);
-                    $this->ebService->writeProject();
-                    break;
-                }
-			}
+        try {
+            $this->ebBackendService->assertCanAccessVendor($vendorName);
+        } catch (\RuntimeException $exception) {
+            $this->flashMessage(
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.vendor.xlf:noAccess.info1'
+                ),
+				$this->getTranslatedLabel(
+                    $this->request,
+                    $this->ebBackendService->lll . '.vendor.xlf:noAccess.info2'
+                ) . $vendorName,
+                ContextualFeedbackSeverity::ERROR,
+            );
+
+            return $this->vendorList();
         }
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->ebBackendService->deleteVendor($vendorName);
+        $this->ebBackendService->readVendors();
 
         return $this->vendorList();
     }
-
-    final function importExampleVendorAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-
-		$this->ebService->importExampleVendor();
-
-        return $this->vendorList();
-	}
 
 }

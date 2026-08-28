@@ -1,14 +1,29 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 class Github
 {
 
 // https://docs.github.com/de/rest/repos/repos?apiVersion=2022-11-28
 
+    /**
+     * @since 0.12
+     */
     static function findRepo(
         string $organization,
         string $repo,
@@ -34,6 +49,9 @@ class Github
         return false;
     }
 
+    /**
+     * @since 0.12
+     */
     static function checkOrganization(
         string $organization,
     ): bool {
@@ -67,6 +85,9 @@ class Github
 //  https://api.github.com/repos/OWNER/REPO/contents/PATH \
 //  -d '{"message":"my commit message","committer":{"name":"Monalisa Octocat","email":"octocat@github.com"},"content":"bXkgbmV3IGZpbGUgY29udGVudHM="}'
 
+    /**
+     * @since 0.12
+     */
     static function uploadRepo(
         string $organization,
         string $repo,
@@ -107,6 +128,9 @@ class Github
 //   https://api.github.com/orgs/ORG/repos \
 //   -d '{"name":"Hello-World","description":"This is your first repository","homepage":"https://github.com","private":false,"has_issues":true,"has_projects":true,"has_wiki":true}'
 
+    /**
+     * @since 0.12
+     */
     static function createRepos(
         string $gitOrganizations,
         string $gitToken,
@@ -118,7 +142,6 @@ class Github
         bool $gitProjects = false,
         bool $gitWiki = false,
     ): bool {
-
         $fields = [
             'name' => $gitRepos,
             'description' => $gitDescription,

@@ -1,300 +1,406 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use Psr\Http\Message\ServerRequestInterface;
 
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Core\Environment;
-
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 
-use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Imaging\Icon; // Removed in TYPO3 v14
-use TYPO3\CMS\Core\Imaging\IconSize;
+use TYPO3\CMS\Core\Page\PageRenderer;
 
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
+
+use TYPO3\CMS\Backend\Template\Components\ComponentFactory;
+use TYPO3\CMS\Backend\Template\Components\Buttons\DropDown\DropDownRadio;
+
+// Deprecation: #107823 - ButtonBar, Menu, and MenuRegistry make* methods deprecated 14.0
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\Buttons\DropDown\DropDownItem;
+
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
-use ExtensionBuilder\ExtensionbuilderTypo3\Service\ExtensionBuilderService;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 
-use TYPO3\CMS\Backend\Form\NodeFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+//use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 class ExtensionBuilderController extends ActionController
 {
-
-     /*
-      * Abstract class for backend modules.
-      * Functions that provide reading and saving of configurations from the backend.
-      * ToDo Doc: Helper functs für Backend
-      *
-      */
-
     public array $coreStatus = [];
     public array $keyStatus = [];
     public bool $isProKey = false;
 
     public array $todo = [];
     public array $changeLog = [];
- 
-    public const DROPDOWN_D = [
-        'Developer' => 'edit',
-        'Configuration' => 'edit',
-        'Info' => 'show'
-    ];
-    public const DROPDOWN_V = [
-        'Vendor' => 'list',
-        'Developer' => 'edit',
-        'Configuration' => 'edit',
-        'Info' => 'show'
-    ];
-    public const DROPDOWN_E = [
-        'Extension' => 'list',
-        'Project' => 'list',
-        'Vendor' => 'list',
-        'Developer' => 'edit',
-        'Configuration' => 'edit',
-        'Info' => 'show'
-    ];
-	
-	public ModuleTemplate $moduleTemplate;
 
+    public ModuleTemplate $moduleTemplate;
+
+    private ?object $componentFactory = null;
+
+    /**
+     * @since 0.12
+     */
     function __construct(
-        protected LanguageServiceFactory $languageServiceFactory,
-        protected ModuleTemplateFactory $moduleTemplateFactory,
-        protected IconFactory $iconFactory,
-        protected NodeFactory $nodeFactory,
-        protected ExtensionBuilderService $ebService,
+        protected readonly LanguageServiceFactory $languageServiceFactory,
+        protected readonly PageRenderer $pageRenderer,
+        protected readonly ModuleTemplateFactory $moduleTemplateFactory,
+        protected readonly IconFactory $iconFactory,
+        protected BackendService $ebBackendService,
     ) {
-        $this->coreStatus = Tools\RestApiClient::getStatus(
-            $this->ebService->configuration['typo3']['builderUrl'],
-            $this->ebService->configuration['typo3']['builderApi'],
-	    );
-
-        $this->keyStatus = Tools\RestApiClient::checkKey(
-            $this->ebService->configuration['typo3']['authUrl'],
-            $this->ebService->configuration['typo3']['authApi'],
-            $this->ebService->configuration['systemId'] ?? '',
-            $this->ebService->configuration['proVersionKey'] ?? '',
-            $this->ebService->developer['developerId'] ?? '',
-            $this->ebService->developer['proVersionKey'] ?? '',
-		);
-
-// ToDo - duplication?
-        $this->isProKey = $this->keyStatus['proKeyActive'] ?? false;
-        $this->ebService->configuration['proKey'] = $this->isProKey;
-
+        // Deprecation: #107823 - ButtonBar, Menu, and MenuRegistry make* methods deprecated 14.0
+        if (version_compare(VersionNumberUtility::getNumericTypo3Version(), '14.0.0', '>=')) {
+            $this->componentFactory = GeneralUtility::makeInstance(ComponentFactory::class);
+        }
     }
-
-    final function readComponent(
-        string $vendorName,
-        string $extensionName,
-		string $componentName,
-    ): array {
-        $fileName =
-            Tools\ExtensionbuilderFolder::getExtensionBuilderFolder()
-            . 'TYPO3' . DIRECTORY_SEPARATOR
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR
-            . lcfirst($componentName) . '.json';
-
-       $array = [];
-
-        if (file_exists($fileName)) {
-            $array = Tools\Json::read($fileName);
-        }
-      
-        return [];
-	}
-
-    final function writeComponent(
-        string $vendorName,
-        string $extensionName,
-		string $componentName,
-        array $componentData,
-    ): void {
-        $fileName =
-            $this->ebService->dataTypo3Path
-            . $vendorName . DIRECTORY_SEPARATOR
-            . $extensionName . DIRECTORY_SEPARATOR
-            . lcfirst($componentName) . '.json';
-
-        $component = [];
-        $component[lcfirst($componentName)] = $componentData;
-
-        if (file_exists($fileName)) {
-            unlink($fileName);
-        }
-
-        Tools\Json::write($fileName, $component);
-	}
-
-    final function renameComponent(
-        string $vendorName,
-        string $extensionName,
-		string $componentName,
-		string $componentNewName,
-        array $componentData,
-    ): void {
-
-	}
-
-    final function deleteComponent(
-        string $vendorName,
-        string $extensionName,
-		string $componentName,
-    ): void {
-
-	}
 
     // Translated
 
+    /**
+     * @since 0.12
+     */
     final function getTranslatedLabel(
         ServerRequestInterface $request,
         string $key,
     ): string {
         $languageService = $this->languageServiceFactory->createFromSiteLanguage(
-            $request->getAttribute('language') ?? $request->getAttribute('site')->getDefaultLanguage()
+            $request->getAttribute('language')
+                ?? $request->getAttribute('site')->getDefaultLanguage()
         );
 
         return $languageService->sL($key);
     }
 
+    /**
+     * @since 0.12
+     */
+    protected function getBackendUser(): BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'];
+    }
+
+    /**
+     * @since 0.12
+     */
+    protected function getLanguageService(): LanguageService
+    {
+        return $this->languageServiceFactory
+            ->createFromUserPreferences($this->getBackendUser());
+    }
+
     // Doc Header Component
 
+    /**
+     * @since 0.12
+     */
     final function addDocHeaderModuleDropDown(
         string $activeEntry,
-        string $activeProjcet = '',
+        string $activeProject = '',
         string $activeVendor = '',
     ): void {
-        $languageService = $GLOBALS['LANG'];
+        $languageService = self::getLanguageService();
 
-        if ($this->ebService->noDeveloper) {
-            $dropdown = self::DROPDOWN_D;
-        } else {
-            if ($this->ebService->noVendors) {
-                $dropdown = self::DROPDOWN_V;
-            } else {
-                $dropdown = self::DROPDOWN_E;
-			}
+        $isTypo3V14OrHigher = version_compare(
+            VersionNumberUtility::getNumericTypo3Version(),
+            '14.0.0',
+            '>='
+        );
+
+        $dropdown = [
+            'Extension' => 'list',
+            'Project' => 'list',
+            'Vendor' => 'list',
+            'Developer' => 'edit',
+            'DeveloperHub' => 'show',
+            'Configuration' => 'edit',
+            'Info' => 'show',
+        ];
+
+        if (!($this->ebBackendService->beUserIsAdmin ?? false)) {
+            unset($dropdown['Configuration']);
         }
 
-        $menu = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
+        if ($this->ebBackendService->noDeveloper) {
+            unset(
+                $dropdown['Extension'],
+                $dropdown['Project'],
+                $dropdown['Vendor']
+            );
+        } elseif ($this->ebBackendService->noVendors) {
+            unset(
+                $dropdown['Extension'],
+                $dropdown['Project']
+            );
+        }
+
+        $docHeaderComponent = $this->moduleTemplate->getDocHeaderComponent();
+        $menuRegistry = $docHeaderComponent->getMenuRegistry();
+        $buttonBar = $docHeaderComponent->getButtonBar();
+
+        // Main module selector stays in MenuRegistry.
+        if ($isTypo3V14OrHigher) {
+            $menu = $this->componentFactory->createMenu();
+        } else {
+            // @extensionScannerIgnoreLine
+            $menu = $menuRegistry->makeMenu();
+        }
+
         $menu->setIdentifier('ExtensionbuilderJumpMenu');
 
         foreach ($dropdown as $dropdownName => $dropdownAction) {
+            if ($isTypo3V14OrHigher) {
+                $item = $this->componentFactory->createMenuItem();
+            } else {
+                // @extensionScannerIgnoreLine
+                $item = $menu->makeMenuItem();
+            }
 
-            $item = $menu->makeMenuItem()
-                ->setTitle($languageService->sL(
-                    $this->ebService->lll . '.xlf:function.' . lcfirst($dropdownName))
+            $item
+                ->setTitle(
+                    $languageService->sL(
+                        $this->ebBackendService->lll
+                        . '.xlf:function.'
+                        . lcfirst($dropdownName)
+                    )
                 )
-                ->setHref($this->uriBuilder->uriFor($dropdownAction, [], $dropdownName));
+                ->setHref(
+                    $this->uriBuilder->uriFor(
+                        $dropdownAction,
+                        [],
+                        $dropdownName
+                    )
+                );
+
             if ($dropdownName === $activeEntry) {
                 $item->setActive(true);
             }
+
             $menu->addMenuItem($item);
-		}
-		
-        $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
-
-        if ($this->ebService->noDeveloper AND $this->noVendors) { return; }
-
-        if ($activeProjcet and ($this->ebService->projects ?? false)) {
-            $menuProjects = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
-            $menuProjects->setIdentifier('ExtensionbuilderJumpProjects');
-
-            $item = $menu->makeMenuItem()
-                ->setHref($this->uriBuilder->uriFor(
-                    'list',
-                    ['currentProject' => 'no'],
-                    'Extension'
-                 ))
-                ->setTitle('No project'); // ToDo LLL
-            $menuProjects->addMenuItem($item);
-
-            foreach ($this->ebService->projects as $projectKey => $projectData) {
-                $item = $menu->makeMenuItem()
-                    ->setHref($this->uriBuilder->uriFor(
-                        'list',
-                        ['currentProject' => $projectKey],
-                        'Extension'
-                    ))
-                    ->setTitle($projectData['name']);
-
-                if ($projectKey === $activeProjcet) {
-                    $item->setActive(true);
-                }
-
-                $menuProjects->addMenuItem($item);
-		    }
-
-            $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->addMenu($menuProjects);
         }
 
-        if (($activeVendor) and (count($this->ebService->vendors ?? []) > 1)) {
-            $menuVendors = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
-            $menuVendors->setIdentifier('ExtensionbuilderJumpVendors');
+        $menuRegistry->addMenu($menu);
 
-            $item = $menu->makeMenuItem()
-                ->setHref($this->uriBuilder->uriFor(
-                    'list',
-                    ['currentVendor' => 'all', 'currentProject' => $activeProjcet],
-                    'Extension'
-                ))
-                ->setTitle('Show all vendors');
+        if ($activeEntry !== 'Extension') {
+            return;
+        }
 
-            if ($activeVendor === 'all') {
-                $item->setActive(true);
+        // Show if projects are present
+
+        $projectCount = 0;
+
+        foreach ($this->ebBackendService->projects as $projectKey => $projectValue) {
+            // ToDo
+            // if (
+            //     ($this->ebBackendService->beUserIsAdmin) ||
+            //     (
+            //         $this->ebBackendService->userHasBackendGroup(
+            //             (int)($vendorValue['backendGroupId'] ?? 0)
+            //         )
+            //     )
+            // ) {
+                $projectCount++;
+            // }
+        }
+
+        if ($projectCount > 0) {
+            if ($isTypo3V14OrHigher) {
+                $projectDropdown = $this->componentFactory->createDropDownButton();
+            } else {
+                // @extensionScannerIgnoreLine
+                $projectDropdown = $buttonBar->makeDropDownButton();
             }
 
-            $menuVendors->addMenuItem($item);
+            $projectDropdown
+                ->setLabel('Project') // ToDo LLL
+                ->setTitle('Project') // ToDo LLL
+                ->setShowLabelText(true);
 
-            $item = $menu->makeMenuItem()
-                ->setHref($this->uriBuilder->uriFor(
-                    'list',
-                    ['currentVendor' => 'no', 'currentProject' => $activeProjcet],
-                    'Extension'
-                ))
-                ->setTitle('Show no vendors'); // ToDo LLL
-            if ($activeVendor === 'no') {
-                $item->setActive(true);
+            if ($isTypo3V14OrHigher) {
+                $item = $this->componentFactory->createDropDownRadio();
+            } else {
+                $item = GeneralUtility::makeInstance(DropDownRadio::class);
             }
-            $menuVendors->addMenuItem($item);
 
-            foreach ($this->ebService->vendors as $vendorKey => $vendorData) {
-                $item = $menu->makeMenuItem()
-                    ->setHref($this->uriBuilder->uriFor(
+            $item
+                ->setHref(
+                    $this->uriBuilder->uriFor(
                         'list',
-                        ['currentVendor' => $vendorKey, 'currentProject' => $activeProjcet],
+                        ['currentProject' => 'no'],
                         'Extension'
-                    ))
-                    ->setTitle($vendorData['vendorName']);
+                    )
+                )
+                ->setLabel('No project') // ToDo LLL
+                ->setTitle('No project')
+                ->setActive($activeProject === 'no');
 
-                if ($vendorKey === $activeVendor) {
-                    $item->setActive(true);
+            $projectDropdown->addItem($item);
+
+            foreach ($this->ebBackendService->projects as $projectKey => $projectValue) {
+                if ($isTypo3V14OrHigher) {
+                    $item = $this->componentFactory->createDropDownRadio();
+                } else {
+                    $item = GeneralUtility::makeInstance(DropDownRadio::class);
                 }
 
-                $menuVendors->addMenuItem($item);
-	    	}
+                $item
+                    ->setHref(
+                        $this->uriBuilder->uriFor(
+                            'list',
+                            ['currentProject' => $projectKey],
+                            'Extension'
+                        )
+                    )
+                    ->setLabel((string)$projectValue['name'])
+                    ->setTitle((string)$projectValue['name'])
+                    ->setActive($projectKey === $activeProject);
 
-            $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->addMenu($menuVendors);
-		}
+                $projectDropdown->addItem($item);
+            }
+
+            $buttonBar->addButton(
+                $projectDropdown,
+                ButtonBar::BUTTON_POSITION_LEFT,
+                1
+            );
+        }
+
+        // Show if vendors are present
+
+        $visibleVendors = [];
+
+        foreach ($this->ebBackendService->vendors as $vendorKey => $vendorValue) {
+            if (
+                $this->ebBackendService->beUserIsAdmin
+                || $this->ebBackendService->userHasBackendGroup(
+                    (int)($vendorValue['backendGroupId'] ?? 0)
+                )
+            ) {
+                $visibleVendors[$vendorKey] = $vendorValue;
+            }
+        }
+
+        $vendorCount = count($visibleVendors);
+
+        if ($vendorCount > 0) {
+            if ($isTypo3V14OrHigher) {
+                $vendorDropdown = $this->componentFactory->createDropDownButton();
+            } else {
+                // @extensionScannerIgnoreLine
+                $vendorDropdown = $buttonBar->makeDropDownButton();
+            }
+
+            $vendorDropdown
+                ->setLabel('Vendor') // ToDo LLL
+                ->setTitle('Vendor') // ToDo LLL
+                ->setShowLabelText(true);
+
+            if ($vendorCount > 1 && $projectCount > 0) {
+                if ($isTypo3V14OrHigher) {
+                    $item = $this->componentFactory->createDropDownRadio();
+                } else {
+                    $item = GeneralUtility::makeInstance(DropDownRadio::class);
+                }
+
+                $item
+                    ->setHref(
+                        $this->uriBuilder->uriFor(
+                            'list',
+                            [
+                                'currentVendor' => 'no',
+                                'currentProject' => $activeProject,
+                            ],
+                            'Extension'
+                        )
+                    )
+                    ->setLabel('Show no vendors') // ToDo LLL
+                    ->setTitle('Show no vendors')
+                    ->setActive($activeVendor === 'no');
+
+                $vendorDropdown->addItem($item);
+            }
+
+            if ($vendorCount > 1) {
+                if ($isTypo3V14OrHigher) {
+                    $item = $this->componentFactory->createDropDownRadio();
+                } else {
+                    $item = GeneralUtility::makeInstance(DropDownRadio::class);
+                }
+
+                $item
+                    ->setHref(
+                        $this->uriBuilder->uriFor(
+                            'list',
+                            [
+                                'currentVendor' => 'all',
+                                'currentProject' => $activeProject,
+                            ],
+                            'Extension'
+                        )
+                    )
+                    ->setLabel('Show all vendors') // ToDo LLL
+                    ->setTitle('Show all vendors')
+                    ->setActive($activeVendor === 'all');
+
+                $vendorDropdown->addItem($item);
+            }
+
+            foreach ($visibleVendors as $vendorKey => $vendorValue) {
+                if ($isTypo3V14OrHigher) {
+                    $item = $this->componentFactory->createDropDownRadio();
+                } else {
+                    $item = GeneralUtility::makeInstance(DropDownRadio::class);
+                }
+
+                $item
+                    ->setHref(
+                        $this->uriBuilder->uriFor(
+                            'list',
+                            [
+                                'currentVendor' => $vendorKey,
+                                'currentProject' => $activeProject,
+                            ],
+                            'Extension'
+                        )
+                    )
+                    ->setLabel((string)$vendorValue['vendorName'])
+                    ->setTitle((string)$vendorValue['vendorName'])
+                    ->setActive($vendorKey === $activeVendor);
+
+                $vendorDropdown->addItem($item);
+            }
+
+            $buttonBar->addButton(
+                $vendorDropdown,
+                ButtonBar::BUTTON_POSITION_LEFT,
+                2
+            );
+        }
     }
 
     final function addDocHeaderCloseButton(
@@ -303,57 +409,129 @@ class ExtensionBuilderController extends ActionController
         string $vendorName = '',
         string $extensionName = '',
         string $projectKey = '',
-        string $componentsUid = '',
-        string $componentUid = '',
+        string $componentsName = '',
+        string $componentName = '',
     ): void {
-        $languageService = $GLOBALS['LANG'];
-        $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $languageService = self::getLanguageService();
+
+        $buttonBar = $this->moduleTemplate
+            ->getDocHeaderComponent()
+            ->getButtonBar();
 
         $parameters = [];
-        if ($vendorName) { $parameters['vendorName'] =  $vendorName; }
-		if ($extensionName) { $parameters['extensionName'] =  $extensionName; }
-        if ($projectKey) { $parameters['projectKey'] =  $projectKey; }
-        if ($componentsUid) { $parameters['componentsUid'] =  $componentsUid; }
-        if ($componentUid) { $parameters['componentUid'] =  $componentUid; }
 
-        if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
-            $icon = $this->iconFactory->getIcon('actions-close', Icon::SIZE_SMALL);
-        } else {
-            $icon = $this->iconFactory->getIcon('actions-close', IconSize::SMALL);
+        if ($vendorName) {
+            $parameters['vendorName'] = $vendorName;
         }
 
-        $closeButton = $buttonBar->makeLinkButton();
+        if ($extensionName) {
+            $parameters['extensionName'] = $extensionName;
+        }
+
+        if ($projectKey) {
+            $parameters['projectKey'] = $projectKey;
+        }
+
+        if ($componentsName) {
+            $parameters['componentsName'] = $componentsName;
+        }
+
+        if ($componentName) {
+            $parameters['componentName'] = $componentName;
+        }
+
+        $icon = $this->iconFactory->getIcon(
+            'actions-close',
+            IconSize::SMALL
+        );
+
+        if (
+            version_compare(
+                VersionNumberUtility::getNumericTypo3Version(),
+                '14.0.0',
+                '>='
+            )
+        ) {
+            $closeButton = $this->componentFactory->createLinkButton();
+        } else {
+            // @extensionScannerIgnoreLine
+            $closeButton = $buttonBar->makeLinkButton();
+        }
 
         $closeButton
-            ->setTitle($languageService->sL($this->ebService->lll . '.xlf:close'))
+            ->setTitle(
+                $languageService->sL(
+                    $this->ebBackendService->lll . '.xlf:close'
+                )
+            )
             ->setShowLabelText(true)
             ->setIcon($icon)
-            ->setHref($this->uriBuilder->uriFor($action, $parameters, $controller));
-        $buttonBar->addButton($closeButton, ButtonBar::BUTTON_POSITION_LEFT, 2);
+            ->setHref(
+                $this->uriBuilder->uriFor(
+                    $action,
+                    $parameters,
+                    $controller
+                )
+            )
+            ->setDataAttributes([
+                'hotkey-action' => 'close',
+            ]);
+
+        $buttonBar->addButton(
+            $closeButton,
+            ButtonBar::BUTTON_POSITION_LEFT,
+            2
+        );
     }
 
     final function addDocHeaderSaveButton(
         string $saveFromId,
         string $saveController,
     ): void {
-        $languageService = $GLOBALS['LANG'];
-        $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $languageService = self::getLanguageService();
 
-        if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
-            $icon = $this->iconFactory->getIcon('actions-save', Icon::SIZE_SMALL);
+        $buttonBar = $this->moduleTemplate
+            ->getDocHeaderComponent()
+            ->getButtonBar();
+
+        $icon = $this->iconFactory->getIcon(
+            'actions-save',
+            IconSize::SMALL
+        );
+
+        if (
+            version_compare(
+                VersionNumberUtility::getNumericTypo3Version(),
+                '14.0.0',
+                '>='
+            )
+        ) {
+            $saveButton = $this->componentFactory->createInputButton();
         } else {
-            $icon = $this->iconFactory->getIcon('actions-save', IconSize::SMALL);
+            // @extensionScannerIgnoreLine
+            $saveButton = $buttonBar->makeInputButton();
         }
 
-        $saveButton = $buttonBar->makeInputButton()
-            ->setTitle($languageService->sL($this->ebService->lll . '.xlf:save'))
+        $saveButton
+            ->setTitle(
+                $languageService->sL(
+                    $this->ebBackendService->lll . '.xlf:save'
+                )
+            )
             ->setShowLabelText(true)
             ->setIcon($icon)
             ->setName('cmd')
             ->setValue('save')
-            ->setForm($saveFromId);
+            ->setForm($saveFromId)
+            ->setDataAttributes([
+                'hotkey-action' => 'save',
+            ]);
 
-        $buttonBar->addButton($saveButton, ButtonBar::BUTTON_POSITION_LEFT, 3);
+        $buttonBar->addButton(
+            $saveButton,
+            ButtonBar::BUTTON_POSITION_LEFT,
+            3
+        );
     }
 
     final function addDocHeaderAddButton(
@@ -361,28 +539,57 @@ class ExtensionBuilderController extends ActionController
         string $controller,
         array $parameters = [],
     ): void {
-        $languageService = $GLOBALS['LANG'];
-        $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $languageService = self::getLanguageService();
 
-        if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
-            $icon = $this->iconFactory->getIcon('actions-archive', Icon::SIZE_SMALL);
+        $buttonBar = $this->moduleTemplate
+            ->getDocHeaderComponent()
+            ->getButtonBar();
+
+        $icon = $this->iconFactory->getIcon(
+            'actions-archive',
+            IconSize::SMALL
+        );
+
+        $lll =
+            $this->ebBackendService->lll
+            . '.'
+            . strtolower($controller)
+            . '.xlf:link.'
+            . strtolower($action);
+
+        if (
+            version_compare(
+                VersionNumberUtility::getNumericTypo3Version(),
+                '14.0.0',
+                '>='
+            )
+        ) {
+            $linkButton = $this->componentFactory->createLinkButton();
         } else {
-            $icon = $this->iconFactory->getIcon('actions-archive', IconSize::SMALL);
+            // @extensionScannerIgnoreLine
+            $linkButton = $buttonBar->makeLinkButton();
         }
 
-        $lll = 
-            $this->ebService->lll . '.'
-             . strtolower($controller)
-             . '.xlf:link.'
-			 . strtolower($action);
-
-        $linkButton = $buttonBar->makeLinkButton()
+        $linkButton
             ->setTitle($languageService->sL($lll))
             ->setShowLabelText(true)
             ->setIcon($icon)
-            ->setHref($this->uriBuilder->uriFor($action, $parameters, $controller));
+            ->setHref(
+                $this->uriBuilder->uriFor(
+                    $action,
+                    $parameters,
+                    $controller
+                )
+            )
+            ->setDataAttributes([
+                'hotkey-action' => 'add',
+            ]);
 
-        $buttonBar->addButton($linkButton, ButtonBar::BUTTON_POSITION_LEFT, 3);
+        $buttonBar->addButton(
+            $linkButton,
+            ButtonBar::BUTTON_POSITION_LEFT,
+            3
+        );
     }
 
     final function addDocHeaderBuildButton(
@@ -391,53 +598,123 @@ class ExtensionBuilderController extends ActionController
         string $vendorName,
         string $extensionName,
     ): void {
-        $languageService = $GLOBALS['LANG'];
-        $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $languageService = self::getLanguageService();
+
+        $buttonBar = $this->moduleTemplate
+            ->getDocHeaderComponent()
+            ->getButtonBar();
 
         $parameters = [];
-        if ($vendorName) { $parameters['vendorName'] =  $vendorName; }
-		if ($extensionName) { $parameters['extensionName'] =  $extensionName; }
 
-        if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
-            $icon = $this->iconFactory->getIcon('actions-archive', Icon::SIZE_SMALL);
-        } else {
-            $icon = $this->iconFactory->getIcon('actions-archive', IconSize::SMALL);
+        if ($vendorName) {
+            $parameters['vendorName'] = $vendorName;
         }
 
-        $lll = 
-            $this->ebService->lll . '.'
-             . strtolower($controller)
-             . '.xlf:link.'
-			 . strtolower($action);
+        if ($extensionName) {
+            $parameters['extensionName'] = $extensionName;
+        }
 
-        $linkButton = $buttonBar->makeLinkButton()
+        $icon = $this->iconFactory->getIcon(
+            'actions-archive',
+            IconSize::SMALL
+        );
+
+        $lll =
+            $this->ebBackendService->lll
+            . '.'
+            . strtolower($controller)
+            . '.xlf:link.'
+            . strtolower($action);
+
+        if (
+            version_compare(
+                VersionNumberUtility::getNumericTypo3Version(),
+                '14.0.0',
+                '>='
+            )
+        ) {
+            $linkButton = $this->componentFactory->createLinkButton();
+        } else {
+            // @extensionScannerIgnoreLine
+            $linkButton = $buttonBar->makeLinkButton();
+        }
+
+        $linkButton
             ->setTitle($languageService->sL($lll))
             ->setShowLabelText(true)
             ->setIcon($icon)
-            ->setHref($this->uriBuilder->uriFor($action, $parameters, $controller));
+            ->setHref(
+                $this->uriBuilder->uriFor(
+                    $action,
+                    $parameters,
+                    $controller
+                )
+            )
+            ->setDataAttributes([
+                'hotkey-action' => 'build',
+                'extensionbuilder-build-button' => '1',
+                'vendor-name' => $vendorName,
+                'extension-name' => $extensionName,
+            ]);
 
-        $buttonBar->addButton($linkButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
+        $buttonBar->addButton(
+            $linkButton,
+            ButtonBar::BUTTON_POSITION_LEFT,
+            4
+        );
     }
 
-    final function addDocHeaderImportExampleVendor(
+    // ToDo Refactoring
+    final function addDocHeaderImportExampleVendorToDoRemove(
         string $importAction,
         string $importController,
     ): void {
-        $languageService = $GLOBALS['LANG'];
-        $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $languageService = self::getLanguageService();
 
-        if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() == 12 ) {
-            $icon = $this->iconFactory->getIcon('actions-archive', Icon::SIZE_SMALL);
+        $buttonBar = $this->moduleTemplate
+            ->getDocHeaderComponent()
+            ->getButtonBar();
+
+        $icon = $this->iconFactory->getIcon(
+            'actions-archive',
+            IconSize::SMALL
+        );
+
+        if (
+            version_compare(
+                VersionNumberUtility::getNumericTypo3Version(),
+                '14.0.0',
+                '>='
+            )
+        ) {
+            $addButton = $this->componentFactory->createLinkButton();
         } else {
-            $icon = $this->iconFactory->getIcon('actions-archive', IconSize::SMALL);
+            // @extensionScannerIgnoreLine
+            $addButton = $buttonBar->makeLinkButton();
         }
 
-        $addButton = $buttonBar->makeLinkButton()
-            ->setTitle($languageService->sL($this->ebService->lll . '.vendor.xlf:importExample'))
+        $addButton
+            ->setTitle(
+                $languageService->sL(
+                    $this->ebBackendService->lll
+                    . '.vendor.xlf:importExample'
+                )
+            )
             ->setShowLabelText(true)
             ->setIcon($icon)
-            ->setHref($this->uriBuilder->uriFor($importAction, [], $importController));
-        $buttonBar->addButton($addButton, ButtonBar::BUTTON_POSITION_LEFT, 4);
+            ->setHref(
+                $this->uriBuilder->uriFor(
+                    $importAction,
+                    [],
+                    $importController
+                )
+            );
+
+        $buttonBar->addButton(
+            $addButton,
+            ButtonBar::BUTTON_POSITION_LEFT,
+            4
+        );
     }
 
     final function flashMessage(
@@ -445,15 +722,95 @@ class ExtensionBuilderController extends ActionController
         string $flashMessage2,
         ContextualFeedbackSeverity $feedback = ContextualFeedbackSeverity::OK
     ): void {
-        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-        $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
+        $flashMessageService = GeneralUtility::makeInstance(
+            FlashMessageService::class
+        );
+
+        $notificationQueue =
+            $flashMessageService->getMessageQueueByIdentifier(
+                FlashMessageQueue::NOTIFICATION_QUEUE
+            );
+
         $flashMessage = GeneralUtility::makeInstance(
             FlashMessage::class,
             $flashMessage1,
             $flashMessage2,
             $feedback,
         );
-        $notificationQueue->enqueue($flashMessage);
-	}
 
+        $notificationQueue->enqueue($flashMessage);
+    }
+
+    final function addDocHeaderTypo3Command(
+        string $action,
+        string $controller,
+        string $vendorName = '',
+        string $extensionName = '',
+        string $projectKey = '',
+        string $componentsName = '',
+        string $componentName = '',
+    ): void {
+        $buttonBar = $this->moduleTemplate
+            ->getDocHeaderComponent()
+            ->getButtonBar();
+
+        $parameters = [];
+
+        if ($vendorName) {
+            $parameters['vendorName'] = $vendorName;
+        }
+
+        if ($extensionName) {
+            $parameters['extensionName'] = $extensionName;
+        }
+
+        if ($projectKey) {
+            $parameters['projectKey'] = $projectKey;
+        }
+
+        if ($componentsName) {
+            $parameters['componentsName'] = $componentsName;
+        }
+
+        if ($componentName) {
+            $parameters['componentName'] = $componentName;
+        }
+
+        $icon = $this->iconFactory->getIcon(
+            'actions-close',
+            IconSize::SMALL
+        );
+
+        if (
+            version_compare(
+                VersionNumberUtility::getNumericTypo3Version(),
+                '14.0.0',
+                '>='
+            )
+        ) {
+            $typo3CommandButton =
+                $this->componentFactory->createInputButton();
+        } else {
+            // @extensionScannerIgnoreLine
+            $typo3CommandButton = $buttonBar->makeLinkButton();
+        }
+
+        $typo3CommandButton
+            ->setTitle('CMD')
+            ->setShowLabelText(true)
+            ->setIcon($icon)
+            ->setHref(
+                $this->uriBuilder->uriFor(
+                    $action,
+                    $parameters,
+                    $controller
+                )
+            );
+
+        $buttonBar->addButton(
+            $typo3CommandButton,
+            ButtonBar::BUTTON_POSITION_LEFT,
+            2
+        );
+    }
 }

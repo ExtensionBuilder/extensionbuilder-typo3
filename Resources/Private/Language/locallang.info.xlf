@@ -3,8 +3,8 @@
 	<file
 		source-language="en"
 		datatype="plaintext"
-		original="EXT:scheduler/Resources/Private/Language/locallang.info.xlf"
-		date="2025-04-06T12:00:00Z"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf"
+		date="2025-07-11T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
@@ -16,6 +16,11 @@
 
 			<trans-unit id="extensionBuilderTypo3Core" resname="extensionBuilderTypo3Core">
 				<source>Extension Builder for TYPO3 Core</source>
+			</trans-unit>
+
+
+			<trans-unit id="generatingCodeFor" resname="generatingCodeFor">
+				<source>Generating code for</source>
 			</trans-unit>
 
 			<trans-unit id="announcements" resname="announcements">
@@ -33,6 +38,7 @@
 			<trans-unit id="changeLog" resname="changeLog">
 				<source>Change Log</source>
 			</trans-unit>
+
 
 		</body>
 	</file>

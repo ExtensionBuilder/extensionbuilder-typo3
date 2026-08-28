@@ -1,51 +1,34 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
-    <f:section name="Content">
 
+    <f:section name="Content">
         <f:form
             action="save"
             controller="Developer"
             id="developer-form"
         >
-            <h1><f:translate key="{lllBase}.developer.xlf:developerSettings" /></h1>
-<f:comment>
-            <f:if condition="{isProKey}">
-                <h2>
-                    - Pro Version -
-                </h2>
-            </f:if>
-</f:comment>
-            <div class="tx_extensionbuilder_module">
-                <f:render
-                    partial="Developer/FieldsDeveloper"
-                    arguments="{lllBase: '{lllBase}', developer: '{developer}'}"
-                />
-                <f:render
-                    partial="Developer/FieldsDefault"
-                    arguments="{lllBase: '{lllBase}', developer: '{developer}', projects: '{projects}', vendors: '{vendors}'}"
-                />
-                <f:render
-                    partial="Developer/FieldsMaintenance"
-                    arguments="{lllBase: '{lllBase}', developer: '{developer}'}"
-                />
-
-<f:comment>
-                <f:render
-                    partial="BuildFields"
-                    arguments="{
-                        lllBase: '{lllBase}',
-                        componentData: '{componentData}',
-                        fields: '{componentFields}',
-                        fieldData: 'componentData'
-                    }"
-                />
-</f:comment>
-
+            <div class="wrapper">
+                <h1>
+                    <f:translate key="{lllBase}.developer.xlf:developerSettings" />
+                </h1>
             </div>
-        </f:form>
 
+            <f:render
+                partial="BuildFields"
+                arguments="{
+                    lllBase: '{lllBase}',
+                    fields: '{developerConfiguration.fieldsEdit}',
+                    fieldsTabs: '{developerConfiguration.fieldsEditTabs}',
+                    fieldsData: '{developerData}',
+                    fieldsDataName: 'developer',
+                    selectFields: '{selectFields}'
+                }"
+            />
+        </f:form>
     </f:section>
 </html>

@@ -1,0 +1,134 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+
+    <f:section name="Content">
+        <div
+            id="extensionbuilder-module"
+            data-eb-module="extensionbuilder_typo3_extension_edit"
+            data-eb-current-vendor="{currentVendor}"
+            data-eb-current-extension="{currentExtension}"
+        >
+            <div class="wrapper">
+                <h1>
+                    <f:switch expression="{extensionData.extension.type}">
+                        <f:case value="sitepackage">
+                            <f:translate key="{lllBase}.extension.xlf:h1.edit.sitepackage" arguments="{0: extensionName}" />
+                        </f:case>
+                        <f:defaultCase>
+                            <f:translate key="{lllBase}.extension.xlf:h1.edit.extension" arguments="{0: extensionName}" />
+                        </f:defaultCase>
+                    </f:switch>
+                </h1>
+            </div>
+
+            <f:form
+                action="save"
+                controller="Extension"
+                id="extension-edit-form"
+            >
+                <div>
+                    <f:variable name="extensionCollapsed">true</f:variable>
+                    <div class="card eb-extension-edit-card mb-3">
+                        <div class="card-header eb-extension-edit-card-header">
+                            <button
+                                type="button"
+                                class="btn btn-link fw-bold p-0 eb-card-header-title-button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#group-extension-{vendorName}-{extensionName}"
+                                aria-expanded="{f:if(condition: extensionCollapsed, then: 'false', else: 'true')}"
+                            >
+                                <span>
+                                    <f:translate key="{lllBase}.extension.xlf:button.extensionconfiguration" />
+                                </span> 
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-sm eb-toggle-table eb-card-header-toggle-button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#group-extension-{vendorName}-{extensionName}"
+                                aria-controls="group-extension-{vendorName}-{extensionName}"
+                                aria-expanded="{f:if(condition: extensionCollapsed, then: 'false', else: 'true')}"
+                            >
+                                <span class="collapseIcon">
+                                    <core:icon
+                                        identifier="{f:if(condition: extensionCollapsed, then: 'actions-view-list-expand', else: 'actions-view-list-collapse')}"
+                                        size="small"
+                                    />
+                                </span>
+                            </button>
+                        </div>
+
+                        <f:comment> Extension configuration</f:comment>
+                        <div
+                            class="panel-collapse collapse {f:if(condition: '!{extensionCollapsed}', then: 'show')}"
+                            id="group-extension-{vendorName}-{extensionName}"
+                            data-table="group-extension-{vendorName}-{extensionName}"
+                        >
+                            <div class="card-body eb-extension-edit-body">
+                                <f:render
+                                    partial="BuildFields"
+                                    arguments="{
+                                        lllBase: '{lllBase}',
+                                        vendorName: '{vendorName}',
+                                        extensionName: '{extensionName}',
+                                        fields: '{extensionConfiguration.fieldsEdit}',
+                                        fieldsTabs: '{extensionConfiguration.fieldsEditTabs}',
+                                        fieldsData: '{extensionData.extension}',
+                                        fieldsDataName: 'extensionData',
+                                        selectFields: '{extensionConfiguration.selects}'
+                                    }"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <f:switch expression="{extensionData.extension.type}">
+                        <f:case value="sitepackage">
+                            <div class="card-body eb-extension-edit-body">
+                                <f:render
+                                    partial="SitePackage"
+                                    arguments="{
+                                        lllBase: '{lllBase}',
+                                        fields: '{sitePackageFields}',
+                                        fieldsTabs: '{sitePackageTabs}',
+                                        fieldsData: '{sitePackageData}',
+                                        fieldsDataName: '{sitePackageDataName}'
+                                    }"
+                                />
+							</div>
+                            <f:render
+                                partial="ComponentsList"
+                                arguments="{
+                                    lllBase: '{lllBase}',
+                                    vendorName: '{vendorName}',
+                                    extensionName: '{extensionName}',
+                                    extensionData: '{extensionData}',
+                                    componentsDev: '{componentsDev}'
+                                }"
+                            />
+                        </f:case>
+
+                        <f:defaultCase>
+                            <f:render
+                                partial="ComponentsList"
+                                arguments="{
+                                    lllBase: '{lllBase}',
+                                    vendorName: '{vendorName}',
+                                    extensionName: '{extensionName}',
+                                    extensionData: '{extensionData}',
+                                    componentsDev: '{componentsDev}'
+                                }"
+                            />
+                        </f:defaultCase>
+                    </f:switch>
+                </div>
+            </f:form>
+        </div>
+    </f:section>
+</html>

@@ -1,3 +1,6 @@
+
+// Version 0.0
+
 LiteGraph.clearRegisteredTypes();
 
 class Extension extends LiteGraph.LGraphNode {
@@ -242,7 +245,7 @@ graph.add(nodeExtension);
 let miscs = 99;
 let wert = (typeof miscs !== "undefined") ? miscs : false;
 
-console.log( "buildNodes "+buildNodes( 11, wert, 22 ));
+console.log( "buildNodes " + buildNodes( 11, wert, 22 ));
 
 //console.log(components[element]);
 
@@ -269,6 +272,9 @@ if (Object.keys(components).length > 0) {
                     title: componentName
                 }
             );
+
+//console.log("Components Name: " + componentName);
+
             graph.add(nodeComponent);
 
             nodeComponents.addOutput(component, "Component");
@@ -287,6 +293,8 @@ if (Object.keys(components).length > 0) {
                             title: componentObjName
                         }
                     );
+//console.log("Component Name: " + componentObjName);
+
                     graph.add(nodeComponentObj);
 
                     nodeComponent.addOutput(componentObj, "ComponentObj");
@@ -306,6 +314,8 @@ if (Object.keys(components).length > 0) {
                                         title:  propertyName
                                     }
                                 );
+//console.log("Propertys Name: " + propertyName);
+
                                 graph.add(nodeProperty);
 
                                 nodeComponentObj.addOutput(property, "Property");
@@ -323,6 +333,8 @@ if (Object.keys(components).length > 0) {
                                                 title:  propertyObjName
                                             }
                                         );
+//console.log("Property Name: " + propertyObjName);
+
                                         graph.add(nodePropertyObj);
 
                                         if (components[component][componentObj]['propertys'][property][propertyObj]['fields']) {
@@ -380,14 +392,14 @@ console.log(components[component][componentObj]['propertys'][property][propertyO
 
 //if (miscs) {
 //    if (Object.keys(miscs).length > 0) {
-        let nodeMiscs = LiteGraph.createNode(
-            'Miscs', 'Extension', {
-                pos: [componentsX, componentY ]
-            }
-        );
-        graph.add(nodeMiscs);
-        nodeExtension.addOutput("miscs", "Miscs");
-        nodeExtension.connect('miscs', nodeMiscs, 0);
+//        let nodeMiscs = LiteGraph.createNode(
+//            'Miscs', 'Extension', {
+//                pos: [componentsX, componentY ]
+//            }
+//        );
+//        graph.add(nodeMiscs);
+//        nodeExtension.addOutput("miscs", "Miscs");
+//        nodeExtension.connect('miscs', nodeMiscs, 0);
 //    }
 //}
 
@@ -398,4 +410,3 @@ graphCanvas.allow_searchbox = false;
 graphCanvas.allow_menu = false;
 
 graph.start();
-

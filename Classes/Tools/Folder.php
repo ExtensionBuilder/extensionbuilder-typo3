@@ -1,14 +1,29 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 class Folder
 {
 
+    /**
+     * @since 0.12
+     */
     static function scanForDirectory(
         string $path,
         string $filter = '',
@@ -30,11 +45,14 @@ class Folder
         return $return;
     }
 
+    /**
+     * @since 0.12
+     */
     static function scanForDirectoryRecursive(
         array &$folder,
         string $path,
     ): array {
-        $folderDirectory = FolderTools::scanForDirectory($path);
+        $folderDirectory = self::scanForDirectory($path);
 
         foreach ($folderDirectory ?? [] as $folderName) {
             $folder[$folderName] = [];
@@ -45,6 +63,9 @@ class Folder
         return $folder;
     }
 
+    /**
+     * @since 0.12
+     */
     static function scanForDirectoryRecursiveForFile(
         array &$folder,
         string $path,
@@ -60,6 +81,9 @@ class Folder
         }
     }
 
+    /**
+     * @since 0.12
+     */
 	static function scanForFile(
         string $path,
         string $extensionFilter = '',
@@ -71,6 +95,7 @@ class Folder
         foreach (self::scanContent($path) ?? [] as $folderContent) {
             if (is_file($path . DIRECTORY_SEPARATOR . $folderContent)) {
                 $found = true;
+                $folderKey = $folderContent;
 
                 if ($filter) {
                     if (strpos($folderContent, $filter) === false) {
@@ -82,11 +107,13 @@ class Folder
 					$pathinfo = pathinfo($path . DIRECTORY_SEPARATOR . $folderContent);
 					if (!(($pathinfo['extension'] ?? '') === $extensionFilter)) {
                         $found = false;
+                    } else {
+                        $folderKey = substr($folderKey, 0, strpos($folderKey, $extensionFilter) - 1);
                     }
                 }
 
                 if ($found) {
-                    $return[] = $folderContent;
+                    $return[$folderKey] = $folderContent;
                 }
             }
         }
@@ -94,6 +121,9 @@ class Folder
         return $return;
     }
 
+    /**
+     * @since 0.12
+     */
     static function scanContent(
         string $path,
     ): array {
@@ -114,6 +144,9 @@ class Folder
         return $return;
     }
 
+    /**
+     * @since 0.12
+     */
     static function deleteForFile(
         string $path,
         string $filter = '',
@@ -135,6 +168,9 @@ class Folder
         }
     }
 
+    /**
+     * @since 0.12
+     */
     static function copy(
         string $source,
         string $target,
@@ -156,6 +192,9 @@ class Folder
         closedir($dir);
     }
 
+    /**
+     * @since 0.12
+     */
     static function delete(
         string $foldserToDelete,
     ): void {
@@ -174,6 +213,37 @@ class Folder
 		}
         if (is_file($foldserToDelete)) { unlink($foldserToDelete); }
         if (is_dir($foldserToDelete)) { rmdir($foldserToDelete); }
+    }
+
+    /**
+     * @since 0.12
+     */
+    static function chownr(
+        string &$path,
+        int &$owner
+    ) {
+        if (!is_dir($path)) {
+            return chown($path, $owner);
+		}
+        $dh = opendir($path);
+        while (($file = readdir($dh)) !== false) {
+            if ($file != '.' && $file != '..') {
+                $fullpath = $path . '/' . $file;
+                if (is_link($fullpath)) {
+                    return FALSE;
+                } elseif (!is_dir($fullpath) && !chown($fullpath, $owner)) {
+                        return FALSE;
+                } elseif (!self::chownr($fullpath, $owner)) {
+                    return FALSE;
+				}
+            }
+        }
+        closedir($dh);
+        if (chown($path, $owner)) {
+            return TRUE;
+		} else {
+            return FALSE;
+        }
     }
 
 }

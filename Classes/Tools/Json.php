@@ -1,8 +1,8 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
@@ -10,28 +10,51 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
+
 class Json
 {
 
+    /**
+     * @since 0.12
+     */
     static function write(
         string $jsonFile,
         array $arrayForJson,
     ): void {
-        file_put_contents(
-            $jsonFile,
-            json_encode(
-                $arrayForJson,
-                JSON_PRETTY_PRINT,
-            )
+        $directory = dirname($jsonFile);
+
+        if (!is_dir($directory)) {
+            GeneralUtility::mkdir_deep($directory);
+        }
+
+        $json = json_encode(
+            $arrayForJson,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
         );
+
+        file_put_contents($jsonFile, $json, LOCK_EX);
     }
 
+    /**
+     * @since 0.12
+     */
     static function read(
         string $jsonFile,
     ): array {
         $error = '';
 
-// ToDo LLL
+// ToDo LLL support
         if (file_exists($jsonFile)) {
             $return = json_decode(file_get_contents($jsonFile), true);
             switch (json_last_error()) {
@@ -80,15 +103,20 @@ class Json
         return $return;
     }
 
+    /**
+     * @since 0.12
+     */
     static function getJsonWithcUrl(
         string $url,
     ): array {
         $return = [];
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
         curl_close($ch);
+
         if ($output) {
             $return = (array)json_decode($output, true);
             if (json_last_error() === 0) {
@@ -99,4 +127,5 @@ class Json
 
         return $return;
 	}
+
 }

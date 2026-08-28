@@ -4,7 +4,7 @@
         source-language="en"
         datatype="plaintext"
         original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.extension.xlf"
-		date="2025-04-06T12:00:00Z"
+		date="2025-07-11T12:00:00Z"
         product-name="extensionbuilder_typo3"
     >
         <header />
@@ -18,10 +18,13 @@
 				<source>Create a new extension</source>
 			</trans-unit>
 
-			<trans-unit id="h1.edit" resname="h1.edit">
+			<trans-unit id="h1.edit.extension" resname="h1.edit.extension">
 				<source>Edit Extension "%s"</source>
 			</trans-unit>
 
+			<trans-unit id="h1.edit.sitepackage" resname="h1.edit.sitepackage">
+				<source>Edit Extension is a Site Package "%s"</source>
+			</trans-unit>
 
 			<trans-unit id="link.add" resname="link.add">
 				<source>Add Extension</source>
@@ -32,10 +35,47 @@
 			</trans-unit>
 
 
-            <trans-unit id="overviewOfProjectExtensions" resname="overviewOfProjectExtensions">
-                <source>Overview of project Extensions</source>
-            </trans-unit>
+			<trans-unit id="noAccess.info1" resname="noAccess.info1">
+				<source>You do not have sufficient permissions for this vendor. Please contact an administrator.</source>
+			</trans-unit>
 
+			<trans-unit id="noAccess.info2" resname="noAccess.info2">
+				<source>No permission for extension: </source>
+			</trans-unit>
+
+
+			<trans-unit id="label.ebDevDescriptionShort" resname="label.ebDevDescriptionShort">
+				<source>Short Description</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDevDescription" resname="label.ebDevDescription">
+				<source>Description</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDevTodo" resname="label.ebDevTodo">
+				<source>ToDo</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDevIssue" resname="label.ebDevIssue">
+				<source>Issue</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.developmentMode" resname="label.developmentMode">
+				<source>Development mode</source>
+			</trans-unit>
+
+			<trans-unit id="label.developmentAiInfo" resname="label.developmentAiInfo">
+				<source>Development AI info</source>
+			</trans-unit>
+
+			<trans-unit id="label.lllSmall" resname="label.lllSmall">
+				<source>LLL small</source>
+			</trans-unit>
+
+			<trans-unit id="label.fluidDebug" resname="label.fluidDebug">
+				<source>LLL small</source>
+			</trans-unit>
 
 			<trans-unit id="extension" resname="extension">
 				<source>Extension</source>
@@ -53,7 +93,6 @@
 				<source>Last upload</source>
 			</trans-unit>
 
-
             <trans-unit id="extension.start.h" resname="extension.start.h" xml:space="preserve" approved="yes">
                 <source>Create your serious extension now.</source>
             </trans-unit>
@@ -70,28 +109,56 @@
                 </target>
             </trans-unit>
 
+            <trans-unit id="button.extensionconfiguration" resname="button.extensionconfiguration">
+                <source>Configuration</source>
+            </trans-unit>
+
+
+
             <trans-unit id="label.extensionconfiguration" resname="label.extensionconfiguration">
                 <source>Extension configuration</source>
             </trans-unit>
-
-			<trans-unit id="typeSitepackage" resname="typeSitepackage">
-				<source>Extension is a Site Package</source>
-			</trans-unit>
 
             <trans-unit id="label.extensionType" resname="label.extensionType">
                 <source>Extension type</source>
             </trans-unit>
 
-            <trans-unit id="label.vendorname" resname="label.vendorname">
-                <source>Vendor</source>
+            <trans-unit id="label.vendorName" resname="label.vendorName">
+                <source>Vendor Name</source>
+            </trans-unit>
+
+            <trans-unit id="label.vendorNamespace" resname="label.vendorNamespace">
+                <source>Namespace</source>
+            </trans-unit>
+
+            <trans-unit id="label.vendorComposerName" resname="label.vendorComposerName">
+                <source>Composer name</source>
+            </trans-unit>
+
+            <trans-unit id="label.extensionNamespace" resname="label.extensionNamespace">
+                <source>Namespace</source>
+            </trans-unit>
+
+            <trans-unit id="label.extensionComposerName" resname="label.extensionComposerName">
+                <source>Vendor composer name</source>
+            </trans-unit>
+
+            <trans-unit id="label.extensionName" resname="label.extensionName">
+                <source>Legacy Name</source>
+            </trans-unit>
+
+
+            <trans-unit id="label.ebDevExtensionId" resname="label.ebDevExtensionId">
+                <source>Extension ID</source>
             </trans-unit>
 
             <trans-unit id="label.project" resname="label.project">
                 <source>Project</source>
             </trans-unit>
 
-            <trans-unit id="label.extensionname" resname="label.extensionname">
-                <source>Name</source>
+
+            <trans-unit id="label.extensionComposerName" resname="label.extensionComposerName">
+                <source>Composer name</source>
             </trans-unit>
 
             <trans-unit id="label.title" resname="label.title">
@@ -102,21 +169,116 @@
                 <source>Description</source>
             </trans-unit>
 
-            <trans-unit id="label.version" resname="label.version">
+            <trans-unit id="label.type" resname="label.type">
+                <source>Type</source>
+            </trans-unit>
+
+            <trans-unit id="label.ebDevStudioStage" resname="label.ebDevStudioStage">
+                <source>Studio stage</source>
+            </trans-unit>
+
+            <trans-unit id="label.ebDevStudioStageUrl" resname="label.ebDevStudioStageUrl">
+                <source>Studio stage URL</source>
+            </trans-unit>
+
+            <trans-unit id="label.ebDevStudioStageSecret" resname="label.ebDevStudioStageSecret">
+                <source>Studio tage secret</source>
+            </trans-unit>
+
+
+			<trans-unit id="label.supportPhone" resname="label.supportPhone">
+				<source>Phone</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportHomepage" resname="label.supportHomepage">
+				<source>Homepage</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportIssues" resname="label.supportIssues">
+				<source>Issues</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportWiki" resname="label.supportWiki">
+				<source>Wiki</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportDonation" resname="label.supportDonation">
+				<source>Donation</source>
+			</trans-unit>
+
+
+            <trans-unit id="label.category" resname="label.category">
+                <source>Category</source>
+            </trans-unit>
+
+            <trans-unit id="label.state" resname="label.state">
+                <source>State</source>
+            </trans-unit>
+
+
+
+            <trans-unit id="label.author" resname="label.author">
+                <source>Author</source>
+            </trans-unit>
+
+            <trans-unit id="label.authorEmail" resname="label.authorEmail">
+                <source>Email</source>
+            </trans-unit>
+
+            <trans-unit id="label.authorCompany" resname="label.authorCompany">
+                <source>Company</source>
+            </trans-unit>
+
+
+             <trans-unit id="label.license" resname="label.license">
+                <source>License</source>
+            </trans-unit>
+
+             <trans-unit id="label.ownLicenseText" resname="label.ownLicenseText">
+                <source>Own license text</source>
+            </trans-unit>
+
+
+            <trans-unit id="label.keywords" resname="label.keywords">
+                <source>Keywords</source>
+            </trans-unit>
+
+
+            <trans-unit id="label.versionTR" resname="label.versionTR">
                 <source>Version</source>
             </trans-unit>
 
-            <trans-unit id="label.version.major" resname="label.version.major">
+            <trans-unit id="label.versionMajor" resname="label.versionMajor">
                 <source>Major</source>
             </trans-unit>
 
-            <trans-unit id="label.version.minor" resname="label.version.minor">
+            <trans-unit id="label.versionMinor" resname="label.versionMinor">
                 <source>Minor</source>
             </trans-unit>
 
-            <trans-unit id="label.version.revision" resname="label.version.revision">
+            <trans-unit id="label.versionRevision" resname="label.versionRevision">
                 <source>Revision</source>
             </trans-unit>
+
+
+            <trans-unit id="label.12" resname="label.12">
+                <source>12</source>
+            </trans-unit>
+
+            <trans-unit id="label.13" resname="label.13">
+                <source>13</source>
+            </trans-unit>
+
+            <trans-unit id="label.14" resname="label.14">
+                <source>14</source>
+            </trans-unit>
+
+            <trans-unit id="label.15" resname="label.15">
+                <source>15</source>
+            </trans-unit>
+
+
+
 
             <trans-unit id="label.tablesconfiguration" resname="label.tablesconfiguration">
                 <source>Tables configuration</source>
@@ -127,12 +289,29 @@
             </trans-unit>
 
 
+
+            <trans-unit id="label.v12" resname="label.v12">
+                <source>V12</source>
+            </trans-unit>
+            <trans-unit id="label.v13" resname="label.v13">
+                <source>V13</source>
+            </trans-unit>
+            <trans-unit id="label.v14" resname="label.v14">
+                <source>V14</source>
+            </trans-unit>
+            <trans-unit id="label.v15" resname="label.v14">
+                <source>V15 Dev</source>
+            </trans-unit>
+
+
             <trans-unit id="extensionexists" resname="extensionexists">
                 <source>Extension exists in typo3conf/ext, please change.</source>
             </trans-unit>
+
             <trans-unit id="specifyextensionname" resname="specifyextensionname">
                 <source>Please specify Extension name</source>
             </trans-unit>
+
             <trans-unit id="specifyvendorname" resname="specifyvendorname">
                 <source>Please specify Vendor name</source>
             </trans-unit>
@@ -142,9 +321,11 @@
                 <source></source>
             </trans-unit>
 
+
             <trans-unit id="build.notactivated" resname="build.notactivated">
                 <source>The created extension is not activated!</source>
             </trans-unit>
+
 
             <trans-unit id="build.successfully" resname="build.successfully">
                 <source>Successfully copy extensions files.</source>
@@ -154,8 +335,13 @@
                 <source>Successfully copy extensions files.</source>
             </trans-unit>
 
-            <trans-unit id="build.clearedcaches" resname="build.clearedcaches">
+
+            <trans-unit id="build.cacheflush" resname="build.cacheflush">
                 <source>Successfully cleared all caches and all available opcode caches.</source>
+            </trans-unit>
+
+            <trans-unit id="build.cachewarmup" resname="build.ccachewarmup">
+                <source>Successfully warmup caches.</source>
             </trans-unit>
 
             <trans-unit id="build.analyzedatabase" resname="build.analyzedatabase">

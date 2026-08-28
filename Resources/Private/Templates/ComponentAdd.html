@@ -1,27 +1,31 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
-    <f:section name="Content">
 
+    <f:section name="Content">
         <f:form
             action="save"
             controller="Component"
             id="component-edit-form"
         >
-            <h1>
-                <f:translate
-                    key="{lllBase}.componentproperty.xlf:h1.add"
-                    arguments="{0: componentsTitle}"
-                />
-            </h1>
+            <div class="wrapper">
+                <h1>
+                    <f:translate
+                        key="{lllBase}.component.xlf:h1.add"
+                        arguments="{0: componentsTitle}"
+                    />
+                </h1>
+			</div>
 
             <f:render
                 partial="BuildFields"
                 arguments="{
                     lllBase: '{lllBase}',
+                    action: '{action}',
                     fields: '{fields}',
                     fieldsTabs: '{fieldsTabs}',
                     fieldsData: '{fieldsData}',
@@ -29,6 +33,5 @@
                 }"
             />
         </f:form>
-		
     </f:section>
 </html>

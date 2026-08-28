@@ -1,26 +1,39 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
-use TYPO3\CMS\Core\Core\Environment;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 class RestApiClient
 {
 
-    public static function build(
-        string $authority,
-        string $path,
-        array $multipart,
-    ): array {
-        return self::executeClientJsonResponseB($authority, $path, $multipart);
-	}
+// $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+// $logger->info('Method not allowed');
 
+
+    /**
+     * @since 0.12
+     */
     public static function getStatus(
         string $authority,
         string $path,
@@ -28,9 +41,25 @@ class RestApiClient
         $multipart = [];
         $multipart['multipart'] = [];
         $multipart['multipart'][] = ['name' => 'command', 'contents' => 'getStatus'];
+
         return self::executeClientJsonResponse($authority, $path, $multipart);
 	}
 
+    /**
+     * @since 0.12
+     */
+    public static function build(
+        string $authority,
+        string $path,
+        array $multipart,
+    ): array {
+// 9999
+        return self::executeClientJsonResponse($authority, $path, $multipart);
+	}
+
+    /**
+     * @since 0.12
+     */
     public static function checkKey(
         string $authority,
         string $path,
@@ -49,81 +78,9 @@ class RestApiClient
         return self::executeClientJsonResponse($authority, $path, $multipart);
 	}
 
-    public static function executeClientJsonResponse(
-        string $authority,
-        string $path,
-        array $multipart,
-    ): array {
-        $hostStatus = new Tools\Uri($authority);
-
-        if (!$hostStatus->isOnline()) {
-            $body = '{ "status": "Server offline" }';
-        } else {
-            try {
-                $client = new \GuzzleHttp\Client();
-
-                $response = $client->request(
-                    'POST',
-                    $authority . $path,
-                    $multipart,
-                );
-
-                $body = (string)$response->getBody() ?? '';
-
-            } catch (RequestException $e) {
-// ToDo Error code
-                if ($e->hasResponse() && $e->getResponse()->getStatusCode() === 404) {
-                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
-                } else {
-//                    $body = '{ "status": "Service offline2 - ' . $e->getMessage() . '", "serverUrl": "' . $hostStatus->getHost() . '" }';
-                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
-                }
-            }
-		}
-
-        return (array)json_decode($body, true);
-	}
-
-    public static function executeClientJsonResponseB(
-        string $authority,
-        string $path,
-        array $multipart,
-    ): array {
-        $hostStatus = new Tools\Uri($authority);
-
-        if (!$hostStatus->isOnline()) {
-            $body = '{ "status": "Server offline" }';
-        } else {
-            try {
-                $client = new \GuzzleHttp\Client();
-
-                $response = $client->request(
-                    'POST',
-                    $authority . $path,
-                    $multipart,
-                );
-
-                $body = (string)$response->getBody() ?? '';
-
-                $jsonStart = strpos($body,  '"status":');
-                if ($jsonStart > 0) {
-                    $body = substr($body, $jsonStart - 6 );
-                }
-
-            } catch (RequestException $e) {
-
-                if ($e->hasResponse() && $e->getResponse()->getStatusCode() === 404) {
-                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
-                } else {
-//                    $body = '{ "status": "Service offline2 - ' . $e->getMessage() . '", "serverUrl": "' . $hostStatus->getHost() . '" }';
-                    $body = '{ "status": "error", "statusCode": "' . $e->getResponse()->getStatusCode() . '" }';
-                }
-            }
-		}
-
-        return (array)json_decode($body, true);
-	}
-
+    /**
+     * @since 0.12
+     */
     public static function checkToRemove(
         string $authority,
         string $path,
@@ -146,6 +103,83 @@ class RestApiClient
         return (array)json_decode($string, true);
 	}
 
+    /**
+     * @since 0.12
+     */
+    public static function executeClientJsonResponse(
+        string $authority,
+        string $path,
+        array $multipart,
+    ): array {
+        $hostStatus = new Tools\Uri($authority);
+
+//debug($hostStatus->isOnline(), 'hostStatus');
+
+        if (!$hostStatus->isOnline()) {
+            $body = '{ "status": "Server offline" }';
+        } else {
+            try {
+                $client = new \GuzzleHttp\Client([
+                    'timeout' => 5,
+                    'connect_timeout' => 3,
+                ]);
+
+                $response = $client->request(
+                    'POST',
+                    $authority . $path,
+                    $multipart,
+                );
+
+
+
+
+                $body = (string)$response->getBody() ?? '';
+
+//debug($client, 'client');
+//debug($response, 'response');
+//debug($body, 'body');
+
+            } catch (RequestException $e) {
+                $statusCode = $e->hasResponse()
+                    ? $e->getResponse()->getStatusCode()
+                    : 0;
+
+                $body = json_encode([
+                    'status' => 'Error: ' . $statusCode,
+                    'statusCode' => $statusCode,
+                    'message' => $e->getMessage(),
+                ], JSON_THROW_ON_ERROR);
+            }
+		}
+
+//file_put_contents($_SERVER["DOCUMENT_ROOT"].'/body.txt',$body);
+
+        $jsonObj = json_decode($body, true,);
+
+        if (!(json_last_error_msg() == 'No error')) {
+
+            if ($pos = strpos($body, "\"status\":") ?? false) {
+                $body = "{\n    " . substr($body, $pos);
+                $jsonObj = json_decode($body, true,);
+            }
+        }
+
+        if (!(json_last_error_msg() == 'No error')) {
+            $jsonObj = json_decode("{ \"status\": \"error\", \"statusCode\": \"JSON: " . json_last_error_msg() . "\" }", true,);
+        }
+
+        return $jsonObj;
+	}
+
+
+
+
+
+
+
+    /**
+     * @since 0.12
+     */
     public static function registerToRemove(
         string $authority,
         string $path,
@@ -168,11 +202,14 @@ class RestApiClient
         return (array)json_decode($string, true);
 	}
 
-    public static function githubSearchToRemove(
+    /**
+     * @since 0.12
+     */
+    public static function gitHubSearchToRemove(
         array &$extension,
     ): bool {
-        $token = $extension['extensionBuild']['gitubCom']['token'] ?? '';
-        $vendorName = $extension['extensionBuild']['gitubCom']['vendor'] ?? '';
+        $token = $extension['extensionBuild']['gitHubCom']['token'] ?? '';
+        $vendorName = $extension['extensionBuild']['gitHubCom']['vendor'] ?? '';
         $extensionName = $extension['extension']['extensionName'] ?? '';
 
         $multipart = [
@@ -193,17 +230,20 @@ class RestApiClient
 		}
 	}
 
-    public static function githubToRemove(
+    /**
+     * @since 0.12
+     */
+    public static function gitHubToRemove(
         array &$extension,
     ): void {
-        if (!($extension['extensionBuild']['gitubCom'] ?? false)) { return; }
+        if (!($extension['extensionBuild']['gitHubCom'] ?? false)) { return; }
 
-        $token = $extension['extensionBuild']['gitubCom']['token'] ?? '';
-        $vendorName = $extension['extensionBuild']['gitubCom']['vendor'] ?? '';
+        $token = $extension['extensionBuild']['gitHubCom']['token'] ?? '';
+        $vendorName = $extension['extensionBuild']['gitHubCom']['vendor'] ?? '';
         $extensionName = $extension['extension']['extensionName'] ?? '';
         $private = false;
 
-        if (!self::githubSearch($extension)) {
+        if (!self::gitHubSearch($extension)) {
             $multipart = [
                 'headers' => [
                     'Authorization' => 'token '.$token,
@@ -217,14 +257,16 @@ class RestApiClient
                 ],
             ];
             $result = self::post('https://api.github.com/', 'user/repos', $multipart);
-//    		debug ($result, 'github.com result');
 
-		}
+        }
 
 //        self::packagistOrgUpdate('typo3', 'cms-scheduler');
 
 	}
 
+    /**
+     * @since 0.12
+     */
     public static function packagistToRemove(
         array &$extension,
     ): void {
@@ -237,7 +279,7 @@ class RestApiClient
         $vendorName = $extension['extensionBuild']['packagistOrg']['vendor'] ?? '';
         $extensionName = $extension['extension']['extensionName'] ?? '';
 
-        if (self::githubSearch($extension)) {
+        if (self::gitHubSearch($extension)) {
             $multipart = [
                 'query' => [
                     'q' => $vendorName . '/' . $extensionName,

@@ -4,16 +4,11 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.vendor.xlf"
-		date="2025-04-06T12:00:00Z"
+		date="2025-07-11T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
-
-			<trans-unit id="link.add" resname="link.add">
-				<source>Add Vendor</source>
-			</trans-unit>
-
 
 			<trans-unit id="h1.list" resname="h1.list">
 				<source>Overview of Vendors</source>
@@ -28,12 +23,12 @@
 			</trans-unit>
 
 
-			<trans-unit id="startNow" resname="startNow">
-				<source>To create your first extension, you must create a vendor.</source>
+			<trans-unit id="link.add" resname="link.add">
+				<source>Add Vendor</source>
 			</trans-unit>
 
-			<trans-unit id="importExample" resname="importExample">
-				<source>Import example vendor and extension</source>
+			<trans-unit id="startNow" resname="startNow">
+				<source>To create your first extension, you must create a vendor.</source>
 			</trans-unit>
 
 
@@ -44,11 +39,9 @@
                 <source>Please specify vendor name</source>
             </trans-unit>
 
-
 			<trans-unit id="vendorList" resname="vendorList">
 				<source>Vendors</source>
 			</trans-unit>
-
 
 			<trans-unit id="showAllVendors" resname="showAllVendors">
 				<source>Show all Vendors</source>
@@ -58,7 +51,6 @@
 				<source>Show no Vendors</source>
 			</trans-unit>
 
-
 			<trans-unit id="savingVendor" resname="savingVendor">
 				<source>Saving vendor: </source>
 			</trans-unit>
@@ -67,9 +59,109 @@
 				<source>Duplicated vendor: </source>
 			</trans-unit>
 
-
 			<trans-unit id="renameVendor" resname="renameVendor">
 				<source>Renamed vendor: </source>
+			</trans-unit>
+
+
+			<trans-unit id="label.vendorName" resname="label.vendorName">
+				<source>Name</source>
+			</trans-unit>
+
+			<trans-unit id="label.vendorComposerName" resname="label.vendorComposerName">
+				<source>Composer name</source>
+			</trans-unit>
+
+			<trans-unit id="label.vendorNamespace" resname="label.vendorNamespace">
+				<source>Namespace</source>
+			</trans-unit>
+
+			<trans-unit id="label.description" resname="label.description">
+				<source>Description</source>
+			</trans-unit>
+
+			<trans-unit id="label.company" resname="label.company">
+				<source>Company</source>
+			</trans-unit>
+
+			<trans-unit id="label.address" resname="label.address">
+				<source>Address</source>
+			</trans-unit>
+
+			<trans-unit id="label.postalcode" resname="label.postalcode">
+				<source>Postalcode</source>
+			</trans-unit>
+
+			<trans-unit id="label.city" resname="label.city">
+				<source>City</source>
+			</trans-unit>
+
+			<trans-unit id="label.province" resname="label.province">
+				<source>Province</source>
+			</trans-unit>
+
+			<trans-unit id="label.country" resname="label.country">
+				<source>Country</source>
+			</trans-unit>
+
+			<trans-unit id="label.homepage" resname="label.homepage">
+				<source>Homepage</source>
+			</trans-unit>
+
+			<trans-unit id="label.email" resname="label.email">
+				<source>E-Mail</source>
+			</trans-unit>
+
+			<trans-unit id="label.phone" resname="label.phone">
+				<source>Phone</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportPhone" resname="label.supportPhone">
+				<source>Phone</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportHomepage" resname="label.supportHomepage">
+				<source>Homepage</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportIssues" resname="label.supportIssues">
+				<source>Issues</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportWiki" resname="label.supportWiki">
+				<source>Wiki</source>
+			</trans-unit>
+
+			<trans-unit id="label.supportDonation" resname="label.supportDonation">
+				<source>Donation</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.accessUsergroup" resname="label.accessUsergroup">
+				<source>Usergroup</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.vendorId" resname="label.vendorId">
+				<source>Vendor ID</source>
+			</trans-unit>
+
+
+			<trans-unit id="noAccess.info1" resname="noAccess.info1">
+				<source>You do not have sufficient permissions for this vendor. Please contact an administrator.</source>
+			</trans-unit>
+
+			<trans-unit id="noAccess.info2" resname="noAccess.info2">
+				<source>No permission for vendor: </source>
+			</trans-unit>
+
+
+			<trans-unit id="label." resname="label.">
+				<source></source>
+			</trans-unit>
+
+			<trans-unit id="tooltip." resname="tooltip.">
+				<source>Build local tooltip </source>
 			</trans-unit>
 
 		</body>

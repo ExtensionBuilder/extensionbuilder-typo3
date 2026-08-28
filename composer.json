@@ -1,9 +1,18 @@
 {
     "name": "extensionbuilder/extensionbuilder-typo3",
     "type": "typo3-cms-extension",
-    "description": "The Extension Builder for TYPO3, supporting version 12 and above",
-	"homepage": "https://extension-builder.dev",
+    "description": "Extension Builder for TYPO3 - The Extension Builder for TYPO3, supporting version 13 and above",
+    "homepage": "https://extension-builder.dev",
     "license": ["GPL-2.0-or-later"],
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "extensionbuilder_typo3",
+            "version": "0.14.253",
+            "Package": {
+                "providesPackages": {}
+            }
+        }
+    },
     "authors": [{
         "name": "Stephan Franz Sellner",
         "email": "contact@extension-builder.dev",
@@ -16,14 +25,12 @@
         "issues": "https://github.com/ExtensionBuilder/extensionbuilder-typo3/issues"
     },
     "require": {
-        "typo3/cms-core": "^12.4 || ^13.4 || ^14.3"
-    },
-    "extra": {
-        "typo3/cms": { "extension-key": "extensionbuilder_typo3" }
+        "php": "^8.2",
+        "typo3/cms-core": "^13.4 || ^14.3 || ^15"
     },
     "autoload": {
         "psr-4": {
-              "ExtensionBuilder\\ExtensionbuilderTypo3\\": "Classes/"
+            "ExtensionBuilder\\ExtensionBuilderTypo3\\": "Classes/"
         }
     }
 }

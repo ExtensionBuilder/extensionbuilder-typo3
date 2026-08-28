@@ -1,12 +1,23 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 class Uri
 {
-
     protected string $scheme;
     protected string $user;
     protected string $pass;
@@ -29,16 +40,18 @@ class Uri
     protected array $pingV4 = [];
     protected array $pingV6 = [];
 
-
     protected int $socketErrNo = 0;
     protected string $socketErrStr = '';
 
     protected array $traceRoute = [];
 
+    /**
+     * @since 0.12
+     */
     final function __construct(
         protected readonly string $uri,
     ) {
-        if (!(stripos($uri, '://') ?? false)) {
+        if ((stripos($uri, '://') === false)) {
             if ($positionAt = stripos($uri, '@')) {
                 if ($positionColon = stripos($uri, ':')) {
                      $this->user = substr($uri, 0 ,$positionColon);
@@ -91,16 +104,25 @@ class Uri
         if ($this->ping()) { $this->socketCheck(); };
 	}
 
+    /**
+     * @since 0.12
+     */
     final function isOnline(): bool
     {
         return $this->online;
 	}
 
+    /**
+     * @since 0.12
+     */
     final function getHost(): string
     {
         return $this->host;
 	}
 
+    /**
+     * @since 0.12
+     */
     final function ping(): bool
     {
         $ping = false;
@@ -119,9 +141,12 @@ class Uri
         return $ping;
 	}
 
+    /**
+     * @since 0.12
+     */
     final function socketCheck(): bool {
         $socket = false;
-        $this->isOnline = false;
+        $this->online = false;
 
         if ($this->port) {
             $host = '';
@@ -143,6 +168,9 @@ class Uri
         return $socket;
 	}
 
+    /**
+     * @since 0.12
+     */
     private function execPing(
         string $host,
     ): array {

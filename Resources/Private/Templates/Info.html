@@ -1,146 +1,398 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
+<f:comment>
+    Version 1.0
+</f:comment>
+
     <f:layout name="Module" />
+
     <f:section name="Content">
 
-        <style>
-            .info {
-                margin-bottom: 50px;
-            }
-        </style>
+        <div class="statusreport-wrapper mt-4">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <f:render
+                        section="EditorInfo"
+                        arguments="{_all}"
+                    />
+                    <f:render
+                        section="CoreInfo"
+                        arguments="{_all}"
+                    />
+                    <f:render
+                        section="Info"
+                        arguments="{_all}"
+                    />
+                    <f:render
+                        section="Copyright"
+                    />
+                </div>
 
-
-        <div class="info">
-            <h1><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3" /></h1>
-
-            <div style="width: 501px; top left repeat-y;">
-                <div style="float: left;  width: 100px;">Version</div>
-                <div style="float: right; width: 400px;">{configuration.version}</div>
-            </div>
-        </div>
-
-        <div class="info">
-            <h1><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3Core" /></h1>
-
-            <div style="width: 501px; top left repeat-y;">
-                <f:if condition="{coreStatus.version}">
-                    <div style="float: left;  width: 100px;">Version</div>
-                    <div style="float: right; width: 400px;">{coreStatus.version}</div>
-                </f:if>
-
-                <div style="float: left;  width: 100px;">Status</div>
-                <div style="float: right; width: 400px;">{coreStatus.status}</div>
-
-                <f:if condition="{coreStatus.serverUrl}">
-                    <div style="float: left;  width: 100px;">Server URL</div>
-                    <div style="float: right; width: 400px;">{coreStatus.serverUrl}</div>
-                </f:if>
-
-                <f:if condition="{builderLocal}">
-                    <div style="float: left;  width: 100px;">Local builder</div>
-                    <div style="float: right; width: 400px;">Online</div>
-                    <div style="float: left;  width: 100px;">Version</div>
-                    <div style="float: right; width: 400px;">{builderLocalversion}</div>
-                </f:if>
-            </div>
-        </div>
-
-        <div class="info">
-            <h1>ID´s</h1>
-            <div style="width: 501px; top left repeat-y;">
-                <div style="float: left;  width: 100px;">System ID </div>
-                <div style="float: right; width: 400px;">{configuration.systemId}</div>
-                <br />
-                <div style="float: left;  width: 100px;">Developer ID </div>
-                <div style="float: right; width: 400px;">{developer.developerId}</div>
-            </div>
-        </div>
-
-        <div class="info">
-            <h1>Info</h1>
-            <div style="width: 501px; top left repeat-y;">
-                <div style="float: left;  width: 100px;">Develpers</div>
-                <div style="float: right; width: 400px;">{configuration.developerCounter}</div>
-                <br />
-                <div style="float: left;  width: 100px;">Vendors</div>
-                <div style="float: right; width: 400px;">{configuration.vendorCounter}</div>
-                <br />
-                <div style="float: left;  width: 100px;">Extensions</div>
-                <div style="float: right; width: 400px;">{configuration.extensionCounter}</div>
-                <br />
-                <div style="float: left;  width: 100px;">Projects</div>
-                <div style="float: right; width: 400px;">{configuration.projectCounter}</div>
-            </div>
-        </div>
-
-        <div class="info">
-            <h1>Copyright</h1>
-            <div style="width: 501px; top left repeat-y;">
-                <div style="float: left;  width: 100px;">Author</div>
-                <div style="float: right; width: 400px;">Stephan Franz Sellner</div>
-                <div style="float: left;  width: 100px;">Support</div>
-                <div style="float: right; width: 400px;"><f:link.email email="contact@extension-builder.dev" target="_blank" /></div>
-                <div style="float: left;  width: 100px;">Homepage</div>
-                <div style="float: right; width: 400px;">
-                    <f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external>
+                <div class="col-12 col-md-6">
+                    <f:if condition="{generatingCodeFor}">
+                        <div class="statusreport-wrapper">
+                           <f:render
+                               section="FieldsInfo"
+                               arguments="{
+                                   lllBase: '{lllBase}',
+                                   infoFields: '{generatingCodeFor}',
+                                   infoTranslate: 'generatingCodeFor',
+                                   heading: 'h2'
+                               }"
+                           />
+                        </div>
+                    </f:if>
                 </div>
             </div>
         </div>
 
         <f:if condition="{announcements}">
-            <div class="info">
+            <div class="statusreport-wrapper">
                 <f:render
-                    partial="Info/FieldsInfo"
+                    section="FieldsInfo"
                     arguments="{
                         lllBase: '{lllBase}',
                         infoFields: '{announcements}',
-                        infoTranslate: 'announcements'
+                        infoTranslate: 'announcements',
+                        heading: 'h2'
                     }"
                 />
             </div>
         </f:if>
 
-        <f:if condition="{issues}">
-            <div class="info">
-                <f:render
-                    partial="Info/FieldsInfo"
-                    arguments="{
-                        lllBase: '{lllBase}',
-                        infoFields: '{issues}',
-                        infoTranslate: 'issues'
-                    }"
-                />
+        <div class="statusreport-wrapper mt-4">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <h2>Editor</h2>
+                </div>
+                <div class="col-12 col-md-6">
+                    <h2>Core</h2>
+                </div>
             </div>
-        </f:if>
+        </div>
 
-        <f:if condition="{todo}">
-            <div class="info">
-                <f:render
-                    partial="Info/FieldsInfo"
-                    arguments="{
-                        lllBase: '{lllBase}',
-                        infoFields: '{todo}',
-                        infoTranslate: 'todo'
-                    }"
-                />
+        <div class="statusreport-wrapper mt-4">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="statusreport-wrapper">
+                        <f:render
+                            section="FieldsInfo"
+                            arguments="{
+                                lllBase: '{lllBase}',
+                                infoFields: '{issuesEditor}',
+                                infoTranslate: 'issues',
+                                heading: 'h3'
+                            }"
+                        />
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="statusreport-wrapper">
+                        <f:render
+                            section="FieldsInfo"
+                            arguments="{
+                                lllBase: '{lllBase}',
+                                infoFields: '{issuesCore}',
+                                infoTranslate: 'issues',
+                                heading: 'h3'
+                            }"
+                        />
+                    </div>
+                </div>
             </div>
-        </f:if>
+        </div>
 
-        <f:if condition="{changeLog}">
-            <div class="info">
-                <f:render
-                    partial="Info/FieldsInfo"
-                    arguments="{
-                        lllBase: '{lllBase}',
-                        infoFields: '{changeLog}',
-                        infoTranslate: 'changeLog'
-                    }"
-                />
+        <div class="statusreport-wrapper mt-4">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="statusreport-wrapper">
+                        <f:render
+                            section="FieldsInfo"
+                            arguments="{
+                                lllBase: '{lllBase}',
+                                infoFields: '{todoEditor}',
+                                infoTranslate: 'todo',
+                                heading: 'h3'
+                            }"
+                        />
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="statusreport-wrapper">
+                        <f:render
+                            section="FieldsInfo"
+                            arguments="{
+                                lllBase: '{lllBase}',
+                                infoFields: '{todoCore}',
+                                infoTranslate: 'todo',
+                                heading: 'h3'
+                            }"
+                        />
+                    </div>
+                </div>
             </div>
-        </f:if>
+        </div>
+
+        <div class="statusreport-wrapper mt-4">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="statusreport-wrapper">
+                        <f:render
+                            section="FieldsInfo"
+                            arguments="{
+                                lllBase: '{lllBase}',
+                                infoFields: '{changeLogEditor}',
+                                infoTranslate: 'changeLog',
+                                heading: 'h3'
+                            }"
+                        />
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="statusreport-wrapper">
+                        <f:render
+                            section="FieldsInfo"
+                            arguments="{
+                                lllBase: '{lllBase}',
+                                infoFields: '{changeLogCore}',
+                                infoTranslate: 'changeLog',
+                                heading: 'h3'
+                            }"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </f:section>
 </html>
+
+
+<f:section name="EditorInfo">
+
+                  <h2><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3" /></h2>
+                  <div class="statusreport-wrapper">
+                      <div class="statusreport" data-severity="notice">
+                          <div class="statusreport-title">
+                              Version
+                          </div>
+                          <div class="statusreport-body">
+                              {configuration.version}
+                          </div>
+                      </div>
+                  </div>
+
+</f:section>
+
+<f:section name="CoreInfo">
+
+    <h2><f:translate key="{lllBase}.info.xlf:extensionBuilderTypo3Core" /></h2>
+    <div class="statusreport-wrapper">
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Version
+            </div>
+            <div class="statusreport-body">
+                {coreStatus.version}
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Status
+            </div>
+            <div class="statusreport-body">
+                {coreStatus.status}
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                URL
+            </div>
+            <div class="statusreport-body">
+                {coreStatus.serverUrl}
+            </div>
+        </div>
+
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Development version
+            </div>
+            <div class="statusreport-body">
+                {coreDevStatus.version}
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+               Development status
+            </div>
+            <div class="statusreport-body">
+               {coreDevStatus.status}
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Development URL
+            </div>
+            <div class="statusreport-body">
+                {coreDevStatus.serverUrl}
+            </div>
+        </div>
+
+        <f:if condition="{builderLocal}">
+            <div class="statusreport" data-severity="notice">
+                <div class="statusreport-title">
+                    Local builder
+                </div>
+                <div class="statusreport-body">
+                    Yes
+                </div>
+            </div>
+            <div class="statusreport" data-severity="notice">
+                <div class="statusreport-title">
+                    Local builder version
+                </div>
+                <div class="statusreport-body">
+                    {builderLocalVersion}
+                </div>
+            </div>
+        </f:if>
+    </div>
+</f:section>
+
+<f:section name="Info">
+    <h2>Info</h2>
+    <div class="statusreport-wrapper">
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Develpers
+            </div>
+            <div class="statusreport-body">
+                {configuration.developerCounter}
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Vendors
+            </div>
+            <div class="statusreport-body">
+                {configuration.vendorCounter}
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Extensions
+            </div>
+            <div class="statusreport-body">
+                {configuration.extensionCounter}
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Projects
+            </div>
+            <div class="statusreport-body">
+                {configuration.projectCounter}
+            </div>
+        </div>
+    </div>
+</f:section>
+
+<f:section name="Copyright">
+    <h2>Copyright</h2>
+    <div class="statusreport-wrapper">
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Author
+            </div>
+            <div class="statusreport-body">
+                Stephan Franz Sellner
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Support
+            </div>
+            <div class="statusreport-body">
+                <f:link.email email="contact@extension-builder.dev" target="_blank" />
+            </div>
+        </div>
+        <div class="statusreport" data-severity="notice">
+            <div class="statusreport-title">
+                Homepage
+            </div>
+            <div class="statusreport-body">
+                <f:link.external uri="https://extension-builder.dev" target="_blank">extension-builder.dev</f:link.external>
+            </div>
+        </div>
+    </div>
+</f:section>
+
+<f:section name="FieldsInfo">
+    <f:if condition="{infoFields}">
+        <{heading}><f:translate key="{lllBase}.info.xlf:{infoTranslate}" /></{heading}>
+        <f:for each="{infoFields}" as="forData">
+            <div class="statusreport" data-severity="notice">
+
+                <f:if condition="{forData.status} == Open">
+                    <div class="statusreport-indicator">
+                        <div class="statusreport-indicator-icon">
+                            <span class="t3js-icon icon icon-size-default icon-state-default icon-actions-exclamation" data-identifier="actions-exclamation" aria-hidden="true">
+                                <span class="icon-markup">
+                                    <svg class="icon-color">
+                                        <use xlink:href="/typo3/sysext/core/Resources/Public/Icons/T3Icons/sprites/actions.svg?1766232022#actions-exclamation"></use>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+				</f:if>
+
+                <f:if condition="{forData.status} == Close">
+                    <div class="statusreport-indicator">
+                        <div class="statusreport-indicator-icon">
+                            <span class="t3js-icon icon icon-size-default icon-state-default icon-actions-check" data-identifier="actions-check" aria-hidden="true">
+                                <span class="icon-markup">
+                                    <svg class="icon-color">
+                                        <use xlink:href="/typo3/sysext/core/Resources/Public/Icons/T3Icons/sprites/actions.svg?1766232022#actions-check"></use>
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+				</f:if>
+
+                <f:if condition="{forData.status} == 'In progress'">
+                    <div class="statusreport-indicator">
+                        <div class="statusreport-indicator-icon">
+                            <span class="t3js-icon icon icon-size-default icon-state-default icon-actions-info" data-identifier="actions-info" aria-hidden="true">
+                                <span class="icon-markup">
+                                    <svg class="icon-color">
+                                        <use xlink:href="/typo3/sysext/core/Resources/Public/Icons/T3Icons/sprites/actions.svg?1766232022#actions-info"></use>
+                                    </svg>
+                                </span>
+                            </span> 
+                        </div>
+                    </div>
+				</f:if>
+
+                <div class="statusreport-title">
+                    {forData.date}
+                    <f:if condition="{forData.date}  && {forData.headline}">
+                        -
+                    </f:if>
+                    {forData.headline}
+                </div>
+                <div class="statusreport-body">
+                    <f:for each="{forData.descriptions}" as="description">
+                        {description}<br />
+                    </f:for>
+                </div>
+
+            </div>
+        </f:for>
+    </f:if>
+</f:section>

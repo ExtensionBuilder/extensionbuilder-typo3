@@ -1,45 +1,33 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
     <f:layout name="Module" />
-    <f:section name="Content">
 
+    <f:section name="Content">
         <f:form
             action="save"
             controller="Configuration"
             id="configuration-form"
         >
-            <h1>
-                <f:translate key="{lllBase}.configuration.xlf:extensionBuilderSettings" />
-            </h1>
+            <div class="wrapper">
+                <h1>
+                    <f:translate key="{lllBase}.configuration.xlf:extensionBuilderSettings" />
+                </h1>
+            </div>
 
-<f:comment>
-            <f:render partial="Configutation/FieldsConfigutationVersion" arguments="{lllBase: lllBase, configuration: configuration}" />
-</f:comment>
-
-            <f:render partial="Configutation/FieldsConfigutation" arguments="{lllBase: lllBase, configuration: configuration}" />
-
-            <f:if condition="{isProKey}">
-                <f:if condition="{builderLocal}">
-                    <f:render partial="Configutation/FieldsLocalBuild" arguments="{lllBase: lllBase, configuration: configuration}" />
-                </f:if>
-            </f:if>
-
-<f:comment>
             <f:render
                 partial="BuildFields"
                 arguments="{
-                    lllBase: lllBase,
-                    componentData: componentData,
-                    fields: configurationFields,
-                    fieldData: 'configuration'
+                    lllBase: '{lllBase}',
+                    fields: '{configurationConfiguration.fieldsEdit}',
+                    fieldsTabs: '{configurationConfiguration.fieldsEditTabs}',
+                    fieldsData: '{configurationData}',
+                    fieldsDataName: 'configuration'
                 }"
             />
-</f:comment>
-
 		</f:form>
-
     </f:section>
 </html>

@@ -1,0 +1,36 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+
+    <f:section name="Content">
+        <f:form
+            action="save"
+            controller="Vendor"
+            id="vendor-edit-form"
+        >
+            <div class="wrapper">
+                <h1>
+                    <f:translate
+                        key="{lllBase}.vendor.xlf:h1.edit"
+                        arguments="{0: vendorData.vendorName}"
+                    />
+                </h1>
+            </div>
+
+            <f:render
+                partial="BuildFields"
+                arguments="{
+                    lllBase: '{lllBase}',
+                    fields: '{vendorConfiguration.fieldsEdit}',
+                    fieldsTabs: '{vendorConfiguration.fieldsEditTabs}',
+                    fieldsData: '{vendorData}',
+                    fieldsDataName: 'vendorData'
+                }"
+            />
+        </f:form>
+    </f:section>
+</html>

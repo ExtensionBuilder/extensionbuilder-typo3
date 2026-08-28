@@ -10,10 +10,6 @@
    :alt: TYPO3 13
    :target: https://get.typo3.org/version/13
 
-.. image:: https://img.shields.io/badge/TYPO3-12-orange.svg
-   :alt: TYPO3 12
-   :target: https://get.typo3.org/version/12
-
 .. image:: https://poser.pugx.org/extensionbuilder/extensionbuilder-typo3/downloads
    :alt: Extension Builder for TYPO3
    :target: https://packagist.org/packages/extensionbuilder/extensionbuilder-typo3
@@ -30,14 +26,12 @@ Its main goal is to streamline the development process and improve the long-term
 
 The Extension Builder offers a wide range of kickstart features, including:
 
-- Scheduler tasks
-- CLI commands
-- Custom ViewHelpers
+- MVC - Domain models, views and controller
+- ViewHelpers
 - Event listeners
-- Controller structures
-- Domain models
-- Repositories
-- Frontend plugins
+- Backend modules
+- Commands and scheduler tasks
+- CLI commands
 - and more…
 
 More at https://extension-builder.dev/

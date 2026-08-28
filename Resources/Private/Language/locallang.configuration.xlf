@@ -3,8 +3,8 @@
 	<file
 		source-language="en"
 		datatype="plaintext"
-		original="EXT:scheduler/Resources/Private/Language/locallang.configuration.xlf"
-		date="2025-04-06T12:00:00Z"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.configuration.xlf"
+		date="2025-07-11T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
@@ -14,55 +14,78 @@
 				<source>Extension Builder settings</source>
 			</trans-unit>
 
+
 			<trans-unit id="savingConfiguration" resname="savingConfiguration">
 				<source>Saving configuration</source>
 			</trans-unit>
 
 
-			<trans-unit id="communityVersion" resname="communityVersion">
-				<source>You use the community version of Extension Builder</source>
+			<trans-unit id="label.developerRepository" resname="label.developerRepository">
+				<source>Repository</source>
 			</trans-unit>
 
-			<trans-unit id="proVersion" resname="proVersion">
-				<source>You use the pro version of Extension Builder</source>
-			</trans-unit>
-
-			<trans-unit id="versionKey" resname="versionKey">
-				<source>versionKey</source>
-			</trans-unit>
-
-			<trans-unit id="versionKey" resname="versionKey">
-				<source>versionKey</source>
-			</trans-unit>
-
-			<trans-unit id="proFeature" resname="proFeature">
-				<source>Overview of Extension Builder Pro features</source>
-			</trans-unit>
-
-			<trans-unit id="proFeatureDevelopmentCode" resname="proFeatureDevelopmentCode">
-				<source>Marking of developer and debug code, this will be removed when the final version is build.</source>
+			<trans-unit id="label.composerRepository" resname="label.composerRepository">
+				<source>Composer repository</source>
 			</trans-unit>
 
 
-			<trans-unit id="remoteInfo" resname="remoteInfo">
-				<source>Remote infos</source>
+			<trans-unit id="label.professionalId" resname="label.professionalId">
+				<source>Professional ID</source>
 			</trans-unit>
 
-			<trans-unit id="builderUrl" resname="builderUrl">
-				<source>Builder Url</source>
+			<trans-unit id="label.professionalKey" resname="label.professionalKey">
+				<source>Professional key</source>
 			</trans-unit>
 
-			<trans-unit id="builderApi" resname="builderApi">
-				<source>Builder Api</source>
+			<trans-unit id="label.buildLocal" resname="label.buildLocal">
+				<source>Build local</source>
 			</trans-unit>
 
-			<trans-unit id="authUrl" resname="authUrl">
-				<source>Auth Url</source>
+			<trans-unit id="label.buildDev" resname="label.buildDev">
+				<source>Build Dev</source>
 			</trans-unit>
 
-			<trans-unit id="authApi" resname="authApi">
-				<source>Aut hApi</source>
+
+			<trans-unit id="label.builderUrl" resname="label.builderUrl">
+				<source>Builder URL</source>
 			</trans-unit>
+
+			<trans-unit id="label.builderApi" resname="label.builderApi">
+				<source>Builder API</source>
+			</trans-unit>
+
+			<trans-unit id="label.builderDevUrl" resname="label.builderDevUrl">
+				<source>Builder Developer URL</source>			</trans-unit>
+
+
+			<trans-unit id="label.builderDevApi" resname="label.builderDevApi">
+				<source>Builder Developer API</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.authUrl" resname="label.authUrl">
+				<source>Auth URL</source>
+			</trans-unit>
+
+			<trans-unit id="label.authApi" resname="label.authApi">
+				<source>Auth API</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.systemId" resname="label.systemId">
+				<source>System ID</source>
+			</trans-unit>
+
+
+
+			<trans-unit id="label." resname="label.">
+				<source></source>
+			</trans-unit>
+
+			<trans-unit id="tooltip." resname="tooltip.">
+				<source>Build local tooltip </source>
+			</trans-unit>
+
 
 		</body>
 	</file>

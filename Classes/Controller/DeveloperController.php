@@ -1,32 +1,75 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
 use Psr\Http\Message\ResponseInterface;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 #[AsController]
 final class DeveloperController extends ExtensionBuilderController
 {
 
+    /**
+     * @since 0.12
+     */
     final function editAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
+
+        if ($this->ebBackendService->noDeveloper) {
+            $this->moduleTemplate->addFlashMessage(
+                '', // ToDo LLL
+                'To start development, add your data.', // ToDo LLL
+                ContextualFeedbackSeverity::INFO,
+                true
+            );
+ 
+           $this->ebBackendService->developer['author'] = $this->getBackendUser()->user['realName'];
+           $this->ebBackendService->developer['author_email'] = $this->getBackendUser()->user['email'];
+
+// ToDo: array "author_company"
+
+        }
+
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                Tools\ConfigArray::arrayMerge($this->ebService->developer, $bodyParams['developer']);
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->developerConfiguration['fieldsEdit'],
+                    $bodyParams['developer']
+                );
 
-                $this->ebService->writeDeveloper();
+                Tools\ConfigArray::arrayMerge($this->ebBackendService->developer, $bodyParams['developer']);
+
+                $this->ebBackendService->writeDeveloper();
 
                 $this->flashMessage(
                     '',
                     $this->getTranslatedLabel(
                         $this->request,
-                        $this->ebService->lll . '.developer.xlf:savingDeveloperSetings',
+                        $this->ebBackendService->lll . '.developer.xlf:savingDeveloperSetings',
                     )
                 );
                 break;
@@ -35,34 +78,33 @@ final class DeveloperController extends ExtensionBuilderController
         $projects = [];
         $projects['no'] = $this->getTranslatedLabel(
             $this->request,
-            $this->ebService->lll . '.project.xlf:noProject',
+            $this->ebBackendService->lll . '.project.xlf:noProject',
         );
 
-	    foreach ($this->ebService->projects ?? [] as $projectName => $projectData) {
+	    foreach ($this->ebBackendService->projects ?? [] as $projectName => $projectData) {
             $projects[$projectName] = $projectData['name'];
 	    }
 
         $vendors = [];
         $vendors['all'] = $this->getTranslatedLabel(
             $this->request,
-            $this->ebService->lll . '.vendor.xlf:showAllVendors',
+            $this->ebBackendService->lll . '.vendor.xlf:showAllVendors',
         );
         $vendors['no'] = $this->getTranslatedLabel(
             $this->request,
-            $this->ebService->lll . '.vendor.xlf:noVendors',
+            $this->ebBackendService->lll . '.vendor.xlf:noVendors',
         );
 
-	    foreach ($this->ebService->vendors ?? [] as $vendorName => $vendorData) {
+	    foreach ($this->ebBackendService->vendors ?? [] as $vendorName => $vendorData) {
             $vendors[$vendorName] = $vendorData['vendorName'];
 	    }
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
-            'isProKey' => $this->isProKey,
-            'developer' => $this->ebService->developer,
-            'vendors' => $vendors,
-            'projects' => $projects,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
+            'developerData' => $this->ebBackendService->developer,
+            'developerConfiguration' => $this->ebBackendService->developerConfiguration,
+            'selectFields' => ['vendors' => $vendors , 'projects' => $projects],
         ]);
 
         $this->addDocHeaderModuleDropDown(

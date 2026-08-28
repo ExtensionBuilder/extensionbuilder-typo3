@@ -1,85 +1,106 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ExtensionBuilder\ExtensionbuilderTypo3\Controller;
+namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
 use Psr\Http\Message\ResponseInterface;
-use ExtensionBuilder\ExtensionbuilderTypo3\Tools;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+
+/**
+ *
+ * Migration:
+ * - Target: ExtensionBuilder Core 1.x
+ * - Status: legacy
+ *
+ * @extensionbuilderCoreMajorVersion 0
+ * @extensionbuilderMigrationStatus legacy
+ *
+ * @since 0.12
+ */
 
 #[AsController]
 final class PropertyController extends ExtensionBuilderController
 {
 
-// ToDo zusammen füheren der ext arrays, sonst werden die alten daten komplet überschriben!
-
+    /**
+     * @since 0.12
+     */
     public function addAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'];
-        $extensionName = $bodyParams['extensionName'];
-        $componentsUid = $bodyParams['componentsUid'];
-        $componentUid = $bodyParams['componentUid'];
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
-        $propertysUid = $bodyParams['propertysUid'];
+        $componentName = (string)($bodyParams['componentName'] ?? '');
+        $componentsName = (string)($bodyParams['componentsName'] ?? '');
+        $propertysName = (string)($bodyParams['propertysName'] ?? '');
 
-        $componentsDev = $this->ebService->extensionConfiguration['components'][$componentsUid];
-        $propertysDev = $componentsDev['propertys'][$propertysUid];
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
 
-        $fields = $propertysDev['fields'];
-        $fieldsTabs = $propertysDev['fieldsTabs'] ?? ['general'];
-        $fieldsData = $bodyParams['fieldsData'] ?? [];
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
 
-        $propertyFieldsData = $bodyParams['propertyData'] ?? [];
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
 
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'][$componentsName];
+        $propertysDev = $componentsDev['propertys'][$propertysName];
 
         $fields = array_merge(
-            ['uid' => [
-                'type' => 'string',
-                'lllPath' => '.componentproperty'
-            ]],
+            [
+                'propertyName' => [
+                    'type' => 'input',
+                    'lllPath' => '.property',
+                    'tab' => 'general',
+                    'required' => true,
+                ]
+            ],
             $propertysDev['fields'],
         );
-        $propertyFields = $propertysDev['propertyFields'];
+
+        $fieldsTabs = $propertysDev['fieldsTabs'] ?? ['general' => [ 'lllPath' => '.property']];
+        $fieldsData = $bodyParams['fieldsData'] ?? [];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                $propertyUid = $fieldsData['uid'];
-                if ($this->ebService->checkUid($this, $propertyUid)) {
-                    self::componentWrite(
-                        $vendorName,
-                        $extensionName,
-                        $componentsUid,
-                        $componentUid,
-                        $propertysUid,
-                        $propertyUid,
-                        $componentsDev,
-                        $propertysDev,
-                        $fieldsData,
-                        $propertyFieldsData,
-                    );
-                }
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->extensionConfiguration['components'][$componentsName]['propertys'][$propertysName]['fields'],
+                    $fieldsData,
+                );
+
+                $propertyName = $fieldsData['propertyName'];
+
+// ToDo checkName als JS
+
+                $this->ebBackendService->writeExtensionProperty(
+                    $this,
+                    $vendorName,
+                    $extensionName,
+                    $componentsName,
+                    $componentName,
+                    $propertysName,
+                    $propertyName,
+                    $fieldsData,
+                );
                 break;
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
-            'componentsTitle' => $componentsDev['title'] ,
-            'componentUid' => $componentUid,
-
+            'componentName' => $componentName,
+            'componentsTitle' => $componentsDev['title'] . 'test' ,
             'fields' => $fields,
             'fieldsTabs' => $fieldsTabs,
             'fieldsData' => $fieldsData,
             'fieldsDataName' => 'fieldsData',
-//            'propertyFields' => $propertyFields,
-//            'propertyFieldsTabs' => $propertyFieldsTabs,
-//            'propertyFieldsData' => $propertyFieldsData,
-//            'propertyFieldsDataName' => 'propertysData',
+            'selections' => $this->ebBackendService->extension['selections'],
+
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -87,8 +108,8 @@ final class PropertyController extends ExtensionBuilderController
             'Component',
             $vendorName,
             $extensionName,
-            componentsUid: $componentsUid,
-            componentUid: $componentUid,
+            componentsName: $componentsName,
+            componentName: $componentName,
         );
         $this->addDocHeaderSaveButton(
             'property-edit-form',
@@ -98,75 +119,102 @@ final class PropertyController extends ExtensionBuilderController
         return $this->moduleTemplate->renderResponse($propertysDev['add']);
     }
 
+    /**
+     * @since 0.12
+     */
     public function editAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'];
-        $extensionName = $bodyParams['extensionName'];
-        $componentsUid = $bodyParams['componentsUid'];
-        $componentUid = $bodyParams['componentUid'];
-        $propertysUid = $bodyParams['propertysUid'];
-        $propertyUid = $bodyParams['propertyUid'];
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
-        $componentsDev = $this->ebService->extensionConfiguration['components'][$componentsUid];
+        $componentName = (string)($bodyParams['componentName'] ?? '');
+        $componentsName = (string)($bodyParams['componentsName'] ?? '');
+        $propertyName = (string)($bodyParams['propertyName'] ?? '');
+        $propertyNameUc = ucfirst((string)($bodyParams['propertyName'] ?? ''));
+        $propertysName = (string)($bodyParams['propertysName'] ?? '');
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/monacoeditor.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
+
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
+
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'][$componentsName];
+        $propertysDev = $this->ebBackendService->extensionConfiguration['components'][$componentsName]['propertys'][$propertysName];
         $componentsFields = $componentsDev['fields'];
-        $propertysDev = $componentsDev['propertys'][$propertysUid];
-
-        $componentData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName][$componentsUid][$componentUid];
-
+        $propertysDev = $componentsDev['propertys'][$propertysName];
+        $componentData = &$this->ebBackendService->extension['components'][$componentsName][$componentName];
         $fields = $propertysDev['fields'];
         $fieldsTabs = $propertysDev['fieldsTabs'] ?? ['general'];
-        $fieldsData = $bodyParams['fieldsData'] ?? $componentData['propertys'][$propertysUid][$propertyUid];
+        $fieldsData = $bodyParams['fieldsData'] ?? $componentData['propertys'][$propertysName][$propertyName];
         unset($fieldsData['fields']);
-
-        $propertyFields = $propertysDev['propertyFields'];
-        $propertyFieldsTabs = $propertysDev['propertyFieldsTabs'];
-        $propertyFieldsData = $bodyParams['propertysData'] ?? $componentData['propertys'][$propertysUid][$propertyUid]['fields'];
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
-                self::componentWrite(
+                Tools\ConfigArray::checkFieldsToBool(
+                    $this->ebBackendService->extensionConfiguration['components'][$componentsName]['propertys'][$propertysName]['fields'],
+                    $fieldsData,
+                );
+
+                $this->ebBackendService->writeExtensionProperty(
+                    $this,
                     $vendorName,
                     $extensionName,
-                    $componentsUid,
-                    $componentUid,
-                    $propertysUid,
-                    $propertyUid,
-                    $componentsDev,
-                    $propertysDev,
+                    $componentsName,
+                    $componentName,
+                    $propertysName,
+                    $propertyName,
                     $fieldsData,
-                    $propertyFieldsData,
                 );
                 break;
 		}
 
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'componentsTitle' => $componentsDev['title'] ,
-            'componentUid' => $componentUid,
-
+            'componentName' => $componentName,
+            'propertysTitle' => $propertysDev['title'] ,
+            'propertyName' => $propertyName,
             'fields' => $fields,
             'fieldsTabs' => $fieldsTabs,
             'fieldsData' => $fieldsData,
             'fieldsDataName' => 'fieldsData',
-
-            'propertyFields' => $propertyFields,
-            'propertyFieldsTabs' => $propertyFieldsTabs,
-            'propertyFieldsData' => $propertyFieldsData,
-            'propertyFieldsDataName' => 'propertysData',
         ]);
+
+// ToDo Code & Doku
+
+//        $fileName =
+//            $componentsDev['path']
+//            . $componentsDev['propertys'][$propertysName]['path']
+//            . $propertyNameUc
+//            . $componentsDev['propertys'][$propertysName]['fileEnd']
+//            . '.php';
+
+        $this->moduleTemplate->assignMultiple([
+            'vendorName' => $vendorName,
+            'extensionName' => $extensionName,
+//            'fileName' => $fileName,
+            'language' => 'php',
+        ]);
+
+
 
         $this->addDocHeaderCloseButton(
             'edit',
             'Component',
             $vendorName,
             $extensionName,
-            componentsUid: $componentsUid,
-            componentUid: $componentUid,
+            componentsName: $componentsName,
+            componentName: $componentName,
         );
         $this->addDocHeaderSaveButton(
             'property-edit-form',
@@ -176,98 +224,63 @@ final class PropertyController extends ExtensionBuilderController
         return $this->moduleTemplate->renderResponse($propertysDev['edit']);
     }
 
-	private function componentWrite(
-        string $vendorName,
-        string $extensionName,
-        string $componentsUid,
-        string $componentUid,
-        string $propertysUid,
-        string $propertyUid,
-        array $componentsDev,
-        array $propertysDev,
-        array $fieldsData,
-        array $propertysData = [],
-    ): void {
-        $componentData =
-            &$this->ebService->vendorsAndExtensions
-            [$vendorName]['extensions'][$extensionName][$componentsDev['uid']][$componentUid];
-
-        if (!($componentData['propertys'] ?? false)) {
-            $componentData['propertys'] = [];
-        }
-
-        if (!($componentData['propertys'][$propertysUid] ?? false)) {
-            $componentData['propertys'][$propertysUid] = [];
-        }
-
-        if (!($componentData['propertys'][$propertysUid][$propertyUid] ?? false)) {
-            $componentData['propertys'][$propertysUid][$propertyUid] = [];
-        }
-
-//        $componentData['propertys'][$propertysUid][$propertyUid] = $fieldsData;
-
-        if (!($componentData['propertys'][$propertysUid][$propertyUid]['fields'] ?? false)) {
-            $componentData['propertys'][$propertysUid][$propertyUid]['fields'] = [];
-        }
-
-        if ($propertysData) {
-            $propertyDataMerge = $componentData['propertys'][$propertysUid][$propertyUid]['fields'];
-            Tools\ConfigArray::arrayMerge($propertyDataMerge, $propertysData);
-            $componentData['propertys'][$propertysUid][$propertyUid]['fields'] = $propertyDataMerge;
-		}
-
-        $this->ebService->writeExtensionComponent(
-            $this,
-            $vendorName,
-            $extensionName,
-            $componentUid,
-            $componentData,
-            $componentsDev['uid'],
-            $componentsDev['title'],
-        );
-	}
-
+    /**
+     * @since 0.12
+     */
     public function deleteAction(): ResponseInterface {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
 		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-        $vendorName = $bodyParams['vendorName'];
-        $extensionName = $bodyParams['extensionName'];
-        $componentsUid = $bodyParams['componentsUid'];
-        $componentUid = $bodyParams['componentUid'];
-        $propertysUid = $bodyParams['propertysUid'];
-        $propertyUid = $bodyParams['propertyUid'];
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
 
-        $componentsDev = $this->ebService->extensionConfiguration['components'][$componentsUid];
-        $componentsFields = $componentsDev['fields'];
-        $propertysDev = $componentsDev['propertys'];
+        $vendorName = (string)($bodyParams['vendorName'] ?? '');
+        $extensionName = (string)($bodyParams['extensionName'] ?? '');
 
-        $extensionData = &$this->ebService->vendorsAndExtensions[$vendorName]['extensions'][$extensionName];
-        $componentData = $extensionData[$componentsUid][$componentUid];
+        $this->ebBackendService->readExtension($vendorName, $extensionName);
 
-	
-        $this->ebService->deleteExtensionComponent(
+        $componentsName = $bodyParams['componentsName'];
+        $componentName = $bodyParams['componentName'];
+        $propertysName = $bodyParams['propertysName'];
+        $propertyName = $bodyParams['propertyName'];
+
+        $this->ebBackendService->deleteExtensionProperty(
             $this,
             $vendorName,
             $extensionName,
-            $componentsUid,
-            $componentUid,
-            $propertysUid,
-            $propertyUid,
+            $componentsName,
+            $componentName,
+            $propertysName,
+            $propertyName,
         );
 
+        $componentsDev = $this->ebBackendService->extensionConfiguration['components'][$componentsName];
+        $componentsFields = $componentsDev['fields'];
+        $fields = $componentsDev['fields'];
+        $propertysDev = $componentsDev['propertys'];
+
+        $extensionData = &$this->ebBackendService->extension['components'];
+        $componentData = $extensionData[$componentsName][$componentName];
+        $fields = $componentsDev['fields'];
+        $fieldsTabs = $componentsDev['fieldsTabs'] ?? ['general'];
+        $fieldsData = $extensionData[$componentsName][$componentName];
+        unset($fieldsData['propertys']);
+
         $this->moduleTemplate->assignMultiple([
-            'lllBase' => $this->ebService->lll,
-            'configuration' => $this->ebService->configuration,
+            'lllBase' => $this->ebBackendService->lll,
+            'configuration' => $this->ebBackendService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
+            'componentName' => $componentName,
             'extensionData' =>$extensionData,
-            'componentsUid' => $componentsUid,
-            'componentUid' => $componentUid,
+            'componentsName' => $componentsName,
+            'componentData' =>$componentData,
             'propertysDev' => $propertysDev,
-            'componentsFields' => $componentsFields,
-            'componentTitle' => $componentsDev['title'],
-            'componentData' => $componentData,
+            'fields' => $fields,
+            'fieldsTabs' => $fieldsTabs,
+            'fieldsData' => $fieldsData,
+            'fieldsDataName' => 'fieldsData',
         ]);
 
         $this->addDocHeaderCloseButton(
@@ -275,13 +288,12 @@ final class PropertyController extends ExtensionBuilderController
             'Extension',
             $vendorName,
             $extensionName,
-            componentsUid: $componentsUid,
-            componentUid: $componentUid,
+            componentsName: $componentsName,
+            componentName: $componentName,
         );
         $this->addDocHeaderSaveButton(
             'component-edit-form',
             'Component',
-
         );
 
         return $this->moduleTemplate->renderResponse($componentsDev['edit']);
