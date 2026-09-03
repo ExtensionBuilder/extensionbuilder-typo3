@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Dev Stack Colors">
-  <!-- 2x2 tiles, tile=29, gap=2, margin=2 -->
-  <rect x="2"  y="2"  width="29" height="29" rx="7" fill="#777BB4"/> <!-- PHP -->
-  <rect x="33" y="2"  width="29" height="29" rx="7" fill="#FF8700"/> <!-- Fluid -->
-  <rect x="2"  y="33" width="29" height="29" rx="7" fill="#F7DF1E"/> <!-- JS -->
-  <rect x="33" y="33" width="29" height="29" rx="7" fill="#1572B6"/> <!-- CSS -->
-</svg>
