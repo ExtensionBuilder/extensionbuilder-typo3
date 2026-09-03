@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.project.xlf"
+		date="2025-07-11T12:00:00Z"
+		product-name="extensionbuilder_typo3"
+	>
+		<header />
+		<body>
+
+			<trans-unit id="h1.list" resname="h1.list">
+				<source>Overview of Projects</source>
+			</trans-unit>
+
+			<trans-unit id="h1.add" resname="h1.add">
+				<source>Create a new project</source>
+			</trans-unit>
+
+			<trans-unit id="h1.edit" resname="h1.edit">
+				<source>Project settings "%s"</source>
+			</trans-unit>
+
+			<trans-unit id="link.add" resname="link.add">
+				<source>Add Project</source>
+			</trans-unit>
+
+			<trans-unit id="createNewProject" resname="createNewProject">
+				<source>Create new Project</source>
+			</trans-unit>
+
+			<trans-unit id="noProject" resname="noProject">
+				<source>No project</source>
+			</trans-unit>
+
+			<trans-unit id="addProject" resname="addProject">
+				<source>Project added</source>
+			</trans-unit>
+
+			<trans-unit id="projectSaved" resname="projectSaved">
+				<source>Project saved</source>
+			</trans-unit>
+
+			<trans-unit id="addextension" resname="addextension">
+				<source>Add Extension to Project</source>
+			</trans-unit>
+
+			<trans-unit id="name" resname="name">
+				<source>Name</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.name" resname="label.name">
+				<source>Name</source>
+			</trans-unit>
+
+			<trans-unit id="label.scope" resname="label.scope">
+				<source>Scope</source>
+			</trans-unit>
+
+			<trans-unit id="label.vendorName" resname="label.vendorName">
+				<source>Vendor</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDisable" resname="label.ebDisable">
+				<source>Disable</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDevDescriptionShort" resname="label.ebDevDescriptionShort">
+				<source>Short Description</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDevDescription" resname="label.ebDevDescription">
+				<source>Description</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDevTodo" resname="label.ebDevTodo">
+				<source>ToDo</source>
+			</trans-unit>
+
+			<trans-unit id="label.ebDevIssue" resname="label.ebDevIssue">
+				<source>Issue</source>
+			</trans-unit>
+
+
+
+			<trans-unit id="projectExtensions" resname="projectExtensions">
+				<source>Project extensions</source>
+			</trans-unit>
+
+			<trans-unit id="projectExtensionsDependencies" resname="projectExtensionsDependencies">
+				<source>Project extensions dependencies</source>
+			</trans-unit>
+
+			<trans-unit id="addExtesionToProject" resname="addExtesionToProject">
+				<source>Add extesion to project</source>
+			</trans-unit>
+
+			<trans-unit id="addTile" resname="addTile">
+				<source>Add Project</source>
+			</trans-unit>
+
+			<trans-unit id="list" resname="list">
+				<source>Projects</source>
+			</trans-unit>
+
+
+
+			<trans-unit id="label." resname="label.">
+				<source></source>
+			</trans-unit>
+
+			<trans-unit id="tooltip." resname="tooltip.">
+				<source>Build local tooltip </source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>

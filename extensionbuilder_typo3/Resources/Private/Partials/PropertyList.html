@@ -1,0 +1,257 @@
+<f:if condition="{propertysDev -> f:count()} > 0">
+    <f:for
+        each="{propertysDev}"
+        as="propertysDevAs"
+        key="propertysDevKey"
+    >
+        <f:if condition="!{componentData.propertys.{propertysDevKey}}">
+            <f:variable name="showPropertys">show</f:variable>
+        </f:if>
+    </f:for>
+</f:if>
+
+<f:if condition="{showPropertys}">
+    <f:if condition="{propertysDev -> f:count()} > 0">
+        <div class="tx_extensionbuilder_mod1_configuration">
+            <div class="panel panel-default overflow-visible">
+                <div class="btn-toolbar panel-heading">
+                    <f:for
+                        each="{propertysDev}"
+                        as="propertysDevAs"
+                        key="propertysDevKey"
+                    >
+                        <f:if condition="!{componentData.propertys.{propertysDevAs.propertysName}}">
+                            <f:link.action
+                                action="add"
+                                controller="{propertysDevAs.controller}"
+                                arguments="{
+                                    'vendorName': '{vendorName}',
+                                    'extensionName': '{extensionName}',
+                                    'componentsName': '{componentsName}',
+                                    'componentName': '{componentName}',
+                                    'propertysName': '{propertysDevAs.propertysName}'
+                                }"
+                                class="btn btn-default"
+                                data="{bs-toggle: 'tooltip'}"
+                                title="{propertyDevAs.title}"
+                            >
+                                 {propertysDevAs.title}
+                            </f:link.action>
+                        </f:if>
+                    </f:for>
+                </div>
+            </div>
+        </div>
+    </f:if>
+</f:if>
+
+<f:for
+    each="{componentData.propertys}"
+    as="propertysAs"
+    key="propertysKey"
+>
+    <div class="tx_extensionbuilder_mod1_configuration">
+        <div class="panel panel-default overflow-visible">
+            <div class="panel-heading eb-list-card-header multi-record-selection-panel" data-group-id="{propertysKey}">
+
+<f:variable name="{propertysKey}Collapsed">false</f:variable>
+
+                <button
+                    type="button"
+                    class="btn btn-link fw-bold p-0 eb-card-header-title-button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#group-{componentName}-{propertysKey}-{vendorName}-{extensionName}"
+                    aria-expanded="{f:if(condition: '{{propertysKey}Collapsed}', then: 'false', else: 'true')}"
+                >
+                    <span>{propertysDev.{propertysKey}.title}</span>
+                    <span
+                        class="t3js-table-total-items"
+                    >
+                        ({propertysAs -> f:count()})
+                    </span>
+                </button>
+
+                <f:link.action
+                    action="add"
+                    controller="{propertysDev.{propertysKey}.controller}"
+                    arguments="{
+                        'vendorName': '{vendorName}',
+                        'extensionName': '{extensionName}',
+                        'componentsName': '{componentsName}',
+                        'componentName': '{componentName}',
+                        'propertysName': '{propertysDev.{propertysKey}.propertysName}'
+                    }"
+                    class="btn btn-default"
+                    data="{bs-toggle: 'tooltip'}"
+                    title="{propertysDev.{propertysKey}.title}"
+                >
+                    Add
+                </f:link.action>
+
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm eb-toggle-table eb-card-header-toggle-button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#group-{componentName}-{propertysKey}-{vendorName}-{extensionName}"
+                    aria-expanded="{f:if(condition: '{{propertysKey}Collapsed}', then: 'false', else: 'true')}"
+                >
+                    <span class="collapseIcon">
+                        <core:icon
+                            identifier="{f:if(condition: '{{propertysKey}Collapsed}', then: 'actions-view-list-expand', else: 'actions-view-list-collapse')}"
+                            size="small"
+                        />
+                    </span>
+                </button>
+            </div>
+	
+            <div
+                class="panel-collapse collapse {f:if(condition: '{{propertysKey}Collapsed}', then: 'show')}"
+                id="group-{componentName}-{propertysKey}-{vendorName}-{extensionName}"
+                data-table="group-{componentName}-{propertysKey}-{vendorName}-{extensionName}"
+            >
+                <div class="table-fit mb-0">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th><f:translate key="{lllBase}.property.xlf:label.componentName" /></th>
+                                <f:for
+                                    each="{propertysDev.{propertysKey}.fields}"
+                                    as="fieldAs"
+                                    key="fieldKey"
+                                >
+                                    <f:if condition="{fieldAs.showInList} == true">
+                                        <th>
+                                            <f:if condition="{f:translate(key: '{lllBase}.component.xlf:label.{fieldKey}')} != ''">
+                                                <f:then>
+                                                    {f:translate(key: '{lllBase}.component.xlf:label.{fieldKey}')}
+                                                </f:then>
+                                                <f:else>
+                                                    {fieldsKey -> f:format.case(mode: 'capital')} <code>(No LLL - label.{fieldKey})</code>
+                                                </f:else>
+                                            </f:if>
+                                        </th>
+                                    </f:if>
+                                </f:for>
+                                <th data-sort-method="none" />
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <f:for
+                                each="{propertysAs}"
+                                as="propertyAs"
+                                key="propertyKey"
+                            >
+                                <tr>
+                                    <f:comment>Property name</f:comment>										
+                                    <td class="nowrap-disabled eb-width-200">
+                                        <div class="name">
+                                            <f:link.action
+                                                action="edit"
+                                                controller="{propertysDev.{propertysKey}.controller}"
+                                                arguments="{
+                                                    'vendorName': '{vendorName}',
+                                                    'extensionName': '{extensionName}',
+                                                    'componentsName': '{componentsName}',
+                                                    'componentName': '{componentName}',
+                                                    'propertysName': '{propertysDev.{propertysKey}.propertysName}',
+                                                    'propertyName': '{propertyKey}'
+                                                }"
+                                            >
+                                                <strong>{propertyKey -> f:format.case(mode: 'capital')}</strong>
+                                            </f:link.action>
+                                        </div>
+                                    </td>
+
+                                    <f:for
+                                        each="{propertysDev.{propertysKey}.fields}"
+                                        as="fieldAs"
+                                        key="fieldKey"
+                                    >
+                                        <f:if condition="{fieldAs.showInList} == true">
+
+                                            <f:if condition="{fieldAs.type} == 'check'">
+                                                <f:then>
+                                                    <td class="eb-width-50">
+                                                        <div class="form-check form-switch">
+                                                            <f:form.checkbox
+                                                                class="form-check-input"
+                                                                value="1"
+                                                                checked="{propertyAs.{fieldKey}}"
+                                                                disabled="disabled"
+                                                            />
+                                                        </div>
+											        </td>
+                                                </f:then>
+                                                <f:else>
+
+                                                    <td class="eb-width-200">
+                                                        {propertyAs.{fieldKey}}
+											        </td>
+                                                </f:else>
+                                            </f:if>
+
+                                        </f:if>
+                                    </f:for>
+
+                                    <f:comment>Control block</f:comment>
+                                    <td class="col-control align-top">
+                                        <div class="btn-group" role="group">
+
+                                            <f:comment>Edit</f:comment>
+                                            <f:link.action
+                                                action="edit"
+                                                controller="{propertysDev.{propertysKey}.controller}"
+                                                arguments="{
+                                                    'vendorName': '{vendorName}',
+                                                    'extensionName': '{extensionName}',
+                                                    'componentsName': '{componentsName}',
+                                                    'componentName': '{componentName}',
+                                                    'propertysName': '{propertysDev.{propertysKey}.propertysName}',
+                                                    'propertyName': '{propertyKey}'
+                                                }"
+                                                class="btn btn-default"
+                                                data="{bs-toggle: 'tooltip'}"
+                                                title="{f:translate(key:'{lllBase}.xlf:edit')}"
+                                            >
+                                                <core:icon identifier="actions-open" />
+                                            </f:link.action>
+
+                                            <f:comment>Duplicate</f:comment>
+
+                                            <f:comment>Rename</f:comment>
+
+                                            <f:comment>Delete</f:comment>
+                                             <f:link.action
+                                                action="delete"
+                                                controller="{propertysDev.{propertysKey}.controller}"
+                                                arguments="{
+                                                    'vendorName': '{vendorName}',
+                                                    'extensionName': '{extensionName}',
+                                                    'componentsName': '{componentsName}',
+                                                    'componentName': '{componentName}',
+                                                    'propertysName': '{propertysDev.{propertysKey}.propertysName}',
+                                                    'propertyName': '{propertyKey}'
+                                                }"
+                                                class="btn btn-default t3js-modal-trigger eb-margin-left-5"
+                                                data="{
+                                                    bs-toggle: 'tooltip',
+                                                    severity: 'warning',
+                                                    button-close-text: '{f:translate(key: \'{lllBase}.xlf:cancel\')}',
+                                                    bs-content='{f:translate(key: \'{lllBase}.xlf:msg.delete\')}'
+                                                }"
+                                                title="{f:translate(key:'{lllBase}.xlf:delete')}"
+                                            >
+                                                <core:icon identifier="actions-edit-delete" />
+                                            </f:link.action>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:for>

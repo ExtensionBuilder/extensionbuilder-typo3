@@ -1,0 +1,28 @@
+<f:if condition="{currentProject} != 'no'">
+	<f:render 
+        partial="ExtensionList"
+        arguments="{
+            lllBase: '{lllBase}',
+            extensions: '{project.extensions}',
+            headline: 'Current Project:',
+            headlineData: '{project.name}',
+            name: '{currentProject.name}',
+            groupId: 'project'
+        }"
+    />
+
+    <f:if condition="{project.dependencies}">
+        <f:render
+            partial="ExtensionList"
+            arguments="{
+                lllBase: '{lllBase}',
+                extensions: '{projects.dependencies}',
+                extensionOnOff: true,
+                headline: 'Project dependencies',
+                name: '{currentProject.name}',
+                groupId: 'dependencies',
+                collapsed: true
+            }"
+        />
+    </f:if>
+</f:if>

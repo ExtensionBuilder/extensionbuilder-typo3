@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.info.xlf"
+		date="2025-07-11T12:00:00Z"
+		product-name="extensionbuilder_typo3"
+	>
+		<header />
+		<body>
+
+			<trans-unit id="extensionBuilderTypo3" resname="extensionBuilderTypo3">
+				<source>Extension Builder for TYPO3</source>
+			</trans-unit>
+
+			<trans-unit id="extensionBuilderTypo3Core" resname="extensionBuilderTypo3Core">
+				<source>Extension Builder for TYPO3 Core</source>
+			</trans-unit>
+
+
+			<trans-unit id="generatingCodeFor" resname="generatingCodeFor">
+				<source>Generating code for</source>
+			</trans-unit>
+
+			<trans-unit id="announcements" resname="announcements">
+				<source>Announcements</source>
+			</trans-unit>
+
+			<trans-unit id="issues" resname="issues">
+				<source>Issues</source>
+			</trans-unit>
+
+			<trans-unit id="todo" resname="todo">
+				<source>ToDo</source>
+			</trans-unit>
+
+			<trans-unit id="changeLog" resname="changeLog">
+				<source>Change Log</source>
+			</trans-unit>
+
+
+		</body>
+	</file>
+</xliff>

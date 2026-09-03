@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf"
+		date="2025-07-11T12:00:00Z"
+		product-name="extensionbuilder_typo3"
+	>
+		<header />
+		<body>
+
+			<trans-unit id="developerSettings" resname="developerSettings">
+				<source>Developer settings</source>
+			</trans-unit>
+
+
+			<trans-unit id="savingDeveloperSetings" resname="savingDeveloperSetings">
+				<source>Saving developer setings</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.author" resname="label.author">
+				<source>Author</source>
+			</trans-unit>
+
+			<trans-unit id="label.author_email" resname="label.author_email">
+				<source>E-Mail</source>
+			</trans-unit>
+
+			<trans-unit id="label.author_company" resname="label.author_company">
+				<source>Company</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.description" resname="label.description">
+				<source>Description</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.currentProject" resname="label.currentProject">
+				<source>Current project</source>
+			</trans-unit>
+
+			<trans-unit id="label.currentVendor" resname="label.currentVendor">
+				<source>Current vendor</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.developerId" resname="label.developerId">
+				<source>Developer ID</source>
+			</trans-unit>
+
+			<trans-unit id="tooltip.developerId" resname="tooltip.developerId">
+				<source>tooltip.Developer ID</source>
+			</trans-unit>
+
+
+			<trans-unit id="label.cacheFlush" resname="label.cacheFlush">
+				<source>Flush Cache</source>
+			</trans-unit>
+
+			<trans-unit id="label.cacheWarmup" resname="label.cacheWarmup">
+				<source>Warmup cache</source>
+			</trans-unit>
+
+			<trans-unit id="label.dumpAutoload" resname="label.dumpAutoload">
+				<source>Dump autoload</source>
+			</trans-unit>
+
+			<trans-unit id="label.databaseStructure" resname="label.databaseStructure">
+				<source>Analyze database</source>
+			</trans-unit>
+
+
+			<trans-unit id="label." resname="label.">
+				<source></source>
+			</trans-unit>
+
+			<trans-unit id="tooltip." resname="tooltip.">
+				<source>Build local tooltip </source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>

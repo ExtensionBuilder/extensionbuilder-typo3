@@ -1,0 +1,40 @@
+<div class="widget-content-main">
+    <h3>Projekt-To-dos</h3>
+
+    <f:if condition="{projectTodos}">
+        <f:then>
+            <div class="list-group">
+                <f:for each="{projectTodos}" as="project" key="projectKey">
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <strong>{project.name}</strong>
+
+                            <f:if condition="{project.scope}">
+                                <span class="badge bg-secondary">
+                                    {project.scope}
+                                </span>
+                            </f:if>
+                        </div>
+
+                        <div class="mt-2">
+                            <f:format.nl2br>
+                                {project.todo}
+                            </f:format.nl2br>
+                        </div>
+                    </div>
+                </f:for>
+            </div>
+
+            <p class="text-muted mt-2 mb-0">
+                {stats.projectsWithTodos} Projekt(e) mit To-dos ·
+                Stand: {stats.lastUpdated}
+            </p>
+        </f:then>
+
+        <f:else>
+            <div class="alert alert-info mb-0">
+                Aktuell sind keine Projekt-To-dos hinterlegt.
+            </div>
+        </f:else>
+    </f:if>
+</div>
