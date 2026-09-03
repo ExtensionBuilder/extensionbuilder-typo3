@@ -1,0 +1,45 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Module" />
+
+    <f:section name="Content">
+        <f:form
+            action="save"
+            controller="Property"
+            id="property-edit-form"
+        >
+            <div class="wrapper">
+                <h1>
+                    <f:translate 
+                        key="{lllBase}.property.xlf:h1.edit"
+                        arguments="{
+                            0: '{propertysTitle}',
+                            1: '{propertyName}',
+                            2: '{componentsTitle}',
+                            3: '{componentName}'
+                        }"
+                    />
+                </h1>
+            </div>
+
+            <f:render
+                partial="BuildFields"
+                arguments="{
+                    lllBase: '{lllBase}',
+                    fields: '{fields}',
+                    fieldsTabs: '{fieldsTabs}',
+                    fieldsData: '{fieldsData}',
+                    fieldsDataName: '{fieldsDataName}',
+                    vendorName: '{vendorName}',
+                    extensionName: '{extensionName}',
+                    fileName: '{fileName}',
+                    language: '{language}'
+                }"
+            />
+        </f:form>
+    </f:section>
+</html>

@@ -1,0 +1,88 @@
+
+require.config({
+    paths: {
+        vs: TYPO3.settings.extensionBuilder.monacoVsPath
+    }
+});
+
+
+<button
+    id="myBtn"
+    class="btn btn-sm btn-default"
+    data-vendorname="{vendorName}"
+    data-extensionname="{extensionName}"
+    data-filename="{fileName}"
+    data-language="{language}"
+>
+    Details anzeigen
+</button>
+
+
+<div
+    id="modalMonacoEditor"
+    class="eb-monaco-overlay hidden"
+>
+    <div
+        id="modal"
+        class="eb-monaco-modal"
+    >
+        <div class="p-2 border-b font-bold eb-monaco-toolbar">
+
+
+            <button id="close" class="btn btn-sm btn-default">
+                <span
+                    class="t3js-icon icon icon-size-small icon-state-default icon-actions-close"
+                    data-identifier="actions-close"
+                    aria-hidden="true"
+                >
+                    <span class="icon-markup">
+                        <svg class="icon-color">
+                             <use xlink:href="/typo3/sysext/core/Resources/Public/Icons/T3Icons/sprites/actions.svg#actions-close"></use>
+                        </svg>
+                    </span>
+                </span>
+                Close
+            </button>
+
+            <button id="save" class="btn btn-sm btn-default">
+                <span
+                    class="t3js-icon icon icon-size-small icon-state-default icon-actions-save"
+                    data-identifier="actions-save"
+                    aria-hidden="true"
+                >
+                    <span class="icon-markup">
+                        <svg class="icon-color">
+                            <use xlink:href="/typo3/sysext/core/Resources/Public/Icons/T3Icons/sprites/actions.svg#actions-save"></use>
+                        </svg>
+                    </span>
+                </span>
+                Save
+            </button>
+
+            <button id="delete" class="btn btn-sm btn-default">
+                <span
+                    class="t3js-icon icon icon-size-small icon-state-default icon-actions-save"
+                    data-identifier="actions-save"
+                    aria-hidden="true"
+                >
+                    <span class="icon-markup">
+                        <svg class="icon-color">
+                            <use xlink:href="/typo3/sysext/core/Resources/Public/Icons/T3Icons/sprites/actions.svg#actions-save"></use>
+                        </svg>
+                    </span>
+                </span>
+                Save
+            </button>
+
+{fileName}
+
+        </div>
+
+        <div
+            id="monacoeditor"
+            class="eb-monaco-editor"
+        >
+        </div>
+
+    </div>
+</div>

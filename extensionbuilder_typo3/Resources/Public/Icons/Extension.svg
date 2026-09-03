@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">ext_icon T3</title>
+  <desc id="desc">Vierfarbiges Extension-Icon mit den Zeichen T3 groß im Vordergrund.</desc>
+
+  <defs>
+    <style>
+      .tile-purple { fill: #777BB4; }
+      .tile-orange { fill: #FF8700; }
+      .tile-yellow { fill: #F7DF1E; }
+      .tile-blue   { fill: #1572B6; }
+
+      .t3-shadow {
+        fill: rgba(0,0,0,.18);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+      }
+      .t3-outline {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 2.1;
+        stroke-linejoin: round;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+      }
+      .t3-text {
+        fill: #1f2d3d;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+      }
+    </style>
+  </defs>
+
+  <!-- 2x2 Kacheln -->
+  <rect x="2"  y="2"  width="29" height="29" rx="7" class="tile-purple"/>
+  <rect x="33" y="2"  width="29" height="29" rx="7" class="tile-orange"/>
+  <rect x="2"  y="33" width="29" height="29" rx="7" class="tile-yellow"/>
+  <rect x="33" y="33" width="29" height="29" rx="7" class="tile-blue"/>
+
+  <!-- T3 im Vordergrund -->
+  <text x="33" y="35" text-anchor="middle" dominant-baseline="middle" class="t3-shadow">T3</text>
+  <text x="32" y="34" text-anchor="middle" dominant-baseline="middle" class="t3-outline">T3</text>
+  <text x="32" y="34" text-anchor="middle" dominant-baseline="middle" class="t3-text">T3</text>
+</svg>
