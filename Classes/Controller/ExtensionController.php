@@ -103,10 +103,7 @@ $projects = $this->ebBackendService->projects;
         //
 		if ($this->ebBackendService->beUserIsAdmin) {
 
-//echo "beUserIsAdmin<br />";
-
-
-$project          = $this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['currentProject'] ?? 'no')] ?? [];
+           $project = $this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['currentProject'] ?? 'no')] ?? [];
 //            $projects = $this->ebBackendService->projects[(
 //                $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no'
 //            )] ?? [];
@@ -116,8 +113,6 @@ $project          = $this->ebBackendService->projects[($this->ebBackendService->
             $vendors = $this->ebBackendService->vendorsAndExtensions ?? [];
             $currentVendor = $this->ebBackendService->developer['typo3']['currentVendor'] ?? 'all';
 
-//debug($projects,"Project:".$currentProject." - ExtensionController.php");
-//debug($vendors,"Vendor: ".$currentVendor." - ExtensionController.php");
 
         } else {
             $currentProject = $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no';

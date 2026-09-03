@@ -244,9 +244,10 @@ class BackendService extends BuildService
         if (!is_dir($this->repositoryPath)) { GeneralUtility::mkdir_deep($this->repositoryPath); }
 
         if ($this->isComposerMode) {
+// ToDo Check
             $packagesPath = ''
                 . Environment::getProjectPath() . DIRECTORY_SEPARATOR
-                . $this->configuration['typo3']['composerPath'];
+                . $this->configuration['typo3']['developerRepository'];
             $composerJson = ''
                 . Environment::getProjectPath() . DIRECTORY_SEPARATOR
                 . 'composer.json';
@@ -254,7 +255,7 @@ class BackendService extends BuildService
             if (!is_dir($packagesPath)) { GeneralUtility::mkdir_deep($packagesPath); }
 
     		$composer = Tools\Json::read($composerJson);
-            $composerPath = $this->configuration['typo3']['composerPath'] . '/*';
+            $composerPath = $this->configuration['typo3']['composerRepository'] . '/*';
 
             if ($composer['repositories'] ?? false) {
                 $addRepositories = true;
@@ -378,7 +379,7 @@ class BackendService extends BuildService
 
 
 //        $extensionsPath =
-//            \TYPO3\CMS\Core\Core\Environment::getProjectPath() . DIRECTORY_SEPARATOR
+//            Environment::getProjectPath() . DIRECTORY_SEPARATOR
 //            . 'typo3conf' . DIRECTORY_SEPARATOR
 //            . 'ext' . DIRECTORY_SEPARATOR;
 
@@ -410,12 +411,11 @@ class BackendService extends BuildService
 // ToDo Description
         // ToDo only load dependencies ext
 
-        $extensionsPath =
-            \TYPO3\CMS\Core\Core\Environment::getProjectPath() . DIRECTORY_SEPARATOR
+        $extensionsPath = ''
+            . Environment::getProjectPath() . DIRECTORY_SEPARATOR
             . 'typo3conf' . DIRECTORY_SEPARATOR
             . 'ext' . DIRECTORY_SEPARATOR;
 
-//debug($this->localExtensions,'BackendService.php');
         foreach ($this->localExtensions ?? [] as $extensionKey => $extensionValue) {
             $file = ''
                 . $extensionsPath . DIRECTORY_SEPARATOR
@@ -431,7 +431,6 @@ class BackendService extends BuildService
 	        }
 		}
 
-//debug($returnArray,'file ' . $file . ' - BackendService.php');
         $this->foreignExtensions = $returnArray;
 	}
 
@@ -812,9 +811,8 @@ return;
                 GeneralUtility::mkdir_deep($dir);
             }
         }
-$this->extension['extension']['extensionNameLegacy'] = $this->extension['extension']['extensionName'];
 
-//debug($this->extension,'BackendService.php');
+        $this->extension['extension']['extensionNameLegacy'] = $this->extension['extension']['extensionName'];
 
         foreach ($this->extension ?? [] as $extensionKey => $extensionValue) {
             switch ($extensionKey) {
@@ -1355,10 +1353,11 @@ $this->extension['extension']['extensionNameLegacy'] = $this->extension['extensi
 
 // 8888
 // ToDo Modal Error
-            $this->logger->info('Backend - Build - Erro');
+
+//            $this->logger->info('Backend - Build - Erro');
 
             self::sendNotification(
-                '',
+                $this->buildMessage,
                 LocalizationUtility::translate($this->lll . '.extension.xlf:build.errorhasoccurred'),
                 ContextualFeedbackSeverity::ERROR,
             );

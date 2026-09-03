@@ -113,8 +113,6 @@ class RestApiClient
     ): array {
         $hostStatus = new Tools\Uri($authority);
 
-//debug($hostStatus->isOnline(), 'hostStatus');
-
         if (!$hostStatus->isOnline()) {
             $body = '{ "status": "Server offline" }';
         } else {
@@ -130,15 +128,7 @@ class RestApiClient
                     $multipart,
                 );
 
-
-
-
                 $body = (string)$response->getBody() ?? '';
-
-//debug($client, 'client');
-//debug($response, 'response');
-//debug($body, 'body');
-
             } catch (RequestException $e) {
                 $statusCode = $e->hasResponse()
                     ? $e->getResponse()->getStatusCode()
@@ -151,8 +141,6 @@ class RestApiClient
                 ], JSON_THROW_ON_ERROR);
             }
 		}
-
-//file_put_contents($_SERVER["DOCUMENT_ROOT"].'/body.txt',$body);
 
         $jsonObj = json_decode($body, true,);
 

@@ -7,7 +7,7 @@
     "extra": {
         "typo3/cms": {
             "extension-key": "extensionbuilder_typo3",
-            "version": "0.14.254",
+            "version": "0.14.260",
             "Package": {
                 "providesPackages": {}
             }

@@ -60,9 +60,10 @@ class BuildService
         public array $extension = [],
         public array $vendorsAndExtensions = [],
         public string $buildResult = '',
-    // Cache Test
-    private array $extensionCache = [],
+        public string $buildMessage = '',
 
+        // Cache Test
+        private array $extensionCache = [],
     ) {
         if (PHP_SAPI === 'cli') {
             $this->ownerInfo = posix_getpwuid(fileowner(getcwd()));
@@ -82,27 +83,30 @@ class BuildService
 		$this->repositoryPath = $this->projectPath . $extensionbuilderPath . DIRECTORY_SEPARATOR;
         $this->configurationData = $this->repositoryPath . 'configuration.json';
 
-		$this->t3tmpPath =
-            Environment::getVarPath() . DIRECTORY_SEPARATOR . 'ExtensionBuilder' . DIRECTORY_SEPARATOR;
-		$this->t3tmpCorePath =
-            Environment::getVarPath() . DIRECTORY_SEPARATOR . 'ExtensionBuilderCore' . DIRECTORY_SEPARATOR;
+		$this->t3tmpPath = ''
+            . Environment::getVarPath() . DIRECTORY_SEPARATOR
+            . 'ExtensionBuilder' . DIRECTORY_SEPARATOR;
+
+		$this->t3tmpCorePath = ''
+            . Environment::getVarPath() . DIRECTORY_SEPARATOR
+            . 'ExtensionBuilderCore' . DIRECTORY_SEPARATOR;
 
 		$this->buildPath = $this->t3tmpPath;
 
-        $extConfigurationPath =
-            $this->packageManager->getPackage('extensionbuilder_typo3')->getPackagePath()
+        $extConfigurationPath = ''
+            . $this->packageManager->getPackage('extensionbuilder_typo3')->getPackagePath()
             . 'Configuration' . DIRECTORY_SEPARATOR
             . 'ExtensionBuilder' . DIRECTORY_SEPARATOR;
 
         if ($this->builderLocal = $this->packageManager->isPackageActive('extensionbuilder_typo3_core')) {
-            $this->builderLocalVersion = 
+            $this->builderLocalVersion =
                 $this->packageManager->
                 getPackage('extensionbuilder_typo3_core')->
                 getPackageMetaData()->
                 getVersion();
         }
 
-        $this->builderVersion = 
+        $this->builderVersion =
             $this->packageManager->
             getPackage('extensionbuilder_typo3')->
             getPackageMetaData()->
@@ -138,18 +142,19 @@ class BuildService
         }
 
         if ($this->isComposerMode) {
-            $this->extensionPath =
-                Environment::getProjectPath() . DIRECTORY_SEPARATOR
-                . $this->configuration['typo3']['composerRepository'] . DIRECTORY_SEPARATOR;
+            $this->extensionPath = ''
+                . Environment::getProjectPath() . DIRECTORY_SEPARATOR
+                . 'packages' . DIRECTORY_SEPARATOR;
+// ToDo               . $this->configuration['typo3']['composerRepository'] . DIRECTORY_SEPARATOR;
+
 	    } else {
-            $this->extensionPath =
-                Environment::getPublicPath() . DIRECTORY_SEPARATOR
+            $this->extensionPath = ''
+                . Environment::getPublicPath() . DIRECTORY_SEPARATOR
                 . 'typo3conf' . DIRECTORY_SEPARATOR
                 . 'ext' . DIRECTORY_SEPARATOR;
         }
 
     }
-
 
     // Configuration
 
@@ -218,8 +223,8 @@ class BuildService
         $vendorList = Tools\Folder::scanForDirectory($this->repositoryPath);
 
         foreach($vendorList ?? [] as $vendorName) {
-            $fileName =
-                $this->repositoryPath
+            $fileName = ''
+                . $this->repositoryPath
                 . $vendorName . DIRECTORY_SEPARATOR
                 . 'vendor.json';
 
@@ -232,7 +237,6 @@ class BuildService
             }
 		}
 	}
-
 
     /**
      * @since 0.12
@@ -250,8 +254,8 @@ class BuildService
 
         $this->extension = [];
 
-        $extensionPath =
-            $this->repositoryPath
+        $extensionPath = ''
+            . $this->repositoryPath
             . $vendorName . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR
             . $extensionName . DIRECTORY_SEPARATOR;
@@ -304,8 +308,8 @@ class BuildService
                 );
 
                 foreach ($extensionList ?? [] as $extensionKey => $extensionValue) {
-                    $jsonData = Tools\Json::read(
-                        $this->repositoryPath
+                    $jsonData = Tools\Json::read( ''
+                        . $this->repositoryPath
                         . $vendorValue . DIRECTORY_SEPARATOR
                         . 'TYPO3'  . DIRECTORY_SEPARATOR
                         . $extensionValue . DIRECTORY_SEPARATOR
@@ -369,15 +373,15 @@ class BuildService
 
             $result = self::buildRemote();
         }
-		
-		$this->buildResult = $result['status'] ?? '';
+
+        $this->buildResult = $result['status'] ?? '';
 
         switch ($result['status'] ?? 'error') {
-            case '200 OK':
+            case 'Build OK': //'200 OK'
                 $this->buildResult = 'OK';
 
-                $debugPath =
-                    $this->buildPath
+                $debugPath = ''
+                    . $this->buildPath
                     . $this->vendorName . DIRECTORY_SEPARATOR
                     . 'TYPO3' . DIRECTORY_SEPARATOR
                     . $this->extensionName . DIRECTORY_SEPARATOR
@@ -388,14 +392,15 @@ class BuildService
                     json_encode($result, JSON_PRETTY_PRINT)
                 );
 
-                $importPath =
-                    $this->buildPath
+                $importPath = ''
+                    . $this->buildPath
                     . $this->vendorName . DIRECTORY_SEPARATOR
                     . 'TYPO3' . DIRECTORY_SEPARATOR
                     . $this->extensionName . DIRECTORY_SEPARATOR
                     . 'import' . DIRECTORY_SEPARATOR;
-                $buildPath =
-                    $this->buildPath
+
+                $buildPath = ''
+                    . $this->buildPath
                     . $this->vendorName . DIRECTORY_SEPARATOR
                     . 'TYPO3' . DIRECTORY_SEPARATOR
                     . $this->extensionName . DIRECTORY_SEPARATOR
@@ -426,12 +431,12 @@ class BuildService
                 Tools\ZipArchive::unzip($importPath.$zipName, $buildPath);
 
                 if ($this->isComposerMode) {
-                    $extPath =
-                        $this->extensionPath
-                        . $this->extension['extension']['extensionComposerName'];
+                    $extPath = ''
+                        . $this->extensionPath
+                        . $this->extension['extension']['extensionNameComposer'] . DIRECTORY_SEPARATOR;
 	    		} else {
-                    $extPath =
-                        $this->extensionPath
+                    $extPath = ''
+                        . $this->extensionPath
                         . $this->extension['extension']['extensionName'] . DIRECTORY_SEPARATOR;
                 }
 
@@ -447,7 +452,8 @@ class BuildService
                     self::chownr($this->t3tmpCorePath, $this->ownerInfo['uid'] );
                     self::chownr($extPath, $this->ownerInfo['uid'] );
                 }
-//ToDo was passiert mit $buildInfo
+
+                // ToDo was passiert mit $buildInfo
                 if ($result['buildLocal'] ?? false) {
                     $buildInfo = 'Extension is build (local).'; // ToDo LLL
                 } else {
@@ -455,6 +461,9 @@ class BuildService
                 }
 
                 break;
+			default:
+                $this->buildResult = $result['error'];
+                $this->buildMessage = $result['message'];
 		}
 	}
 
@@ -487,18 +496,26 @@ class BuildService
     {
         $multipart = self::buildRequest();
 
-        $this->logger->info('Build - Remote',[
-            'builderUrl' => $this->configuration['typo3']['builderUrl'],
-            'builderApi' => $this->configuration['typo3']['builderApi'],
-        ]);
+// ToDo
+//        $this->logger->info('Build - Remote',[
+//            'builderUrl' => $this->configuration['typo3']['builderUrl'],
+//            'builderApi' => $this->configuration['typo3']['builderApi'],
+//        ]);
+
+        if ($this->configuration['typo3']['buildDev'] ?? false) {
+            $builderUrl = $this->configuration['typo3']['builderDevUrl'];
+            $builderApi = $this->configuration['typo3']['builderDevApi'];
+		} else {
+            $builderUrl = $this->configuration['typo3']['builderUrl'];
+            $builderApi = $this->configuration['typo3']['builderApi'];
+		}
 
         $buildRemoteStart = microtime(true);
         $result = Tools\RestApiClient::build(
-            $this->configuration['typo3']['builderUrl'],
-            $this->configuration['typo3']['builderApi'],
+            $builderUrl,
+            $builderApi,
             $multipart,
         );
-
         $buildRemoteDuration = microtime(true)-$buildRemoteStart;
 
         $result['buildRemote'] = true;
@@ -512,14 +529,14 @@ class BuildService
      */
     private function buildRequest(): array
     {
-        $extensionDevelopmentSourcePath =
-            $this->repositoryPath
+        $extensionDevelopmentSourcePath = ''
+            . $this->repositoryPath
             . $this->vendorName . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR
             . $this->extensionName . DIRECTORY_SEPARATOR;
 
-        $exportPath =
-            $this->buildPath
+        $exportPath = ''
+            . $this->buildPath
             . $this->vendorName . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR
             . $this->extensionName . DIRECTORY_SEPARATOR;
@@ -540,12 +557,14 @@ class BuildService
         $extConf = self::readExtensionHelper($extensionDevelopmentSourcePath);
         if ($extConf['extensionBuild']['copyBack'] ?? false) {
             $extensionName = $extConf['extension']['extensionName'];
-            $extPath =
-                Environment::getPublicPath() . DIRECTORY_SEPARATOR
+            $extPath = ''
+                . Environment::getPublicPath() . DIRECTORY_SEPARATOR
                 . 'typo3conf' . DIRECTORY_SEPARATOR
                 . 'ext' . DIRECTORY_SEPARATOR
                 . $this->extensionName . DIRECTORY_SEPARATOR;
-            $developerCodePath = $extensionDevelopmentSourcePath . 'DeveloperCode' . DIRECTORY_SEPARATOR;
+            $developerCodePath = ''
+                . $extensionDevelopmentSourcePath
+                . 'DeveloperCode' . DIRECTORY_SEPARATOR;
 
             foreach ($extConf['extensionBuild']['copyBack'] ?? [] as $copyBackName => $copyBackData) {
                 if ($copyBackData) {
@@ -571,16 +590,17 @@ class BuildService
         $multipart['multipart'][] = ['name' => 'version', 'contents' => $this->builderVersion];
         $multipart['multipart'][] = ['name' => 'jsonVersion', 'contents' => '1'];
 
-        $multipart['multipart'][] = ['name' => 'developerId', 'contents' => $this->configuration['systemId']];
+        $multipart['multipart'][] = ['name' => 'systemId', 'contents' => $this->configuration['systemId'] ?? 'cli build']; // ToDo
+        $multipart['multipart'][] = ['name' => 'developerId', 'contents' => $this->developer['developerId']];
 
-        $multipart['multipart'][] = ['name' => 'systemId', 'contents' => $this->developer['developerId'] ?? 'cli build']; // ToDo
-
-        $multipart['multipart'][] = ['name' => 'serverIp', 'contents' => $_SERVER['SERVER_ADDR'] ?? '']; // ToDo CLI/Command no IP
-        $multipart['multipart'][] = ['name' => 'serverMac', 'contents' => 'community']; // ToDo
-        $multipart['multipart'][] = ['name' => 'vendorHash', 'contents' => '']; // ToDo Check for useing
+        $multipart['multipart'][] = ['name' => 'serverAddress', 'contents' => $_SERVER['SERVER_ADDR'] ?? '']; // ToDo CLI/Command no IP
+        $multipart['multipart'][] = ['name' => 'serverName', 'contents' => $_SERVER['SERVER_NAME'] ?? '']; // ToDo CLI/Command no IP
+        $multipart['multipart'][] = ['name' => 'vendorNameComposer', 'contents' => $this->extension['extension']['vendorNameComposer']];
+        $multipart['multipart'][] = ['name' => 'extensionNameComposer',  'contents' => $this->extension['extension']['extensionNameComposer']];
 
         $multipart['multipart'][] = ['name' => 'vendor', 'contents' => $this->vendorName];
         $multipart['multipart'][] = ['name' => 'extension',  'contents' => $this->extensionName];
+
 
 // ToDo
 //        $dependentExtensionsList['dependenciesExport'] = $this->foreignExtensionsList; // Todo Docu / fuction check
