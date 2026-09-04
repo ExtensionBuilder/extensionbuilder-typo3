@@ -5,22 +5,17 @@
 >
     <f:layout name="Module" />
     <f:section name="Content">
-
         <f:asset.css
             identifier="litegraph"
             href="EXT:extensionbuilder_typo3/Resources/Public/Css/litegraph.css"
         />
 
-        <f:asset.script 
-            identifier="litegraph"
-            src="EXT:extensionbuilder_typo3/Resources/Public/JavaScript/Contrib/Litegraph/litegraph.min.js"
-        />
-        <f:asset.script
-            identifier="ext-kickstarter"
-            src="EXT:extensionbuilder_typo3/Resources/Public/JavaScript/extensioninfo.js"
-        />
+        <div
+            id="graph-container"
+            class="litegraph-container"
+            data-extension="{extension}"
+            data-components="{components}">
 
-        <div id="graph-container" data-extension="{extension}" data-components="{components}">
 
 <f:comment>
             <button id="buildExtension" class="eb-build-extension-button">Build Extension</button>

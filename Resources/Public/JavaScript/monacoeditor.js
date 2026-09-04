@@ -1,6 +1,6 @@
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 
-// Version 0.0
+// Developer Info: Beta monacoeditor in PropertyController
 
 let editor = null;
 let completionProviderRegistered = false;

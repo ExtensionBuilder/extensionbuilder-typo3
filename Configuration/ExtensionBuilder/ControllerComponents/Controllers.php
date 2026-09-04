@@ -12,6 +12,8 @@
  * @since 0.13
  */
 
+// ToDo Obsolate -> FrondenModels?
+
 $components['controllers'] = [];
 $components['controllers']['componentName'] = 'controllers';
 $components['controllers']['title'] = 'Controller';

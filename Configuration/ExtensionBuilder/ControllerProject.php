@@ -12,7 +12,6 @@
  * @since 0.13
  */
 
-
 $lllPath = '.project';
 
 // Add Project
@@ -22,7 +21,6 @@ $addTabs['general'] = [];
 $addTabs['description'] = [];
 $addTabs['toDo'] = [];
 $addTabs['issue'] = [];
-
 
 $add = [];
 $add['name'] = ['type' => 'input', 'tab' => 'general'];

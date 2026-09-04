@@ -1,7 +1,7 @@
 import DocumentService from '@typo3/core/document-service.js';
 import Hotkeys, { ModifierKeys } from '@typo3/backend/hotkeys.js';
 
-// Version 1.0
+// Developer Info: Hotkeysfor the BackendController
 
 const scope = 'extensionbuilder_typo3/backend-module';
 

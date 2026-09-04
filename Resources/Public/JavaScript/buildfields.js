@@ -1,5 +1,7 @@
 import { Tab } from 'bootstrap';
 
+// Developer Info: Beta use in dome BE Controller
+
 const initializeExtensionBuilderTabs = () => {
     document
         .querySelectorAll('.eb-build-fields [data-bs-toggle="tab"]')

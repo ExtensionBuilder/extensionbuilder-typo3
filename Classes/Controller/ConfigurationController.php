@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -20,33 +19,17 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class ConfigurationController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    function createSystemId(): string
+    final public function editAction(): ResponseInterface
     {
-        $data = [
-            'host' => $_SERVER['HTTP_HOST'] ?? '',
-            'server_name' => $_SERVER['SERVER_NAME'] ?? '',
-            'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? '',
-            'server_addr' => $_SERVER['SERVER_ADDR'] ?? '',
-            'php_uname' => php_uname('n'),
-        ];
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
-        return hash('sha256', json_encode($data, JSON_UNESCAPED_SLASHES));
-    }
-
-    /**
-     * @since 0.12
-     */
-    final function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
@@ -72,7 +55,7 @@ final class ConfigurationController extends ExtensionBuilderController
                     )
                 );
                 break;
-		}
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -94,7 +77,7 @@ final class ConfigurationController extends ExtensionBuilderController
             'Configuration',
         );
 
-    	return $this->moduleTemplate->renderResponse('Configuration');
+        return $this->moduleTemplate->renderResponse('Configuration');
     }
 
 }

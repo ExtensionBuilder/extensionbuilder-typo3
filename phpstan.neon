@@ -1,0 +1,10 @@
+parameters:
+    level: 8
+
+    paths:
+        - Classes
+        - Tests
+
+    tmpDir: .phpstan
+
+    reportUnmatchedIgnoredErrors: true

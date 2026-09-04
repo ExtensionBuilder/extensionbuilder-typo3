@@ -2,6 +2,8 @@ import DocumentService from '@typo3/core/document-service.js';
 import RegularEvent from '@typo3/core/event/regular-event.js';
 import Icons from '@typo3/backend/icons.js';
 
+// Developer Info: Store the module status for the BackendController.
+
 const STORAGE_KEY = 'extensionbuilder_typo3.uiState.v1';
 
 DocumentService.ready().then(() => {

@@ -3,6 +3,8 @@ import DocumentService from '@typo3/core/document-service.js';
 import Modal from '@typo3/backend/modal.js';
 import Severity from '@typo3/backend/severity.js';
 
+// Developer Info: Beta modal build info ExtensionController
+
 DocumentService.ready().then(() => {
   document.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-extensionbuilder-build-button="1"]');

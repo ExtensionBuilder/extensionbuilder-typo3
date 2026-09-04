@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -15,24 +14,25 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 class Github
 {
-
-// https://docs.github.com/de/rest/repos/repos?apiVersion=2022-11-28
+    // https://docs.github.com/de/rest/repos/repos?apiVersion=2022-11-28
 
     /**
      * @since 0.12
      */
-    static function findRepo(
+    public static function findRepo(
         string $organization,
         string $repo,
     ): bool {
-        $curl_session = curl_init(); 
+        $curl_session = curl_init();
         curl_setopt($curl_session, CURLOPT_URL, 'https://api.github.com/orgs/' . $organization . '/repos');
-        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl_session, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curl_session, CURLOPT_HTTPHEADER, [
+        curl_setopt(
+            $curl_session,
+            CURLOPT_HTTPHEADER,
+            [
                 'Accept: application/vnd.github+json',
                 'X-GitHub-Api-Version: 2022-11-28',
                 'User-Agent: Awesome-Octocat-App',
@@ -41,25 +41,28 @@ class Github
         $result = curl_exec($curl_session);
         curl_close($curl_session);
         $result = json_decode($result, true);
-		foreach ($result ?? [] as $resultKey => $resultData) {
+        foreach ($result ?? [] as $resultKey => $resultData) {
             if (($resultData['name'] ?? '') === $repo) {
                 return true;
-    		}
-		}
+            }
+        }
         return false;
     }
 
     /**
      * @since 0.12
      */
-    static function checkOrganization(
+    public static function checkOrganization(
         string $organization,
     ): bool {
-        $curl_session = curl_init(); 
+        $curl_session = curl_init();
         curl_setopt($curl_session, CURLOPT_URL, 'https://api.github.com/orgs/' . $organization . '/repos');
-        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl_session, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curl_session, CURLOPT_HTTPHEADER, [
+        curl_setopt(
+            $curl_session,
+            CURLOPT_HTTPHEADER,
+            [
                 'Accept: application/vnd.github+json',
                 'X-GitHub-Api-Version: 2022-11-28',
                 'User-Agent: Awesome-Octocat-App',
@@ -70,47 +73,50 @@ class Github
         $result = json_decode($result, true);
         if ($result['status'] ?? false) {
             return false;
-		} else {
-            return true;
-		}
+        }
+        return true;
+
     }
 
-// https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents
+    // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents
 
-//curl -L \
-//  -X PUT \
-//  -H "Accept: application/vnd.github+json" \
-//  -H "Authorization: Bearer <YOUR-TOKEN>" \
-//  -H "X-GitHub-Api-Version: 2022-11-28" \
-//  https://api.github.com/repos/OWNER/REPO/contents/PATH \
-//  -d '{"message":"my commit message","committer":{"name":"Monalisa Octocat","email":"octocat@github.com"},"content":"bXkgbmV3IGZpbGUgY29udGVudHM="}'
+    //curl -L \
+    //  -X PUT \
+    //  -H "Accept: application/vnd.github+json" \
+    //  -H "Authorization: Bearer <YOUR-TOKEN>" \
+    //  -H "X-GitHub-Api-Version: 2022-11-28" \
+    //  https://api.github.com/repos/OWNER/REPO/contents/PATH \
+    //  -d '{"message":"my commit message","committer":{"name":"Monalisa Octocat","email":"octocat@github.com"},"content":"bXkgbmV3IGZpbGUgY29udGVudHM="}'
 
     /**
      * @since 0.12
      */
-    static function uploadRepo(
+    public static function uploadRepo(
         string $organization,
         string $repo,
         string $token,
         string $message,
     ): bool {
-        $curl_session = curl_init(); 
+        $curl_session = curl_init();
         curl_setopt($curl_session, CURLOPT_URL, 'https://api.github.com/orgs/' . $organization . '/repos');
-        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl_session, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($curl_session, CURLOPT_HTTPHEADER, [
+        curl_setopt(
+            $curl_session,
+            CURLOPT_HTTPHEADER,
+            [
                 'Accept: application/vnd.github+json',
-//                'Authorization: Bearer ' . $token,
+                //                'Authorization: Bearer ' . $token,
                 'X-GitHub-Api-Version: 2022-11-28',
                 'User-Agent: Awesome-Octocat-App',
             ]
         );
 
-//  -d '{
-//"message":"my commit message",
-//"committer":{"name":"Monalisa Octocat","email":"octocat@github.com"},
-//"content":"bXkgbmV3IGZpbGUgY29udGVudHM="
-//}'
+        //  -d '{
+        //"message":"my commit message",
+        //"committer":{"name":"Monalisa Octocat","email":"octocat@github.com"},
+        //"content":"bXkgbmV3IGZpbGUgY29udGVudHM="
+        //}'
 
         $result = curl_exec($curl_session);
         curl_close($curl_session);
@@ -119,19 +125,18 @@ class Github
         return true;
     }
 
-
-// curl -L \
-//   -X POST \
-//   -H "Accept: application/vnd.github+json" \
-//   -H "Authorization: Bearer <YOUR-TOKEN>"\
-//   -H "X-GitHub-Api-Version: 2022-11-28" \
-//   https://api.github.com/orgs/ORG/repos \
-//   -d '{"name":"Hello-World","description":"This is your first repository","homepage":"https://github.com","private":false,"has_issues":true,"has_projects":true,"has_wiki":true}'
+    // curl -L \
+    //   -X POST \
+    //   -H "Accept: application/vnd.github+json" \
+    //   -H "Authorization: Bearer <YOUR-TOKEN>"\
+    //   -H "X-GitHub-Api-Version: 2022-11-28" \
+    //   https://api.github.com/orgs/ORG/repos \
+    //   -d '{"name":"Hello-World","description":"This is your first repository","homepage":"https://github.com","private":false,"has_issues":true,"has_projects":true,"has_wiki":true}'
 
     /**
      * @since 0.12
      */
-    static function createRepos(
+    public static function createRepos(
         string $gitOrganizations,
         string $gitToken,
         string $gitRepos,
@@ -153,14 +158,17 @@ class Github
         ];
         // https://api.github.com/orgs/ORG/repos
         $curl_session = curl_init();
-        curl_setopt($curl_session, CURLOPT_URL, 'https://api.github.com/orgs/'.$gitOrganizations.'/repos');
-        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($curl_session, CURLOPT_URL, 'https://api.github.com/orgs/' . $gitOrganizations . '/repos');
+        curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl_session, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($curl_session, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($curl_session, CURLOPT_POSTFIELDS, json_encode($fields));
-        curl_setopt($curl_session, CURLOPT_HTTPHEADER, [
+        curl_setopt(
+            $curl_session,
+            CURLOPT_HTTPHEADER,
+            [
                 'Accept: application/vnd.github+json',
-                'Authorization: Bearer '.$gitToken,
+                'Authorization: Bearer ' . $gitToken,
                 'X-GitHub-Api-Version: 2022-11-28',
                 'User-Agent: Awesome-Octocat-App',
             ]

@@ -21,7 +21,6 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.14
  */
-
 final class MarkdownRenderer
 {
     private bool $headingPermalinks;

@@ -7,17 +7,15 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Command;
 // Activate only when V13 support is discontinued.
 //use TYPO3\CMS\Core\Attribute\AsNonSchedulableCommand;
 //use Symfony\Component\Console\Attribute\AsCommand;
+use ExtensionBuilder\ExtensionBuilderTypo3\Service\BuildService;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Service\BuildService;
-
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -36,7 +34,6 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Service\BuildService;
 //#[AsNonSchedulableCommand]
 class ExtensionBuilderTypo3 extends Command
 {
-
     /**
      * @since 0.14
      */
@@ -74,7 +71,7 @@ class ExtensionBuilderTypo3 extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Name of the extension to be created',
                 '',
-            );    
+            );
     }
 
     /**
@@ -94,9 +91,9 @@ class ExtensionBuilderTypo3 extends Command
 
         $this->buildService->buildResult = 'No program generation performed';
 
-        if (!($developer ?? false)) {
+        if (!($developer)) {
             $developers = [];
-            foreach ($this->buildService->developers ?? [] as $developerKey => $developerValue) {
+            foreach ($this->buildService->developers as $developerKey => $developerValue) {
                 $developers[] = $developerKey;
             }
 
@@ -105,11 +102,11 @@ class ExtensionBuilderTypo3 extends Command
                 $developers,
                 'import'
             );
-		}
+        }
 
         if (!($ebbs[$vendor] ?? false)) {
             $vendors = [];
-            foreach ($ebbs ?? [] as $vendorKey => $vendorValue) {
+            foreach ($ebbs as $vendorKey => $vendorValue) {
                 $vendors[] = $vendorKey;
             }
 
@@ -118,8 +115,8 @@ class ExtensionBuilderTypo3 extends Command
                 $vendors,
                 'import'
             );
-		}
-		
+        }
+
         if (!($ebbs[$vendor]['extensions'][$extension] ?? false)) {
             $extensions = [];
             foreach ($ebbs[$vendor]['extensions'] ?? [] as $extensionKey => $extensionValue) {
@@ -131,12 +128,12 @@ class ExtensionBuilderTypo3 extends Command
                 $extensions,
                 'import'
             );
-		}
+        }
 
         $this->buildService->build($developer, $vendor, $extension);
 
-        $buildInfo =
-            "Extension Builder for TYPO3\n\n"
+        $buildInfo
+            = "Extension Builder for TYPO3\n\n"
             . 'Developer ' . $developer . "\n"
             . 'Vendor    ' . $vendor . "\n"
             . 'Extension ' . $extension . "\n\n"
@@ -146,9 +143,9 @@ class ExtensionBuilderTypo3 extends Command
 
         if ($this->buildService->buildResult === 'OK') {
             return Command::SUCCESS;
-        } else {
-            return Command::FAILURE;
         }
+        return Command::FAILURE;
+
     }
 
 }

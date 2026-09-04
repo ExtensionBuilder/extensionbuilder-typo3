@@ -12,6 +12,8 @@
  * @since 0.13
  */
 
+// ToDo Rename to  FrontendModels
+
 $components['models'] = [];
 $components['models']['componentName'] = 'models';
 $components['models']['title'] = 'Model';

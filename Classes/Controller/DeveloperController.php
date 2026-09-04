@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
+
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
-
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -22,17 +21,17 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class DeveloperController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    final function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    final public function editAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
@@ -46,11 +45,11 @@ final class DeveloperController extends ExtensionBuilderController
                 ContextualFeedbackSeverity::INFO,
                 true
             );
- 
-           $this->ebBackendService->developer['author'] = $this->getBackendUser()->user['realName'];
-           $this->ebBackendService->developer['author_email'] = $this->getBackendUser()->user['email'];
 
-// ToDo: array "author_company"
+            $this->ebBackendService->developer['author'] = $this->getBackendUser()->user['realName'] ?? '';
+            $this->ebBackendService->developer['author_email'] = $this->getBackendUser()->user['email'] ?? '';
+
+            // ToDo: array "author_company"
 
         }
 
@@ -73,7 +72,7 @@ final class DeveloperController extends ExtensionBuilderController
                     )
                 );
                 break;
-		}
+        }
 
         $projects = [];
         $projects['no'] = $this->getTranslatedLabel(
@@ -81,9 +80,9 @@ final class DeveloperController extends ExtensionBuilderController
             $this->ebBackendService->lll . '.project.xlf:noProject',
         );
 
-	    foreach ($this->ebBackendService->projects ?? [] as $projectName => $projectData) {
+        foreach ($this->ebBackendService->projects ?? [] as $projectName => $projectData) {
             $projects[$projectName] = $projectData['name'];
-	    }
+        }
 
         $vendors = [];
         $vendors['all'] = $this->getTranslatedLabel(
@@ -95,9 +94,9 @@ final class DeveloperController extends ExtensionBuilderController
             $this->ebBackendService->lll . '.vendor.xlf:noVendors',
         );
 
-	    foreach ($this->ebBackendService->vendors ?? [] as $vendorName => $vendorData) {
+        foreach ($this->ebBackendService->vendors ?? [] as $vendorName => $vendorData) {
             $vendors[$vendorName] = $vendorData['vendorName'];
-	    }
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -119,7 +118,7 @@ final class DeveloperController extends ExtensionBuilderController
             'Develope',
         );
 
-    	return $this->moduleTemplate->renderResponse('Developer');
+        return $this->moduleTemplate->renderResponse('Developer');
     }
 
 }

@@ -3,18 +3,16 @@
 declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Service;
-	
-use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Package\PackageManager;
-
-use Psr\Log\LoggerInterface;
 
 use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Core\Environment;
+
+use TYPO3\CMS\Core\Package\PackageManager;
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -26,7 +24,6 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  */
 class BuildService
 {
-
     /**
      * @since 0.12
      */
@@ -43,7 +40,7 @@ class BuildService
         public string $repositoryPath = '',
         public string $extensionPath = '',
         public string $configurationData = '',
-		public string $t3tmpPath = '',
+        public string $t3tmpPath = '',
         public string $t3tmpCorePath = '',
         public string $buildPath = '',
         public bool $builderLocal = false,
@@ -67,31 +64,31 @@ class BuildService
     ) {
         if (PHP_SAPI === 'cli') {
             $this->ownerInfo = posix_getpwuid(fileowner(getcwd()));
-		} else {
+        } else {
             $this->ownerInfo = posix_getpwuid(fileowner($_SERVER['DOCUMENT_ROOT']));
-		}
+        }
 
         $this->isComposerMode = Environment::isComposerMode();
 
-		$this->projectPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR;
+        $this->projectPath = Environment::getProjectPath() . DIRECTORY_SEPARATOR;
 
         $extensionbuilderPath = 'ExtensionBuilder';
         if (!$this->isComposerMode) {
             $extensionbuilderPath = '.' . $extensionbuilderPath;
         }
 
-		$this->repositoryPath = $this->projectPath . $extensionbuilderPath . DIRECTORY_SEPARATOR;
+        $this->repositoryPath = $this->projectPath . $extensionbuilderPath . DIRECTORY_SEPARATOR;
         $this->configurationData = $this->repositoryPath . 'configuration.json';
 
-		$this->t3tmpPath = ''
+        $this->t3tmpPath = ''
             . Environment::getVarPath() . DIRECTORY_SEPARATOR
             . 'ExtensionBuilder' . DIRECTORY_SEPARATOR;
 
-		$this->t3tmpCorePath = ''
+        $this->t3tmpCorePath = ''
             . Environment::getVarPath() . DIRECTORY_SEPARATOR
             . 'ExtensionBuilderCore' . DIRECTORY_SEPARATOR;
 
-		$this->buildPath = $this->t3tmpPath;
+        $this->buildPath = $this->t3tmpPath;
 
         $extConfigurationPath = ''
             . $this->packageManager->getPackage('extensionbuilder_typo3')->getPackagePath()
@@ -99,18 +96,18 @@ class BuildService
             . 'ExtensionBuilder' . DIRECTORY_SEPARATOR;
 
         if ($this->builderLocal = $this->packageManager->isPackageActive('extensionbuilder_typo3_core')) {
-            $this->builderLocalVersion =
-                $this->packageManager->
-                getPackage('extensionbuilder_typo3_core')->
-                getPackageMetaData()->
-                getVersion();
+            $this->builderLocalVersion
+                = $this->packageManager
+                ->getPackage('extensionbuilder_typo3_core')
+                ->getPackageMetaData()
+                ->getVersion();
         }
 
-        $this->builderVersion =
-            $this->packageManager->
-            getPackage('extensionbuilder_typo3')->
-            getPackageMetaData()->
-            getVersion();
+        $this->builderVersion
+            = $this->packageManager
+            ->getPackage('extensionbuilder_typo3')
+            ->getPackageMetaData()
+            ->getVersion();
 
         self::readConfiguration();
 
@@ -125,29 +122,29 @@ class BuildService
         self::readVendorsAndExtensions();
 
         if (
-            ($this->configuration['typo3']['builderUrl'] ?? false ) &&
-            ($this->configuration['typo3']['builderApi'] ?? false )
+            ($this->configuration['typo3']['builderUrl'] ?? false)
+            && ($this->configuration['typo3']['builderApi'] ?? false)
 
         ) {
             $this->coreStatus = Tools\RestApiClient::getStatus(
                 $this->configuration['typo3']['builderUrl'],
                 $this->configuration['typo3']['builderApi'],
-	        );
+            );
         } else {
-	        $this->coreStatus['status'] = 'no config';
-	        $this->coreStatus['version'] = '';
-	        $this->coreStatus['serverUrl'] = '';
-	        $this->coreStatus['remoteIp'] = '';
-	        $this->coreStatus['maintenanceTime'] = '';
+            $this->coreStatus['status'] = 'no config';
+            $this->coreStatus['version'] = '';
+            $this->coreStatus['serverUrl'] = '';
+            $this->coreStatus['remoteIp'] = '';
+            $this->coreStatus['maintenanceTime'] = '';
         }
 
         if ($this->isComposerMode) {
             $this->extensionPath = ''
                 . Environment::getProjectPath() . DIRECTORY_SEPARATOR
                 . 'packages' . DIRECTORY_SEPARATOR;
-// ToDo               . $this->configuration['typo3']['composerRepository'] . DIRECTORY_SEPARATOR;
+            // ToDo               . $this->configuration['typo3']['composerRepository'] . DIRECTORY_SEPARATOR;
 
-	    } else {
+        } else {
             $this->extensionPath = ''
                 . Environment::getPublicPath() . DIRECTORY_SEPARATOR
                 . 'typo3conf' . DIRECTORY_SEPARATOR
@@ -175,7 +172,7 @@ class BuildService
             GeneralUtility::mkdir_deep($this->repositoryPath);
         }
 
-	}
+    }
 
     /**
      * @since 0.12
@@ -184,12 +181,12 @@ class BuildService
     {
         $developers = Tools\Folder::scanForFile($this->repositoryPath, 'json', 'developer.');
 
-        foreach($developers  ?? [] as $developerKey => $developerValue) {
+        foreach ($developers  ?? [] as $developerKey => $developerValue) {
             $fileName = $this->repositoryPath . $developerKey . '.json';
             $developerJson = Tools\Json::read($fileName);
             $this->developers[substr($developerKey, strlen('developer.'))] = $developerJson['developer'] ?? [];
         }
-	}
+    }
 
     /**
      * @since 0.12
@@ -198,9 +195,9 @@ class BuildService
     {
         if ((PHP_SAPI === 'cli')) {
             $this->beUserId = 'cli';
-    		$this->beUserIsAdmin = 1;
-    		$this->beUserGroup = '';
-		} else {
+            $this->beUserIsAdmin = 1;
+            $this->beUserGroup = '';
+        } else {
             $this->beUserId = $GLOBALS['BE_USER']->user['username'];
             $this->beUserIsAdmin = (bool)$GLOBALS['BE_USER']->user['admin'];
             $this->beUserGroup = $GLOBALS['BE_USER']->user['usergroup'] ?? '';
@@ -211,7 +208,7 @@ class BuildService
                 $developerJson = Tools\Json::read($fileName);
                 $this->developer = $developerJson['developer'] ?? [];
                 $this->noDeveloper = false;
-	    	}
+            }
         }
     }
 
@@ -222,7 +219,7 @@ class BuildService
     {
         $vendorList = Tools\Folder::scanForDirectory($this->repositoryPath);
 
-        foreach($vendorList ?? [] as $vendorName) {
+        foreach ($vendorList ?? [] as $vendorName) {
             $fileName = ''
                 . $this->repositoryPath
                 . $vendorName . DIRECTORY_SEPARATOR
@@ -235,8 +232,8 @@ class BuildService
                 $this->vendors[$vendorName] = [];
                 $this->vendors[$vendorName] = $vendor['vendor'] ?? [];
             }
-		}
-	}
+        }
+    }
 
     /**
      * @since 0.12
@@ -263,7 +260,7 @@ class BuildService
         $this->extension = self::readExtensionHelper($extensionPath);
 
         $this->extensionCache[$cacheKey] = $this->extension;
-	}
+    }
 
     /**
      * @since 0.12
@@ -277,7 +274,7 @@ class BuildService
         foreach ($extensionJsonList ?? [] as $json) {
             $jsonData = Tools\Json::read($pathToExtensionConfiguration . DIRECTORY_SEPARATOR . $json);
             if (($jsonData ?? false)) {
-				Tools\ConfigArray::arrayMerge($return, $jsonData);
+                Tools\ConfigArray::arrayMerge($return, $jsonData);
             }
         }
 
@@ -308,26 +305,26 @@ class BuildService
                 );
 
                 foreach ($extensionList ?? [] as $extensionKey => $extensionValue) {
-                    $jsonData = Tools\Json::read( ''
+                    $jsonData = Tools\Json::read(
+                        ''
                         . $this->repositoryPath
                         . $vendorValue . DIRECTORY_SEPARATOR
-                        . 'TYPO3'  . DIRECTORY_SEPARATOR
+                        . 'TYPO3' . DIRECTORY_SEPARATOR
                         . $extensionValue . DIRECTORY_SEPARATOR
                         . 'extension.json'
                     );
 
                     if (json_last_error() == JSON_ERROR_NONE) {
                         $vendorsAndExtensions[$vendorValue]['extensions'][$extensionValue] = $jsonData;
-                    } else {
-// ToDo error handling
                     }
+                    // ToDo error handling
+
                 }
             }
         }
 
         $this->vendorsAndExtensions = $vendorsAndExtensions;
     }
-
 
     // Area for build extensions
 
@@ -339,7 +336,7 @@ class BuildService
         string $vendorName,
         string $extensionName,
     ): void {
-		$buildOk = false;
+        $buildOk = false;
 
         $this->beUserId = $beUserId;
         $this->vendorName = $vendorName;
@@ -364,7 +361,7 @@ class BuildService
             return;
         }
 
-		if ($this->builderLocal && ($this->configuration['typo3']['buildLocal'] ?? false)) {
+        if ($this->builderLocal && ($this->configuration['typo3']['buildLocal'] ?? false)) {
             $this->logger->info('Build - Local');
 
             $result = self::buildLocal();
@@ -404,7 +401,7 @@ class BuildService
                     . $this->vendorName . DIRECTORY_SEPARATOR
                     . 'TYPO3' . DIRECTORY_SEPARATOR
                     . $this->extensionName . DIRECTORY_SEPARATOR
-                    . 'build'.DIRECTORY_SEPARATOR;
+                    . 'build' . DIRECTORY_SEPARATOR;
 
                 $extension = $result['extension'];
 
@@ -428,13 +425,13 @@ class BuildService
                 file_put_contents($importPath . $zipName, $zipBinary, LOCK_EX);
 
                 GeneralUtility::mkdir_deep($buildPath);
-                Tools\ZipArchive::unzip($importPath.$zipName, $buildPath);
+                Tools\ZipArchive::unzip($importPath . $zipName, $buildPath);
 
                 if ($this->isComposerMode) {
                     $extPath = ''
                         . $this->extensionPath
                         . $this->extension['extension']['extensionNameComposer'] . DIRECTORY_SEPARATOR;
-	    		} else {
+                } else {
                     $extPath = ''
                         . $this->extensionPath
                         . $this->extension['extension']['extensionName'] . DIRECTORY_SEPARATOR;
@@ -448,9 +445,9 @@ class BuildService
                 Tools\Folder::copy($buildPath, $extPath);
 
                 if (PHP_SAPI === 'cli') {
-                    self::chownr($this->t3tmpPath, $this->ownerInfo['uid'] );
-                    self::chownr($this->t3tmpCorePath, $this->ownerInfo['uid'] );
-                    self::chownr($extPath, $this->ownerInfo['uid'] );
+                    self::chownr($this->t3tmpPath, $this->ownerInfo['uid']);
+                    self::chownr($this->t3tmpCorePath, $this->ownerInfo['uid']);
+                    self::chownr($extPath, $this->ownerInfo['uid']);
                 }
 
                 // ToDo was passiert mit $buildInfo
@@ -461,11 +458,11 @@ class BuildService
                 }
 
                 break;
-			default:
+            default:
                 $this->buildResult = $result['error'];
                 $this->buildMessage = $result['message'];
-		}
-	}
+        }
+    }
 
     /**
      * @since 0.12
@@ -487,7 +484,7 @@ class BuildService
         $result = ['buildLocal' => true] + $result;
 
         return $result;
-	}
+    }
 
     /**
      * @since 0.12
@@ -496,19 +493,19 @@ class BuildService
     {
         $multipart = self::buildRequest();
 
-// ToDo
-//        $this->logger->info('Build - Remote',[
-//            'builderUrl' => $this->configuration['typo3']['builderUrl'],
-//            'builderApi' => $this->configuration['typo3']['builderApi'],
-//        ]);
+        // ToDo
+        //        $this->logger->info('Build - Remote',[
+        //            'builderUrl' => $this->configuration['typo3']['builderUrl'],
+        //            'builderApi' => $this->configuration['typo3']['builderApi'],
+        //        ]);
 
         if ($this->configuration['typo3']['buildDev'] ?? false) {
             $builderUrl = $this->configuration['typo3']['builderDevUrl'];
             $builderApi = $this->configuration['typo3']['builderDevApi'];
-		} else {
+        } else {
             $builderUrl = $this->configuration['typo3']['builderUrl'];
             $builderApi = $this->configuration['typo3']['builderApi'];
-		}
+        }
 
         $buildRemoteStart = microtime(true);
         $result = Tools\RestApiClient::build(
@@ -516,13 +513,13 @@ class BuildService
             $builderApi,
             $multipart,
         );
-        $buildRemoteDuration = microtime(true)-$buildRemoteStart;
+        $buildRemoteDuration = microtime(true) - $buildRemoteStart;
 
         $result['buildRemote'] = true;
         $result['buildRemoteDuration'] = $buildRemoteDuration;
 
         return $result;
-	}
+    }
 
     /**
      * @since 0.12
@@ -551,7 +548,7 @@ class BuildService
 
         $extensionSourceExportPath = $exportPath . 'source' . DIRECTORY_SEPARATOR;
 
-		Tools\Folder::copy($extensionDevelopmentSourcePath, $extensionSourceExportPath);
+        Tools\Folder::copy($extensionDevelopmentSourcePath, $extensionSourceExportPath);
 
         // Copyback ToDo
         $extConf = self::readExtensionHelper($extensionDevelopmentSourcePath);
@@ -572,20 +569,20 @@ class BuildService
                     $copyBackDestination = $developerCodePath . $copyBackName;
                     if (is_dir($copyBackSorce)) {
                         Tools\Folder::copy($copyBackSorce, $copyBackDestination);
-    				} elseif (is_file($copyBackSorce)) {
+                    } elseif (is_file($copyBackSorce)) {
                         $path_parts = pathinfo($copyBackDestination);
                         GeneralUtility::mkdir_deep($path_parts['dirname']);
                         copy($copyBackSorce, $copyBackDestination);
-    				}
-				}
-		    }
+                    }
+                }
+            }
         }
 
-		$extensionSourcePath = $exportPath . 'source' . DIRECTORY_SEPARATOR;
-		$extensionDebugPath = $exportPath . 'debug' . DIRECTORY_SEPARATOR;
+        $extensionSourcePath = $exportPath . 'source' . DIRECTORY_SEPARATOR;
+        $extensionDebugPath = $exportPath . 'debug' . DIRECTORY_SEPARATOR;
 
         $multipart = [];
-		$multipart['multipart'] = [];
+        $multipart['multipart'] = [];
         $multipart['multipart'][] = ['name' => 'command', 'contents' => 'build'];
         $multipart['multipart'][] = ['name' => 'version', 'contents' => $this->builderVersion];
         $multipart['multipart'][] = ['name' => 'jsonVersion', 'contents' => '1'];
@@ -596,30 +593,29 @@ class BuildService
         $multipart['multipart'][] = ['name' => 'serverAddress', 'contents' => $_SERVER['SERVER_ADDR'] ?? '']; // ToDo CLI/Command no IP
         $multipart['multipart'][] = ['name' => 'serverName', 'contents' => $_SERVER['SERVER_NAME'] ?? '']; // ToDo CLI/Command no IP
         $multipart['multipart'][] = ['name' => 'vendorNameComposer', 'contents' => $this->extension['extension']['vendorNameComposer']];
-        $multipart['multipart'][] = ['name' => 'extensionNameComposer',  'contents' => $this->extension['extension']['extensionNameComposer']];
+        $multipart['multipart'][] = ['name' => 'extensionNameComposer', 'contents' => $this->extension['extension']['extensionNameComposer']];
 
         $multipart['multipart'][] = ['name' => 'vendor', 'contents' => $this->vendorName];
-        $multipart['multipart'][] = ['name' => 'extension',  'contents' => $this->extensionName];
+        $multipart['multipart'][] = ['name' => 'extension', 'contents' => $this->extensionName];
 
+        // ToDo
+        //        $dependentExtensionsList['dependenciesExport'] = $this->foreignExtensionsList; // Todo Docu / fuction check
+        //        Tools\Json::write(
+        //            $extensionSourcePath . 'extension.dependencies.export.json',
+        //            $dependentExtensionsList
+        //        );
 
-// ToDo
-//        $dependentExtensionsList['dependenciesExport'] = $this->foreignExtensionsList; // Todo Docu / fuction check
-//        Tools\Json::write(
-//            $extensionSourcePath . 'extension.dependencies.export.json',
-//            $dependentExtensionsList
-//        );
-	
-		$jsonFileList = GeneralUtility::getFilesInDir($extensionSourcePath, 'json');
+        $jsonFileList = GeneralUtility::getFilesInDir($extensionSourcePath, 'json');
 
         // Build multipart value for JSON-Files
         foreach ($jsonFileList ?? [] as $jsonFile) {
-			$base64 = 'data:text/plain;base64,' . base64_encode(file_get_contents($extensionSourcePath . $jsonFile));
+            $base64 = 'data:text/plain;base64,' . base64_encode(file_get_contents($extensionSourcePath . $jsonFile));
             $multipart['multipart'][] = ['name' => $jsonFile, 'contents' => $base64];
         }
 
         // Build multipart value for DeveloperCode-Flies
         $extensionDevCodePath = $extensionSourcePath . 'DeveloperCode';
-		if (file_exists($extensionDevCodePath)) {
+        if (file_exists($extensionDevCodePath)) {
 
             $files = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator($extensionDevCodePath),
@@ -627,16 +623,16 @@ class BuildService
             );
             foreach ($files as $fileName => $fileData) {
                 $fileName = str_replace('\\', '/', $fileName);
-                $pos = strpos ($fileName, 'DeveloperCode');
-				if ($pos > 0) {
+                $pos = strpos($fileName, 'DeveloperCode');
+                if ($pos > 0) {
                     if (is_file($fileName)) {
-                     $fileNameNew = substr ($fileName, $pos);
-                     $base64 = 'data:text/plain;base64,' . base64_encode(file_get_contents($fileName));
-                     $multipart['multipart'][] = ['name' => $fileNameNew, 'contents' => $base64];
-    				}
-				}
-	    	}
-		}
+                        $fileNameNew = substr($fileName, $pos);
+                        $base64 = 'data:text/plain;base64,' . base64_encode(file_get_contents($fileName));
+                        $multipart['multipart'][] = ['name' => $fileNameNew, 'contents' => $base64];
+                    }
+                }
+            }
+        }
 
         file_put_contents(
             $extensionDebugPath . 'request.json',
@@ -677,26 +673,28 @@ class BuildService
     ) {
         if (!is_dir($path)) {
             return chown($path, $owner);
-		}
+        }
         $dh = opendir($path);
         while (($file = readdir($dh)) !== false) {
             if ($file != '.' && $file != '..') {
                 $fullpath = $path . '/' . $file;
                 if (is_link($fullpath)) {
-                    return FALSE;
-                } elseif (!is_dir($fullpath) && !chown($fullpath, $owner)) {
-                        return FALSE;
-                } elseif (!self::chownr($fullpath, $owner)) {
-                    return FALSE;
-				}
+                    return false;
+                }
+                if (!is_dir($fullpath) && !chown($fullpath, $owner)) {
+                    return false;
+                }
+                if (!self::chownr($fullpath, $owner)) {
+                    return false;
+                }
             }
         }
         closedir($dh);
         if (chown($path, $owner)) {
-            return TRUE;
-		} else {
-            return FALSE;
+            return true;
         }
+        return false;
+
     }
 
 }

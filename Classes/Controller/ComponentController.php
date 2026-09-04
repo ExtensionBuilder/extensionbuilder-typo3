@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -20,16 +19,15 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class ComponentController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    public function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+    public function addAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -58,7 +56,7 @@ final class ComponentController extends ExtensionBuilderController
         $fields = array_merge(
             [
                 'componentName' => [
-                   'type' => 'input',
+                    'type' => 'input',
                     'lllPath' => '.component',
                     'tab' => 'general',
                     'required' => true,
@@ -87,7 +85,7 @@ final class ComponentController extends ExtensionBuilderController
                     $fieldsData,
                 );
 
-// ToDo Duplette über JavaScript
+                // ToDo Check for duplicates using JavaScript
 
                 $componentName = $fieldsData['componentName'];
 
@@ -102,9 +100,8 @@ final class ComponentController extends ExtensionBuilderController
 
                 $fieldsData['componentName'] = $componentName; // ToDo ???
                 break;
-		}
+        }
 
-// ToDo ???
         $this->ebBackendService->getLocalExtensions($this->ebBackendService->extension['components']['extensions'] ?? []);
 
         $this->moduleTemplate->assignMultiple([
@@ -138,8 +135,9 @@ final class ComponentController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    public function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+    public function editAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -189,7 +187,7 @@ final class ComponentController extends ExtensionBuilderController
                     $fieldsData,
                 );
                 break;
-		}
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -201,7 +199,7 @@ final class ComponentController extends ExtensionBuilderController
             'componentsName' => $componentsName,
             'action' => 'edit',
             'componentsTitle' => $componentsDev['title'],
-            'componentData' =>$componentData,
+            'componentData' => $componentData,
             'propertysDev' => $propertysDev,
             'fields' => $fields,
             'fieldsTabs' => $fieldsTabs,
@@ -221,7 +219,7 @@ final class ComponentController extends ExtensionBuilderController
             'Component',
         );
 
-// ToDo
+        // ToDo
         $this->addDocHeaderBuildButton(
             'build',
             'Extension',
@@ -232,15 +230,15 @@ final class ComponentController extends ExtensionBuilderController
         return $this->moduleTemplate->renderResponse($componentsDev['edit']);
     }
 
-
-// error
+    // error
     /**
      * @since 0.12
      */
-    public function deleteAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+    public function deleteAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');

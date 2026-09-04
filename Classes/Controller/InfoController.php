@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
+
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 use TYPO3\CMS\Core\Utility;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
-
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -22,33 +21,32 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class InfoController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    final function showAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+    final public function showAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
 
         $this->coreStatus = Tools\RestApiClient::getStatus(
             $this->ebBackendService->configuration['typo3']['builderUrl'] ?? '',
             $this->ebBackendService->configuration['typo3']['builderApi'] ?? '',
-	    );
+        );
 
         $this->coreDevStatus = Tools\RestApiClient::getStatus(
             $this->ebBackendService->configuration['typo3']['builderDevUrl'] ?? '',
             $this->ebBackendService->configuration['typo3']['builderDevApi'] ?? '',
-	    );
+        );
 
-        $this->ebBackendService->configuration['version'] =
-            Utility\ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3');
+        $this->ebBackendService->configuration['version']
+            = Utility\ExtensionManagementUtility::getExtensionVersion('extensionbuilder_typo3');
 
         $this->ebBackendService->configuration['developerCounter'] = $this->ebBackendService->countDeveloper();
         $this->ebBackendService->configuration['vendorCounter'] = count($this->ebBackendService->vendors ?? []);
@@ -56,8 +54,8 @@ final class InfoController extends ExtensionBuilderController
         $this->ebBackendService->configuration['extensionCounter'] = 0;
 
         foreach ($this->ebBackendService->vendors ?? [] as $vendorName => $vendorsData) {
-            $this->ebBackendService->configuration['extensionCounter'] =
-                $this->ebBackendService->configuration['extensionCounter']
+            $this->ebBackendService->configuration['extensionCounter']
+                = $this->ebBackendService->configuration['extensionCounter']
                 + count($this->ebBackendService->vendorsAndExtensions[$vendorName]['extensions'] ?? []);
         }
 
@@ -69,7 +67,7 @@ final class InfoController extends ExtensionBuilderController
             'builderLocal' => $this->ebBackendService->builderLocal,
             'builderLocalVersion' => $this->ebBackendService->builderLocalVersion,
 
-// ToDo
+            // ToDo
             'isProKey' => $this->isProKey,
             'keyStatus' => $this->keyStatus,
 
@@ -90,7 +88,7 @@ final class InfoController extends ExtensionBuilderController
             'list',
             'Extension',
         );
-	
+
         return $this->moduleTemplate->renderResponse('Info');
     }
 

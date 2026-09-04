@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
 use Psr\Http\Message\ResponseInterface;
-
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -20,19 +17,20 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class ExtensionInfoController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    public function infoAction(): ResponseInterface {
-		$bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function infoAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/extensioninfo.js');
 
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
@@ -43,7 +41,7 @@ final class ExtensionInfoController extends ExtensionBuilderController
 
         $extension = $extensionData['extension'];
         $components = [];
-        foreach ($componentsDev ?? [] as $componentName => $componentData ) {
+        foreach ($componentsDev ?? [] as $componentName => $componentData) {
             if ($extensionData['components'][$componentName] ?? false) {
                 $components[$componentName] = $extensionData['components'][$componentName];
             }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -15,10 +14,8 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 class ZipArchive
 {
-
     /**
      * @since 0.12
      */
@@ -26,34 +23,40 @@ class ZipArchive
         string $source,
         string $destination,
     ): bool {
-        if (!extension_loaded('zip') || !file_exists($source)) { return false; }
+        if (!extension_loaded('zip') || !file_exists($source)) {
+            return false;
+        }
 
         $zip = new \ZipArchive();
 
-        if (!$zip->open($destination, \ZIPARCHIVE::CREATE)) { return false; }
+        if (!$zip->open($destination, \ZIPARCHIVE::CREATE)) {
+            return false;
+        }
 
         $source = str_replace('\\', '/', realpath($source));
 
         if (is_dir($source) === true) {
-            $files = 
-                new \RecursiveIteratorIterator(
-                   new \RecursiveDirectoryIterator($source),
-                   \RecursiveIteratorIterator::SELF_FIRST
+            $files
+                = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($source),
+                    \RecursiveIteratorIterator::SELF_FIRST
                 );
             foreach ($files as $file => $fileData) {
                 $file = str_replace('\\', '/', $file);
 
-                if (in_array(substr($file, strrpos($file, '/') +1), ['.', '..',])) { continue; }
+                if (in_array(substr($file, strrpos($file, '/') + 1), ['.', '..'])) {
+                    continue;
+                }
 
-                $file = realpath( $file );
+                $file = realpath($file);
 
                 if (is_dir($file) === true) {
                     $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
-                } else if (is_file($file) === true) {
+                } elseif (is_file($file) === true) {
                     $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
                 }
             }
-        } else if (is_file($source) === true) {
+        } elseif (is_file($source) === true) {
             $zip->addFromString(basename($source), file_get_contents($source));
         }
 
@@ -102,13 +105,13 @@ class ZipArchive
                 $entryName = str_replace('\\', '/', $entryName);
 
                 if (
-                    $entryName === '' ||
-                    str_contains($entryName, "\0") ||
-                    str_starts_with($entryName, '/') ||
-                    preg_match('#^[a-zA-Z]:/#', $entryName) ||
-                    str_contains($entryName, '../') ||
-                    str_contains($entryName, '/..') ||
-                    $entryName === '..'
+                    $entryName === ''
+                    || str_contains($entryName, "\0")
+                    || str_starts_with($entryName, '/')
+                    || preg_match('#^[a-zA-Z]:/#', $entryName)
+                    || str_contains($entryName, '../')
+                    || str_contains($entryName, '/..')
+                    || $entryName === '..'
                 ) {
                     return false;
                 }
@@ -148,8 +151,8 @@ class ZipArchive
                 $targetDirectoryReal = realpath($targetDirectory);
 
                 if (
-                    $targetDirectoryReal === false ||
-                    !str_starts_with(
+                    $targetDirectoryReal === false
+                    || !str_starts_with(
                         rtrim($targetDirectoryReal, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR,
                         $destinationReal
                     )

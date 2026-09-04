@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -21,14 +20,12 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
  *
  * @since 0.12
  */
-
 class Json
 {
-
     /**
      * @since 0.12
      */
-    static function write(
+    public static function write(
         string $jsonFile,
         array $arrayForJson,
     ): void {
@@ -49,19 +46,19 @@ class Json
     /**
      * @since 0.12
      */
-    static function read(
+    public static function read(
         string $jsonFile,
     ): array {
         $error = '';
 
-// ToDo LLL support
+        // ToDo LLL support
         if (file_exists($jsonFile)) {
             $return = json_decode(file_get_contents($jsonFile), true);
             switch (json_last_error()) {
                 case JSON_ERROR_NONE:
                     break;
                 case JSON_ERROR_DEPTH:
-		    		$error = 'Maximale Stacktiefe überschritten';
+                    $error = 'Maximale Stacktiefe überschritten';
                     break;
                 case JSON_ERROR_STATE_MISMATCH:
                     $error = 'Unterlauf oder Nichtübereinstimmung der Modi';
@@ -79,15 +76,15 @@ class Json
                     $error = 'Unbekannter Fehler';
                     break;
             }
-		} else {
+        } else {
             $error = 'File not found';
-		}
+        }
 
         if ($error) {
             $return = [];
 
-// ToDo cut path
-//            $jsonFile = substr($jsonFile, strlen(Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder()));
+            // ToDo cut path
+            //            $jsonFile = substr($jsonFile, strlen(Tools\ExtensionbuilderFolder::getVendorsAndExtensionsBaseFolder()));
 
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $notificationQueue = $flashMessageService->getMessageQueueByIdentifier(FlashMessageQueue::NOTIFICATION_QUEUE);
@@ -98,7 +95,7 @@ class Json
                 ContextualFeedbackSeverity::ERROR,
             );
             $notificationQueue->enqueue($flashMessage);
-		}
+        }
 
         return $return;
     }
@@ -106,7 +103,7 @@ class Json
     /**
      * @since 0.12
      */
-    static function getJsonWithcUrl(
+    public static function getJsonWithcUrl(
         string $url,
     ): array {
         $return = [];
@@ -122,10 +119,10 @@ class Json
             if (json_last_error() === 0) {
                 $return = array_values($return);
                 $return = $return[0];
-			}
-		}
+            }
+        }
 
         return $return;
-	}
+    }
 
 }

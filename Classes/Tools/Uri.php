@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -15,7 +14,6 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 class Uri
 {
     protected string $scheme;
@@ -48,17 +46,17 @@ class Uri
     /**
      * @since 0.12
      */
-    final function __construct(
+    final public function __construct(
         protected readonly string $uri,
     ) {
         if ((stripos($uri, '://') === false)) {
             if ($positionAt = stripos($uri, '@')) {
                 if ($positionColon = stripos($uri, ':')) {
-                     $this->user = substr($uri, 0 ,$positionColon);
-                     $this->pass = substr($uri, $positionColon + 1, $positionAt - $positionColon - 1);
+                    $this->user = substr($uri, 0, $positionColon);
+                    $this->pass = substr($uri, $positionColon + 1, $positionAt - $positionColon - 1);
                 }
                 $uri = substr($uri, $positionAt + 1);
-			}
+            }
             $parts = parse_url($uri);
         } else {
             $parts = parse_url($uri);
@@ -74,20 +72,20 @@ class Uri
         $this->query = $parts['query'] ?? '';
         $this->fragment = $parts['fragment'] ?? '';
 
-        if (!(strpos($this->host, '[') === false)) {
+        if (!(!str_contains($this->host, '['))) {
             $this->host = substr($this->host, 1);
             $this->host = substr($this->host, 0, strlen($this->host) - 1);
         }
 
-        if (filter_var($this->host, FILTER_VALIDATE_IP,FILTER_FLAG_IPV4)) {
+        if (filter_var($this->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $this->hostIpV4 = $this->host;
-        } elseif (filter_var($this->host, FILTER_VALIDATE_IP,FILTER_FLAG_IPV6)) {
+        } elseif (filter_var($this->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             $this->hostIpV6 = $this->host;
         } else {
             $dnsGetA = dns_get_record($this->host, DNS_A);
             $dnsGetAAAA = dns_get_record($this->host, DNS_AAAA);
             $this->hostIpV4 = $dnsGetA[0]['ip'] ?? '';
-            $this->hostIpV6 = $dnsGetAAAA[0]['ipv6']?? '';
+            $this->hostIpV6 = $dnsGetAAAA[0]['ipv6'] ?? '';
         }
 
         if (!($this->port)) {
@@ -101,29 +99,31 @@ class Uri
             }
         }
 
-        if ($this->ping()) { $this->socketCheck(); };
-	}
+        if ($this->ping()) {
+            $this->socketCheck();
+        }
+    }
 
     /**
      * @since 0.12
      */
-    final function isOnline(): bool
+    final public function isOnline(): bool
     {
         return $this->online;
-	}
+    }
 
     /**
      * @since 0.12
      */
-    final function getHost(): string
+    final public function getHost(): string
     {
         return $this->host;
-	}
+    }
 
     /**
      * @since 0.12
      */
-    final function ping(): bool
+    final public function ping(): bool
     {
         $ping = false;
         if ($this->hostIpV4) {
@@ -137,14 +137,15 @@ class Uri
             $this->onlineV6 = $this->pingV6['online'];
             $ping = true;
         }
-		
+
         return $ping;
-	}
+    }
 
     /**
      * @since 0.12
      */
-    final function socketCheck(): bool {
+    final public function socketCheck(): bool
+    {
         $socket = false;
         $this->online = false;
 
@@ -152,9 +153,9 @@ class Uri
             $host = '';
             if ($this->onlineV6) {
                 $host = '[' . $this->hostIpV6 . ']';
-			} else {
+            } else {
                 $host = $this->hostIpV4;
-			}
+            }
 
             $fsock = @fsockopen($host, (int)$this->port, $this->socketErrNo, $this->socketErrStr, 30);
 
@@ -163,10 +164,10 @@ class Uri
                 $this->online = true;
                 $socket = true;
             }
-		}
+        }
 
         return $socket;
-	}
+    }
 
     /**
      * @since 0.12
@@ -174,28 +175,31 @@ class Uri
     private function execPing(
         string $host,
     ): array {
-        exec(sprintf(
-                'ping -c ' . $this->count . ' -W ' . $this->timeout . ' %s', escapeshellarg($host)),
-                $result,
-                $resultStatus,
+        exec(
+            sprintf(
+                'ping -c ' . $this->count . ' -W ' . $this->timeout . ' %s',
+                escapeshellarg($host)
+            ),
+            $result,
+            $resultStatus,
         );
 
         $pingResult['online'] = false;
         if ($resultStatus === 0) {
             foreach ($result ?? [] as $resultData) {
-                if (!(strpos($resultData,'transmitted') === false)) {
+                if (!(!str_contains($resultData, 'transmitted'))) {
                     $explode = explode(', ', $resultData);
                     $pingResult['transmitted'] = (int)substr($explode[0], 0, strpos($explode[0], ' packets transmitted'));
                     $pingResult['received'] = (int)substr($explode[1], 0, strpos($explode[1], ' received'));
                     $pingResult['loss'] = (int)substr($explode[2], 0, strpos($explode[2], '% packet loss'));
-// ToDo ??? put in relation to $this->count
+                    // ToDo ??? put in relation to $this->count
                     if ($pingResult['loss'] < 50) {
                         $pingResult['online'] = true;
                     }
                 }
-                if (!(strpos($resultData,'rtt min/avg/max/mdev = ') === false)) {
+                if (!(!str_contains($resultData, 'rtt min/avg/max/mdev = '))) {
                     $time = substr($resultData, strlen('rtt min/avg/max/mdev = '));
-                    $time = substr($time, 0, strpos($time,' ms'));
+                    $time = substr($time, 0, strpos($time, ' ms'));
                     $explode = explode('/', $time);
 
                     $pingResult['min'] = (float)$explode[0];
@@ -207,6 +211,6 @@ class Uri
         }
 
         return $pingResult;
-	}
+    }
 
 }

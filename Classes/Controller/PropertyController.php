@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -20,17 +19,17 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class PropertyController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    public function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function addAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -56,7 +55,7 @@ final class PropertyController extends ExtensionBuilderController
                     'lllPath' => '.property',
                     'tab' => 'general',
                     'required' => true,
-                ]
+                ],
             ],
             $propertysDev['fields'],
         );
@@ -73,7 +72,7 @@ final class PropertyController extends ExtensionBuilderController
 
                 $propertyName = $fieldsData['propertyName'];
 
-// ToDo checkName als JS
+                // ToDo checkName als JS
 
                 $this->ebBackendService->writeExtensionProperty(
                     $this,
@@ -86,7 +85,7 @@ final class PropertyController extends ExtensionBuilderController
                     $fieldsData,
                 );
                 break;
-		}
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -122,9 +121,11 @@ final class PropertyController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    public function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function editAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -173,7 +174,7 @@ final class PropertyController extends ExtensionBuilderController
                     $fieldsData,
                 );
                 break;
-		}
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -190,23 +191,21 @@ final class PropertyController extends ExtensionBuilderController
             'fieldsDataName' => 'fieldsData',
         ]);
 
-// ToDo Code & Doku
+        // ToDo Code & Doku
 
-//        $fileName =
-//            $componentsDev['path']
-//            . $componentsDev['propertys'][$propertysName]['path']
-//            . $propertyNameUc
-//            . $componentsDev['propertys'][$propertysName]['fileEnd']
-//            . '.php';
+        //        $fileName =
+        //            $componentsDev['path']
+        //            . $componentsDev['propertys'][$propertysName]['path']
+        //            . $propertyNameUc
+        //            . $componentsDev['propertys'][$propertysName]['fileEnd']
+        //            . '.php';
 
         $this->moduleTemplate->assignMultiple([
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
-//            'fileName' => $fileName,
+            //            'fileName' => $fileName,
             'language' => 'php',
         ]);
-
-
 
         $this->addDocHeaderCloseButton(
             'edit',
@@ -227,9 +226,11 @@ final class PropertyController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    public function deleteAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function deleteAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
@@ -273,9 +274,9 @@ final class PropertyController extends ExtensionBuilderController
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'componentName' => $componentName,
-            'extensionData' =>$extensionData,
+            'extensionData' => $extensionData,
             'componentsName' => $componentsName,
-            'componentData' =>$componentData,
+            'componentData' => $componentData,
             'propertysDev' => $propertysDev,
             'fields' => $fields,
             'fieldsTabs' => $fieldsTabs,

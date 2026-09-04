@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -15,15 +14,12 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 class DeveloperCode
 {
-
     /**
-     *
      * @since 0.12
      */
-    static function searchAndReplace(
+    public static function searchAndReplace(
         string $vendorName,
         string $extensionName,
         string $vendorNameOrg,
@@ -31,27 +27,29 @@ class DeveloperCode
         string $search,
         string $replace,
     ): void {
-// ToDo functionality test
-        $pathToVendorsAndExtensions =
-            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR
+        // ToDo functionality test
+        $pathToVendorsAndExtensions
+            = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR
             . 'typo3conf' . DIRECTORY_SEPARATOR
             . 'ext' . DIRECTORY_SEPARATOR
             . 'extensionbuilder_typo3' . DIRECTORY_SEPARATOR
             . 'VendorsAndExtensions' . DIRECTORY_SEPARATOR;
 
-        $pathToVendorsAndExtensionsSouceNew =
-            $pathToVendorsAndExtensions
+        $pathToVendorsAndExtensionsSouceNew
+            = $pathToVendorsAndExtensions
             . $vendorName . DIRECTORY_SEPARATOR
             . $extensionName . DIRECTORY_SEPARATOR
             . 'DeveloperCode';
 
-        $pathToVendorsAndExtensionsSouceOrg =
-            $pathToVendorsAndExtensions
+        $pathToVendorsAndExtensionsSouceOrg
+            = $pathToVendorsAndExtensions
             . $vendorNameOrg . DIRECTORY_SEPARATOR
             . $extensionNameOrg . DIRECTORY_SEPARATOR
             . 'DeveloperCode';
 
-        if (!file_exists($pathToVendorsAndExtensionsSouceOrg)) { return; }
+        if (!file_exists($pathToVendorsAndExtensionsSouceOrg)) {
+            return;
+        }
 
         $directory = new \RecursiveDirectoryIterator($pathToVendorsAndExtensionsSouceNew);
         $iterator  = new \RecursiveIteratorIterator($directory);

@@ -13,7 +13,6 @@
  */
 
 return [
-
     'Classes',
     'Classes' . DIRECTORY_SEPARATOR . 'Authentication',
     'Classes' . DIRECTORY_SEPARATOR . 'Controller',

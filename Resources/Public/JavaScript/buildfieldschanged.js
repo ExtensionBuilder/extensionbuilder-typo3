@@ -1,7 +1,7 @@
 import RegularEvent from '@typo3/core/event/regular-event.js';
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 
-// Version 1.0
+// Developer Info: Beta use in ExtensionController
 
 // ToDo Doku
 

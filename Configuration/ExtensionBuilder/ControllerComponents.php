@@ -12,7 +12,6 @@
  * @since 0.13
  */
 
-
 /**
  *
  * The properties of the field are controlled by the following parameters.

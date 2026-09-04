@@ -19,43 +19,44 @@ final class Typo3OverviewWidget implements WidgetInterface, RequestAwareWidgetIn
     public function __construct(
         private readonly WidgetConfigurationInterface $configuration,
         private readonly BackendViewFactory $backendViewFactory,
+        /** @var array<string, mixed> */
         private readonly array $options = [],
-    ) {
+    ) {}
+
+    public function renderWidgetContent(): string
+    {
+        $view = $this->backendViewFactory->create($this->request);
+
+        $view->assignMultiple([
+            'configuration' => $this->configuration,
+            'options' => $this->options,
+            'projectTodos' => [
+                'test' => [
+                    'name' => 'Testprojekt',
+                    'todo' => 'Das ist ein Test-To-do',
+                    'scope' => 'Test',
+                ],
+            ],
+            'stats' => [
+                'projectsWithTodos' => 1,
+                'lastUpdated' => (new \DateTimeImmutable())->format('d.m.Y H:i'),
+            ],
+        ]);
+
+        return $view->render(
+            'EXT:extensionbuilder_typo3/Resources/Private/Templates/Widget/Typo3OverviewWidget'
+        );
     }
 
-public function renderWidgetContent(): string
-{
-    $view = $this->backendViewFactory->create($this->request);
+    public function renderWidgetContent1(): string
+    {
+        return '<div class="widget-content-main">
+            <h3>Extension Builder</h3>
+            <p>Dashboard-Widget funktioniert.</p>
+        </div>';
+    }
 
-    $view->assignMultiple([
-        'configuration' => $this->configuration,
-        'options' => $this->options,
-        'projectTodos' => [
-            'test' => [
-                'name' => 'Testprojekt',
-                'todo' => 'Das ist ein Test-To-do',
-                'scope' => 'Test',
-            ],
-        ],
-        'stats' => [
-            'projectsWithTodos' => 1,
-            'lastUpdated' => (new \DateTimeImmutable())->format('d.m.Y H:i'),
-        ],
-    ]);
-
-    return $view->render(
-        'EXT:extensionbuilder_typo3/Resources/Private/Templates/Widget/Typo3OverviewWidget'
-    );
-}
-
-public function renderWidgetContent1(): string
-{
-    return '<div class="widget-content-main">
-        <h3>Extension Builder</h3>
-        <p>Dashboard-Widget funktioniert.</p>
-    </div>';
-}
-
+    /** @return array<string, mixed> */
     public function getOptions(): array
     {
         return $this->options;
@@ -85,6 +86,7 @@ public function renderWidgetContent1(): string
         return $view->render('Widget/Typo3OverviewWidget');
     }
 
+    /** @return array<string, mixed> */
     private function getProjectTodos(): array
     {
         $projects = [];

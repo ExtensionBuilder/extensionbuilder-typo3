@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -15,10 +14,8 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 class Uuid
 {
-
     /**
      * @since 0.12
      */
@@ -43,18 +40,18 @@ class Uuid
     public static function createSystemId(
         string $uuid = '',
     ): string {
-        $data = [
-            'host' => (string)($_SERVER['HTTP_HOST'] ?? ''),
-            'server_name' => (string)($_SERVER['SERVER_NAME'] ?? ''),
-            'document_root' => (string)($_SERVER['DOCUMENT_ROOT'] ?? ''),
-            'server_addr' => (string)($_SERVER['SERVER_ADDR'] ?? ''),
-            'php_uname' => php_uname('n'),
-            'uuid' => (string)($uuid ?? ''),
-        ];
-
         return hash(
             'sha256',
-            json_encode($data, JSON_UNESCAPED_SLASHES)
+            json_encode(
+                [
+                    'host' => (string)($_SERVER['HTTP_HOST'] ?? ''),
+                    'server_name' => (string)($_SERVER['SERVER_NAME'] ?? ''),
+                    'document_root' => (string)($_SERVER['DOCUMENT_ROOT'] ?? ''),
+                    'php_uname' => php_uname('n'),
+                    'uuid' => ($uuid),
+                ],
+                JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
+            )
         );
     }
 

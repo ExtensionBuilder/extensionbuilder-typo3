@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
 
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -24,18 +23,17 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class VendorController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    final function listAction(): ResponseInterface
+    final public function listAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
 
@@ -45,7 +43,8 @@ final class VendorController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    private function vendorList(): ResponseInterface {
+    private function vendorList(): ResponseInterface
+    {
 
         if ($this->ebBackendService->noVendors) {
             $this->moduleTemplate->addFlashMessage(
@@ -87,14 +86,16 @@ final class VendorController extends ExtensionBuilderController
         );
 
         return $this->moduleTemplate->renderResponse('VendorList');
-	}
+    }
 
     /**
      * @since 0.12
      */
-    final function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    final public function addAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
@@ -110,7 +111,7 @@ final class VendorController extends ExtensionBuilderController
                     $vendorData,
                 );
 
-                $vendorData['vendorName'] = preg_replace("/[^a-zA-Z0-9]/", '', trim($vendorData['vendorName'] ?? ''));
+                $vendorData['vendorName'] = preg_replace('/[^a-zA-Z0-9]/', '', trim($vendorData['vendorName'] ?? ''));
 
                 $vendorName = $vendorData['vendorName'];
 
@@ -127,14 +128,14 @@ final class VendorController extends ExtensionBuilderController
                         $vendorData['vendorComposerName'] = $vendorName;
                     }
 
-// ToDo: Move to JS?
-// ToDo: Check vendorComposerName already exists
+                    // ToDo: Move to JS?
+                    // ToDo: Check vendorComposerName already exists
 
-                    $vendorComposerName = str_replace([' ','-'], '_', $vendorData['vendorComposerName']);
+                    $vendorComposerName = str_replace([' ', '-'], '_', $vendorData['vendorComposerName']);
                     $vendorComposerName = ltrim($vendorComposerName, '1234567890');
                     $vendorComposerName = GeneralUtility::underscoredToUpperCamelCase(trim($vendorComposerName));
                     $vendorData['vendorComposerName'] = $vendorComposerName;
- 
+
                     $vendorData['vendorId'] = Tools\Uuid::uuid();
 
                     $this->ebBackendService->vendors[$vendorName] = $vendorData;
@@ -151,18 +152,20 @@ final class VendorController extends ExtensionBuilderController
                         $this->getTranslatedLabel(
                             $this->request,
                             $this->ebBackendService->lll . '.vendor.xlf:savingVendor'
-                         ) . $vendorName,
+                        ) . $vendorName,
                     );
                 } else {
                     $this->flashMessage(
                         '',
                         LocalizationUtility::translate($this->ebBackendService->lll . '.vendor.xlf:specifyvendorname')
                     );
-			    }
+                }
                 break;
-		}
+        }
 
-        if (!($vendorData ?? false)) { $vendorData = []; }
+        if (!($vendorData ?? false)) {
+            $vendorData = [];
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -189,9 +192,11 @@ final class VendorController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    final function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    final public function editAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
@@ -204,11 +209,11 @@ final class VendorController extends ExtensionBuilderController
             $this->ebBackendService->assertCanAccessVendor($vendorName);
         } catch (\RuntimeException $exception) {
             $this->flashMessage(
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.vendor.xlf:noAccess.info1'
                 ),
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.vendor.xlf:noAccess.info2'
                 ) . $vendorName,
@@ -243,7 +248,7 @@ final class VendorController extends ExtensionBuilderController
                     ) . $vendorName,
                 );
                 break;
-		}
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -264,15 +269,17 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-    	return $this->moduleTemplate->renderResponse('VendorEdit');
+        return $this->moduleTemplate->renderResponse('VendorEdit');
     }
 
     /**
      * @since 0.12
      */
-    final function deleteAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    final public function deleteAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = $bodyParams['vendorName'] ?? '';
 
@@ -280,11 +287,11 @@ final class VendorController extends ExtensionBuilderController
             $this->ebBackendService->assertCanAccessVendor($vendorName);
         } catch (\RuntimeException $exception) {
             $this->flashMessage(
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.vendor.xlf:noAccess.info1'
                 ),
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.vendor.xlf:noAccess.info2'
                 ) . $vendorName,

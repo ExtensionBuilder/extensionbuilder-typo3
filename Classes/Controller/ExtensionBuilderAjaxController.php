@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
+use TYPO3\CMS\Backend\Attribute\AsController;
+
 use TYPO3\CMS\Core\Http\JsonResponse;
 
-use Psr\Http\Message\ResponseInterface;
-
-use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
-
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -23,11 +22,9 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class ExtensionBuilderAjaxController
 {
-
     /**
      * @since 0.12
      */
@@ -40,22 +37,18 @@ final class ExtensionBuilderAjaxController
      */
     public function getFieldsValuesAction(ServerRequestInterface $request): JsonResponse
     {
-		$queryParams = array_merge(
-            $request->getQueryParams() ?? [],
-            $request->getParsedBody() ?? []
-        );
+        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
 
-        $name = (string)($queryParams['name'] ?? 'Stephan');
-
-        $config = (string)($queryParams['config'] ?? '');
-        $key = (string)($queryParams['key'] ?? '');
-        $base = (string)($queryParams['base'] ?? '');
-        $fields = (string)($queryParams['fields'] ?? '');
+        $name = (string)($bodyParams['name'] ?? '');
+        $config = (string)($bodyParams['config'] ?? '');
+        $key = (string)($bodyParams['key'] ?? '');
+        $base = (string)($bodyParams['base'] ?? '');
+        $fields = (string)($bodyParams['fields'] ?? '');
 
         $value = [];
 
         switch ($config) {
-            case "vendors":
+            case 'vendors':
                 if (!$this->ebBackendService->canAccessVendor($key)) {
                     return new JsonResponse([
                         'success' => false,
@@ -65,12 +58,7 @@ final class ExtensionBuilderAjaxController
 
                 $value = $this->ebBackendService->vendors[$key];
                 break;
-
-            case "blau":
-//        echo "Die Farbe ist Blau";
-                break;
             default:
-//        echo "Die Farbe ist weder Rot noch Blau";
         }
 
         $response = new JsonResponse([
@@ -89,12 +77,9 @@ final class ExtensionBuilderAjaxController
      */
     public function checkNameAction(ServerRequestInterface $request): JsonResponse
     {
-		$queryParams = array_merge(
-            $request->getQueryParams() ?? [],
-            $request->getParsedBody() ?? []
-        );
+        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
 
-        $name = trim((string)($queryParams['name'] ?? ''));
+        $name = trim((string)($bodyParams['name'] ?? ''));
 
         return new JsonResponse([
             'success' => true,
@@ -108,13 +93,10 @@ final class ExtensionBuilderAjaxController
      */
     public function readDevCodeAction(ServerRequestInterface $request): JsonResponse
     {
-        $queryParams = array_merge(
-            $request->getQueryParams(),
-            $request->getParsedBody() ?? []
-        );
+        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
 
-        $vendorName = trim((string)($queryParams['vendorName'] ?? ''));
-        $extensionName = trim((string)($queryParams['extensionName'] ?? ''));
+        $vendorName = trim((string)($bodyParams['vendorName'] ?? ''));
+        $extensionName = trim((string)($bodyParams['extensionName'] ?? ''));
 
         if ($vendorName === '' || $extensionName === '') {
             return new JsonResponse([
@@ -148,7 +130,7 @@ final class ExtensionBuilderAjaxController
 
         try {
             $relativeFileName = $this->sanitizeRelativeFilePath(
-                (string)($queryParams['fileName'] ?? '')
+                (string)($bodyParams['fileName'] ?? '')
             );
         } catch (\InvalidArgumentException $exception) {
             return new JsonResponse([
@@ -183,7 +165,8 @@ final class ExtensionBuilderAjaxController
         );
 
         $developerCodeFile = $this->buildSafePath(
-            $this->ebBackendService->repositoryPath
+            ''
+            . $this->ebBackendService->repositoryPath
             . $vendorName . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR
             . $extensionName . DIRECTORY_SEPARATOR
@@ -221,13 +204,10 @@ final class ExtensionBuilderAjaxController
             ], 405);
         }
 
-        $queryParams = array_merge(
-            $request->getQueryParams(),
-            $request->getParsedBody() ?? []
-        );
+        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
 
-        $vendorName = trim((string)($queryParams['vendorName'] ?? ''));
-        $extensionName = trim((string)($queryParams['extensionName'] ?? ''));
+        $vendorName = trim((string)($bodyParams['vendorName'] ?? ''));
+        $extensionName = trim((string)($bodyParams['extensionName'] ?? ''));
 
         if ($vendorName === '' || $extensionName === '') {
             return new JsonResponse([
@@ -261,7 +241,7 @@ final class ExtensionBuilderAjaxController
 
         try {
             $relativeFileName = $this->sanitizeRelativeFilePath(
-                (string)($queryParams['fileName'] ?? '')
+                (string)($bodyParams['fileName'] ?? '')
             );
         } catch (\InvalidArgumentException $exception) {
             return new JsonResponse([
@@ -277,10 +257,11 @@ final class ExtensionBuilderAjaxController
             ], 400);
         }
 
-        $codeContent = (string)($queryParams['content'] ?? '');
+        $codeContent = (string)($bodyParams['content'] ?? '');
 
         $developerCodeFile = $this->buildSafePath(
-            $this->ebBackendService->repositoryPath
+            ''
+            . $this->ebBackendService->repositoryPath
             . $vendorName . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR
             . $extensionName . DIRECTORY_SEPARATOR
@@ -332,13 +313,10 @@ final class ExtensionBuilderAjaxController
         ob_start();
 
         try {
-            $queryParams = array_merge(
-                $request->getQueryParams(),
-                $request->getParsedBody() ?? []
-            );
+            $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
 
-            $vendorName = trim((string)($queryParams['vendorName'] ?? ''));
-            $extensionName = trim((string)($queryParams['extensionName'] ?? ''));
+            $vendorName = trim((string)($bodyParams['vendorName'] ?? ''));
+            $extensionName = trim((string)($bodyParams['extensionName'] ?? ''));
 
             if ($vendorName === '' || $extensionName === '') {
                 return $this->jsonResponseAndDiscardOutput([
@@ -471,6 +449,8 @@ final class ExtensionBuilderAjaxController
 
     /**
      * @since 0.14
+     *
+     * @param array<string, mixed> $payload
      */
     private function jsonResponseAndDiscardOutput(
         array $payload,

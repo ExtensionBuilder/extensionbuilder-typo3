@@ -2,7 +2,7 @@ import DocumentService from '@typo3/core/document-service.js';
 import Modal from '@typo3/backend/modal.js';
 import Severity from '@typo3/backend/severity.js';
 
-// Version 0.0
+// Developer Info: Beta maintenancemodal in ExtensionController
 
 DocumentService.ready().then(() => {
   const cfg = globalThis.TYPO3?.settings?.myext?.maintenance;

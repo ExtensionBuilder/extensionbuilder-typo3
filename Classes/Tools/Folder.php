@@ -7,7 +7,6 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -17,14 +16,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @since 0.12
  */
-
 class Folder
 {
-
     /**
      * @since 0.12
      */
-    static function scanForDirectory(
+    public static function scanForDirectory(
         string $path,
         string $filter = '',
     ): array {
@@ -48,7 +45,7 @@ class Folder
     /**
      * @since 0.12
      */
-    static function scanForDirectoryRecursive(
+    public static function scanForDirectoryRecursive(
         array &$folder,
         string $path,
     ): array {
@@ -56,8 +53,8 @@ class Folder
 
         foreach ($folderDirectory ?? [] as $folderName) {
             $folder[$folderName] = [];
-            $folder[$folderName] =
-                self::scanForDirectoryRecursive($folder[$folderName] , $path . DIRECTORY_SEPARATOR . $folderName);
+            $folder[$folderName]
+                = self::scanForDirectoryRecursive($folder[$folderName], $path . DIRECTORY_SEPARATOR . $folderName);
         }
 
         return $folder;
@@ -66,25 +63,25 @@ class Folder
     /**
      * @since 0.12
      */
-    static function scanForDirectoryRecursiveForFile(
+    public static function scanForDirectoryRecursiveForFile(
         array &$folder,
         string $path,
     ): void {
         foreach ($folder ?? [] as $folderName => $folderData) {
-			$files = self::scanForFile($path . DIRECTORY_SEPARATOR . $folderName);
-			foreach ($files ?? [] as $fileName) {
-				$folder[$folderName][$fileName] = $path . DIRECTORY_SEPARATOR . $folderName . DIRECTORY_SEPARATOR . $fileName;
-			}
-			if (is_array($folder[$folderName])) {
-			    self::scanForDirectoryRecursiveForFile($folder[$folderName], $path . DIRECTORY_SEPARATOR . $folderName);
-			}
+            $files = self::scanForFile($path . DIRECTORY_SEPARATOR . $folderName);
+            foreach ($files ?? [] as $fileName) {
+                $folder[$folderName][$fileName] = $path . DIRECTORY_SEPARATOR . $folderName . DIRECTORY_SEPARATOR . $fileName;
+            }
+            if (is_array($folder[$folderName])) {
+                self::scanForDirectoryRecursiveForFile($folder[$folderName], $path . DIRECTORY_SEPARATOR . $folderName);
+            }
         }
     }
 
     /**
      * @since 0.12
      */
-	static function scanForFile(
+    public static function scanForFile(
         string $path,
         string $extensionFilter = '',
         string $filter = '',
@@ -98,14 +95,14 @@ class Folder
                 $folderKey = $folderContent;
 
                 if ($filter) {
-                    if (strpos($folderContent, $filter) === false) {
+                    if (!str_contains($folderContent, $filter)) {
                         $found = false;
                     }
-				}
+                }
 
                 if ($extensionFilter && $found) {
-					$pathinfo = pathinfo($path . DIRECTORY_SEPARATOR . $folderContent);
-					if (!(($pathinfo['extension'] ?? '') === $extensionFilter)) {
+                    $pathinfo = pathinfo($path . DIRECTORY_SEPARATOR . $folderContent);
+                    if (!(($pathinfo['extension'] ?? '') === $extensionFilter)) {
                         $found = false;
                     } else {
                         $folderKey = substr($folderKey, 0, strpos($folderKey, $extensionFilter) - 1);
@@ -124,7 +121,7 @@ class Folder
     /**
      * @since 0.12
      */
-    static function scanContent(
+    public static function scanContent(
         string $path,
     ): array {
         $return = [];
@@ -147,11 +144,11 @@ class Folder
     /**
      * @since 0.12
      */
-    static function deleteForFile(
+    public static function deleteForFile(
         string $path,
         string $filter = '',
     ): void {
-// ToDo Improve filter see function scanFor File
+        // ToDo Improve filter see function scanFor File
         $returnFile = [];
 
         $returnFolderContent = self::scanContent($path);
@@ -171,11 +168,13 @@ class Folder
     /**
      * @since 0.12
      */
-    static function copy(
+    public static function copy(
         string $source,
         string $target,
     ): void {
-        if (!file_exists($source)) { return; }
+        if (!file_exists($source)) {
+            return;
+        }
 
         GeneralUtility::mkdir_deep($target);
         $dir = opendir($source);
@@ -195,55 +194,70 @@ class Folder
     /**
      * @since 0.12
      */
-    static function delete(
+    public static function delete(
         string $foldserToDelete,
     ): void {
-		if (!file_exists($foldserToDelete)) { return; }
+        if (!file_exists($foldserToDelete)) {
+            return;
+        }
 
         $files = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($foldserToDelete),
-            \RecursiveIteratorIterator::CHILD_FIRST);
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
         foreach ($files as $file => $fileData) {
             $file = str_replace('\\', '/', $file);
             // Ignore '.' and '..' folders
-            if (in_array(substr($file, strrpos($file, '/') +1), ['.', '..'])) { continue; }
+            if (in_array(substr($file, strrpos($file, '/') + 1), ['.', '..'])) {
+                continue;
+            }
 
-            if (is_file($file)) { unlink($file); }
-            if (is_dir($file)) { rmdir($file); }
-		}
-        if (is_file($foldserToDelete)) { unlink($foldserToDelete); }
-        if (is_dir($foldserToDelete)) { rmdir($foldserToDelete); }
+            if (is_file($file)) {
+                unlink($file);
+            }
+            if (is_dir($file)) {
+                rmdir($file);
+            }
+        }
+        if (is_file($foldserToDelete)) {
+            unlink($foldserToDelete);
+        }
+        if (is_dir($foldserToDelete)) {
+            rmdir($foldserToDelete);
+        }
     }
 
     /**
      * @since 0.12
      */
-    static function chownr(
+    public static function chownr(
         string &$path,
         int &$owner
     ) {
         if (!is_dir($path)) {
             return chown($path, $owner);
-		}
+        }
         $dh = opendir($path);
         while (($file = readdir($dh)) !== false) {
             if ($file != '.' && $file != '..') {
                 $fullpath = $path . '/' . $file;
                 if (is_link($fullpath)) {
-                    return FALSE;
-                } elseif (!is_dir($fullpath) && !chown($fullpath, $owner)) {
-                        return FALSE;
-                } elseif (!self::chownr($fullpath, $owner)) {
-                    return FALSE;
-				}
+                    return false;
+                }
+                if (!is_dir($fullpath) && !chown($fullpath, $owner)) {
+                    return false;
+                }
+                if (!self::chownr($fullpath, $owner)) {
+                    return false;
+                }
             }
         }
         closedir($dh);
         if (chown($path, $owner)) {
-            return TRUE;
-		} else {
-            return FALSE;
+            return true;
         }
+        return false;
+
     }
 
 }

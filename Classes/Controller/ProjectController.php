@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
 
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -22,17 +19,17 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class ProjectController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
-    public function listAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function listAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
 
@@ -42,7 +39,8 @@ final class ProjectController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    private function projectList(): ResponseInterface {
+    private function projectList(): ResponseInterface
+    {
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
             'configuration' => $this->ebBackendService->configuration,
@@ -63,14 +61,15 @@ final class ProjectController extends ExtensionBuilderController
         );
 
         return $this->moduleTemplate->renderResponse('ProjectList');
-	}
+    }
 
     /**
      * @since 0.12
      */
-    final function addAction(): ResponseInterface {
+    final public function addAction(): ResponseInterface
+    {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
@@ -103,14 +102,14 @@ final class ProjectController extends ExtensionBuilderController
                         );
 
                         return $this->projectList();
-                    } else {
-                        $this->flashMessage('', 'project name exists please change'); // ToDo LLL
-				    }
+                    }
+                    $this->flashMessage('', 'project name exists please change'); // ToDo LLL
+
                 } else {
                     $this->flashMessage('', 'Please specify project name'); // ToDo LLL
-			    }
+                }
                 break;
-		}
+        }
 
         $project = [];
         $project['name'] = '';
@@ -147,9 +146,10 @@ final class ProjectController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    final function editAction(): ResponseInterface {
+    final public function editAction(): ResponseInterface
+    {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
@@ -189,7 +189,7 @@ final class ProjectController extends ExtensionBuilderController
                 $this->ebBackendService->writeProjects();
                 $this->ebBackendService->readProjects();
                 break;
-		}
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -212,15 +212,16 @@ final class ProjectController extends ExtensionBuilderController
             'Project',
         );
 
-    	return $this->moduleTemplate->renderResponse('ProjectEdit');
+        return $this->moduleTemplate->renderResponse('ProjectEdit');
     }
 
     /**
      * @since 0.12
      */
-    final function deleteAction(): ResponseInterface {
+    final public function deleteAction(): ResponseInterface
+    {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
@@ -228,7 +229,7 @@ final class ProjectController extends ExtensionBuilderController
         $projectKey = $bodyParams['projectKey'] ?? 'noKey';
 
         if ($this->ebBackendService->projects[$projectKey] ?? false) {
-            $flashMessage = 'Delete project ' . $this->ebBackendService->projects[$projectKey]['name'] ; // ToDo LLL
+            $flashMessage = 'Delete project ' . $this->ebBackendService->projects[$projectKey]['name']; // ToDo LLL
             $flashMessageInfo = '';
             unset($this->ebBackendService->projects[$projectKey]);
             $this->ebBackendService->writeProjects();
@@ -241,9 +242,10 @@ final class ProjectController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    final function addExtensionAction(): ResponseInterface {
+    final public function addExtensionAction(): ResponseInterface
+    {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
 
@@ -258,25 +260,25 @@ final class ProjectController extends ExtensionBuilderController
                 $this->ebBackendService->readProjects();
 
                 break;
-		}
+        }
 
         $project = [];
         $project['name'] = '';
         $project['description'] = '';
         $project['extensions'] = [];
 
-		$extensions = [];
-		foreach($this->ebBackendService->vendorsAndExtensions ?? [] as $vendorKey => $vendorData) {
-		    foreach($vendorData['extensions'] ?? [] as $extensionKey => $extensionData) {
-		        $extensions[$extensionData['extension']['extensionNamespace']] = $extensionData['extension'];
-		    }
-		}
-		foreach($this->ebBackendService->projects[$projectKey]['extensions'] ?? [] as $extensionKey => $extensionData) {
+        $extensions = [];
+        foreach ($this->ebBackendService->vendorsAndExtensions ?? [] as $vendorKey => $vendorData) {
+            foreach ($vendorData['extensions'] ?? [] as $extensionKey => $extensionData) {
+                $extensions[$extensionData['extension']['extensionNamespace']] = $extensionData['extension'];
+            }
+        }
+        foreach ($this->ebBackendService->projects[$projectKey]['extensions'] ?? [] as $extensionKey => $extensionData) {
             unset($extensions[$extensionKey]);
-		}
-		foreach($this->ebBackendService->projects[$projectKey]['dependencies'] ?? [] as $dependencieKey => $dependencieData) {
+        }
+        foreach ($this->ebBackendService->projects[$projectKey]['dependencies'] ?? [] as $dependencieKey => $dependencieData) {
             unset($extensions[$dependencieKey]);
-		}
+        }
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -291,7 +293,7 @@ final class ProjectController extends ExtensionBuilderController
         $this->addDocHeaderCloseButton(
             'edit',
             'Project',
-             projectKey: $projectKey,
+            projectKey: $projectKey,
         );
 
         return $this->moduleTemplate->renderResponse('ProjectAddExtesion');
@@ -300,9 +302,10 @@ final class ProjectController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    final function deleteExtensionAction(): ResponseInterface {
+    final public function deleteExtensionAction(): ResponseInterface
+    {
         $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
 

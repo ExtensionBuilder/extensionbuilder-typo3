@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools\MarkdownRenderer;
 use Psr\Http\Message\ResponseInterface;
+
+use TYPO3\CMS\Backend\Attribute\AsController;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools\MarkdownRenderer;
-
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -23,16 +21,16 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools\MarkdownRenderer;
  *
  * @since 0.14
  */
-
 #[AsController]
 final class DeveloperHubController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.14
      */
-    final function showAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+    final public function showAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
@@ -88,10 +86,11 @@ final class DeveloperHubController extends ExtensionBuilderController
                 $label = $matches[1];
                 $targetMdFile = self::sanitizeMarkdownPath(rawurldecode($matches[2]));
                 $backendUrl = $this->buildMarkdownUrl($targetMdFile);
+
                 return '[' . $label . '](' . $backendUrl . ')';
             },
             $markdown
-        );
+        ) ?? $markdown;
     }
 
     /**

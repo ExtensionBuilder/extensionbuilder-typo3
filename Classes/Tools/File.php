@@ -1,11 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -15,10 +14,8 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 class File
 {
-
     /**
      * @since 0.12
      */
@@ -78,12 +75,12 @@ class File
             $lineCountByExtension[$extension] += $lines;
         }
 
-//        echo "Projektpfad: $path\n";
-//        echo "Dateien mit Endung (" . implode(', ', $allowedExtensions) . "): $fileCount\n";
-//        echo "Gesamtanzahl Zeilen: $lineCount\n";
+        //        echo "Projektpfad: $path\n";
+        //        echo "Dateien mit Endung (" . implode(', ', $allowedExtensions) . "): $fileCount\n";
+        //        echo "Gesamtanzahl Zeilen: $lineCount\n";
 
-//        print_r($fileCountByExtension);
-//        print_r($lineCountByExtension);
+        //        print_r($fileCountByExtension);
+        //        print_r($lineCountByExtension);
 
         return [];
     }

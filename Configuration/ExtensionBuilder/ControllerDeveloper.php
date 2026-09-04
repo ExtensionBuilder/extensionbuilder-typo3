@@ -12,7 +12,6 @@
  * @since 0.13
  */
 
-
 $lllPath = '.developer';
 
 // Add Developer

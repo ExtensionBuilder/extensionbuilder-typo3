@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Client;
-
-use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 
+use GuzzleHttp\Exception\RequestException;
+use TYPO3\CMS\Core\Log\LogManager;
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -23,13 +21,10 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
  *
  * @since 0.12
  */
-
 class RestApiClient
 {
-
-// $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-// $logger->info('Method not allowed');
-
+    // $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+    // $logger->info('Method not allowed');
 
     /**
      * @since 0.12
@@ -43,7 +38,7 @@ class RestApiClient
         $multipart['multipart'][] = ['name' => 'command', 'contents' => 'getStatus'];
 
         return self::executeClientJsonResponse($authority, $path, $multipart);
-	}
+    }
 
     /**
      * @since 0.12
@@ -53,9 +48,9 @@ class RestApiClient
         string $path,
         array $multipart,
     ): array {
-// 9999
+        // 9999
         return self::executeClientJsonResponse($authority, $path, $multipart);
-	}
+    }
 
     /**
      * @since 0.12
@@ -76,7 +71,7 @@ class RestApiClient
         $multipart['multipart'][] = ['name' => 'developerId', 'contents' => $developerId];
         $multipart['multipart'][] = ['name' => 'developerProKey', 'contents' => $developerProKey];
         return self::executeClientJsonResponse($authority, $path, $multipart);
-	}
+    }
 
     /**
      * @since 0.12
@@ -101,7 +96,7 @@ class RestApiClient
         $string = (string)$response->getBody();
 
         return (array)json_decode($string, true);
-	}
+    }
 
     /**
      * @since 0.12
@@ -140,30 +135,24 @@ class RestApiClient
                     'message' => $e->getMessage(),
                 ], JSON_THROW_ON_ERROR);
             }
-		}
+        }
 
-        $jsonObj = json_decode($body, true,);
+        $jsonObj = json_decode($body, true);
 
         if (!(json_last_error_msg() == 'No error')) {
 
-            if ($pos = strpos($body, "\"status\":") ?? false) {
+            if ($pos = strpos($body, '"status":') ?? false) {
                 $body = "{\n    " . substr($body, $pos);
-                $jsonObj = json_decode($body, true,);
+                $jsonObj = json_decode($body, true);
             }
         }
 
         if (!(json_last_error_msg() == 'No error')) {
-            $jsonObj = json_decode("{ \"status\": \"error\", \"statusCode\": \"JSON: " . json_last_error_msg() . "\" }", true,);
+            $jsonObj = json_decode('{ "status": "error", "statusCode": "JSON: ' . json_last_error_msg() . '" }', true);
         }
 
         return $jsonObj;
-	}
-
-
-
-
-
-
+    }
 
     /**
      * @since 0.12
@@ -188,7 +177,7 @@ class RestApiClient
         $string = (string)$response->getBody();
 
         return (array)json_decode($string, true);
-	}
+    }
 
     /**
      * @since 0.12
@@ -209,14 +198,14 @@ class RestApiClient
                 'q' => $vendorName . '/' . $extensionName,
             ],
         ];
-//        $result = self::get('https://api.github.com/', 'search/repositories', $multipart);
+        //        $result = self::get('https://api.github.com/', 'search/repositories', $multipart);
 
         if (count($result['items']) > 0) {
             return true;
-		} else {
-            return false;
-		}
-	}
+        }
+        return false;
+
+    }
 
     /**
      * @since 0.12
@@ -224,7 +213,9 @@ class RestApiClient
     public static function gitHubToRemove(
         array &$extension,
     ): void {
-        if (!($extension['extensionBuild']['gitHubCom'] ?? false)) { return; }
+        if (!($extension['extensionBuild']['gitHubCom'] ?? false)) {
+            return;
+        }
 
         $token = $extension['extensionBuild']['gitHubCom']['token'] ?? '';
         $vendorName = $extension['extensionBuild']['gitHubCom']['vendor'] ?? '';
@@ -234,7 +225,7 @@ class RestApiClient
         if (!self::gitHubSearch($extension)) {
             $multipart = [
                 'headers' => [
-                    'Authorization' => 'token '.$token,
+                    'Authorization' => 'token ' . $token,
                     'Accept' => 'application/vnd.github+json',
                 ],
                 'json' => [
@@ -248,9 +239,9 @@ class RestApiClient
 
         }
 
-//        self::packagistOrgUpdate('typo3', 'cms-scheduler');
+        //        self::packagistOrgUpdate('typo3', 'cms-scheduler');
 
-	}
+    }
 
     /**
      * @since 0.12
@@ -260,7 +251,9 @@ class RestApiClient
     ): void {
         // https://packagist.org/apidoc
 
-        if (!($extension['extensionBuild']['packagistOrg'] ?? false)) { return; }
+        if (!($extension['extensionBuild']['packagistOrg'] ?? false)) {
+            return;
+        }
 
         $token = $extension['extensionBuild']['packagistOrg']['token'] ?? '';
         $username = $extension['extensionBuild']['packagistOrg']['username'] ?? '';

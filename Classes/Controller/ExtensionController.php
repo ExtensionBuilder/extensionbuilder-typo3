@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Backend\Attribute\AsController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Service\ExtensionLockService;
+use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
-use ExtensionBuilder\ExtensionBuilderTypo3\Service\ExtensionLockService;
-
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -26,17 +23,15 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
  *
  * @since 0.12
  */
-
 #[AsController]
 final class ExtensionController extends ExtensionBuilderController
 {
-
     /**
      * @since 0.12
      */
     public function listAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -44,7 +39,7 @@ final class ExtensionController extends ExtensionBuilderController
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
 
-// ToDo maintenance mode
+        // ToDo maintenance mode
         $maintenanceActive = false;
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/maintenancemodal.js');
 
@@ -60,20 +55,20 @@ final class ExtensionController extends ExtensionBuilderController
         ]);
 
         if (
-            ($bodyParams['currentProject'] ?? false) &&
-            !($bodyParams['currentProject'] == ($this->ebBackendService->developer['typo3']['currentProject'] ?? ''))
+            ($bodyParams['currentProject'] ?? false)
+            && !($bodyParams['currentProject'] == ($this->ebBackendService->developer['typo3']['currentProject'] ?? ''))
         ) {
             $this->ebBackendService->developer['typo3']['currentProject'] = $bodyParams['currentProject'];
             $this->ebBackendService->writeDeveloper();
-		}
+        }
 
         if (
-            ($bodyParams['currentVendor'] ?? false) &&
-            !($bodyParams['currentVendor'] == ($this->ebBackendService->developer['typo3']['currentVendor'] ?? ''))
+            ($bodyParams['currentVendor'] ?? false)
+            && !($bodyParams['currentVendor'] == ($this->ebBackendService->developer['typo3']['currentVendor'] ?? ''))
         ) {
             $this->ebBackendService->developer['typo3']['currentVendor'] = $bodyParams['currentVendor'];
             $this->ebBackendService->writeDeveloper();
-		}
+        }
 
         return $this->extensionList();
     }
@@ -98,40 +93,39 @@ final class ExtensionController extends ExtensionBuilderController
         $vendors = [];
         $currentVendor = '';
 
-$projects = $this->ebBackendService->projects;
+        $projects = $this->ebBackendService->projects;
 
         //
-		if ($this->ebBackendService->beUserIsAdmin) {
+        if ($this->ebBackendService->beUserIsAdmin) {
 
-           $project = $this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['currentProject'] ?? 'no')] ?? [];
-//            $projects = $this->ebBackendService->projects[(
-//                $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no'
-//            )] ?? [];
+            $project = $this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['currentProject'] ?? 'no')] ?? [];
+            //            $projects = $this->ebBackendService->projects[(
+            //                $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no'
+            //            )] ?? [];
 
             $currentProject = $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no';
 
             $vendors = $this->ebBackendService->vendorsAndExtensions ?? [];
             $currentVendor = $this->ebBackendService->developer['typo3']['currentVendor'] ?? 'all';
 
-
         } else {
             $currentProject = $this->ebBackendService->developer['typo3']['currentProject'] ?? 'no';
             $currentVendor = $this->ebBackendService->developer['typo3']['currentVendor'] ?? 'all';
 
-//            $projects = ['no'];
+            //            $projects = ['no'];
             $project = $this->ebBackendService->projects[($this->ebBackendService->developer['typo3']['currentProject'] ?? 'no')] ?? [];
 
-// ToDo $project 
+            // ToDo $project
             foreach ($this->ebBackendService->vendors as $vendorKey => $vendorValue) {
                 if ($this->ebBackendService->userHasBackendGroup((int)($vendorValue['backendGroupId'] ?? 0))) {
-// ToDo
+                    // ToDo
                 }
             }
-//            foreach ($this->ebBackendService->vendors as $vendorKey => $vendorValue) {
-//                if (strpos($this->ebBackendService->beUserGroup, ((string)$vendorValue['backendGroupId'] ?? ''))) {
-//                    $vendors[$vendorKey] = $this->ebBackendService->vendorsAndExtensions[$vendorKey];
-//				}
-//            }
+            //            foreach ($this->ebBackendService->vendors as $vendorKey => $vendorValue) {
+            //                if (strpos($this->ebBackendService->beUserGroup, ((string)$vendorValue['backendGroupId'] ?? ''))) {
+            //                    $vendors[$vendorKey] = $this->ebBackendService->vendorsAndExtensions[$vendorKey];
+            //				}
+            //            }
 
         }
 
@@ -157,15 +151,16 @@ $projects = $this->ebBackendService->projects;
             'Extension',
         );
         return $this->moduleTemplate->renderResponse('ExtensionList');
-	}
+    }
 
     /**
      * @since 0.12
      */
-    public function addAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+    public function addAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfieldschanged.js');
 
@@ -181,18 +176,18 @@ $projects = $this->ebBackendService->projects;
                 $vendorName = (string)($extensionData['vendorName'] ?? '');
                 $extensionName = (string)($extensionData['extensionNamespace'] ?? '');
 
-// ToDo: Move to JSA
-// ToDo:check vendorComposerName already exists
+                // ToDo: Move to JSA
+                // ToDo:check vendorComposerName already exists
 
                 if ($vendorName && $extensionName) {
-//ToDo
+                    //ToDo
                     if (!($this->ebBackendService->localExtensions[$extensionName] ?? false)) {
-// ToDo
-//                        $extensionNamespace = str_replace([' ','-'], '_', $extensionData['extensionNamespace']);
-//                        $extensionNamespace = ltrim($extensionNamespace, '1234567890');
-//                        $extensionNamespace = GeneralUtility::underscoredToUpperCamelCase(trim($extensionNamespace));
-// ToDo
-//                        $extensionData['vendorComposerName'] = $this->ebBackendService->configuration['vendorComposerName'];
+                        // ToDo
+                        //                        $extensionNamespace = str_replace([' ','-'], '_', $extensionData['extensionNamespace']);
+                        //                        $extensionNamespace = ltrim($extensionNamespace, '1234567890');
+                        //                        $extensionNamespace = GeneralUtility::underscoredToUpperCamelCase(trim($extensionNamespace));
+                        // ToDo
+                        //                        $extensionData['vendorComposerName'] = $this->ebBackendService->configuration['vendorComposerName'];
 
                         $extensionData['ebDevSystemId'] = $this->ebBackendService->configuration['systemId'] ?? '';
                         $extensionData['ebDevVendorId'] = $this->ebBackendService->vendors[$vendorName]['vendorId' ?? ''];
@@ -208,11 +203,11 @@ $projects = $this->ebBackendService->projects;
                         $extensionData['versionRevision'] = 0;
 
                         $this->ebBackendService->extension['extension'] = $extensionData;
-// 8888
-                Tools\ConfigArray::checkFieldsToBool(
-                    $this->ebBackendService->extensionConfiguration['fieldsEdit'],
-                    $this->ebBackendService->extension['extension'],
-                );
+                        // 8888
+                        Tools\ConfigArray::checkFieldsToBool(
+                            $this->ebBackendService->extensionConfiguration['fieldsEdit'],
+                            $this->ebBackendService->extension['extension'],
+                        );
 
                         $this->ebBackendService->writeExtension($vendorName, $extensionName);
 
@@ -222,19 +217,19 @@ $projects = $this->ebBackendService->projects;
                         $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
 
                         return $this->extensionList();
-                    } else {
-                        if ($this->ebBackendService->isComposerMode) {
-                            $this->flashMessage(
-                                '',
-                                LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:extensionexists')
-                            );
-                        } else {
-                            $this->flashMessage(
-                                '',
-                                LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:extensionexists')
-                            );
-						}
                     }
+                    if ($this->ebBackendService->isComposerMode) {
+                        $this->flashMessage(
+                            '',
+                            LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:extensionexists')
+                        );
+                    } else {
+                        $this->flashMessage(
+                            '',
+                            LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:extensionexists')
+                        );
+                    }
+
                 } else {
                     if ($vendorName) {
                         $this->flashMessage(
@@ -247,10 +242,9 @@ $projects = $this->ebBackendService->projects;
                             LocalizationUtility::translate($this->ebBackendService->lll . '.extension.xlf:specifyvendorname')
                         );
                     }
-			    }
+                }
                 break;
-		}
-	
+        }
 
         if (!($extension ?? false)) {
             $extension = [];
@@ -277,15 +271,17 @@ $projects = $this->ebBackendService->projects;
             'Extension',
         );
 
-    	return $this->moduleTemplate->renderResponse('ExtensionAdd');
+        return $this->moduleTemplate->renderResponse('ExtensionAdd');
     }
 
     /**
      * @since 0.12
      */
-    public function editAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function editAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -294,11 +290,11 @@ $projects = $this->ebBackendService->projects;
             $this->ebBackendService->assertCanAccessVendor($vendorName);
         } catch (\RuntimeException $exception) {
             $this->flashMessage(
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.extension.xlf:noAccess.info1'
                 ),
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.extension.xlf:noAccess.info2'
                 ) . $extensionName,
@@ -329,16 +325,14 @@ $projects = $this->ebBackendService->projects;
             }
         }
 
+        //$lock = $this->extensionLockService->acquire(
+        //    $vendorName,
+        //    $extensionName,
+        //    (int)$GLOBALS['BE_USER']->user['uid'],
+        //    (string)$GLOBALS['BE_USER']->user['username']
+        //);
 
-//$lock = $this->extensionLockService->acquire(
-//    $vendorName,
-//    $extensionName,
-//    (int)$GLOBALS['BE_USER']->user['uid'],
-//    (string)$GLOBALS['BE_USER']->user['username']
-//);
-
-//$readOnly = !$lock['acquired'] && !$GLOBALS['BE_USER']->isAdmin();
-
+        //$readOnly = !$lock['acquired'] && !$GLOBALS['BE_USER']->isAdmin();
 
         switch ($bodyParams['cmd'] ?? '') {
             case 'save':
@@ -352,8 +346,8 @@ $projects = $this->ebBackendService->projects;
                     $this->ebBackendService->extension['extension'],
                 );
 
-                $this->ebBackendService->extension['extension']['version']  = 
-                    (string)($extensionData['versionMajor'] ?? '0') . '.'
+                $this->ebBackendService->extension['extension']['version']
+                    = (string)($extensionData['versionMajor'] ?? '0') . '.'
                     . (string)($extensionData['versionMinor'] ?? '0') . '.'
                     . (string)($extensionData['versionRevision'] ?? '0');
 
@@ -362,24 +356,22 @@ $projects = $this->ebBackendService->projects;
                 $this->flashMessage('', 'Saving extension: ' . $extensionName); // ToDo LLL
 
                 break;
-		}
+        }
 
-// ToDo Arra in fluid
-unset($extensionData['authors']);
-unset($extensionData['support']);
-unset($extensionData['keywords']);
-unset($extensionData['depends']);
+        // ToDo Arra in fluid
+        unset($extensionData['authors']);
+        unset($extensionData['support']);
+        unset($extensionData['keywords']);
+        unset($extensionData['depends']);
 
+        //       $javaScriptRenderer = $this->pageRenderer->getJavaScriptRenderer();
+        //       $javaScriptRenderer->addJavaScriptModuleInstruction(
+        //           JavaScriptModuleInstruction::create('@typo3/filelist/file-list.js')->instance()
+        //       );
 
+        //$this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/tree-init.js');
 
- //       $javaScriptRenderer = $this->pageRenderer->getJavaScriptRenderer();
- //       $javaScriptRenderer->addJavaScriptModuleInstruction(
- //           JavaScriptModuleInstruction::create('@typo3/filelist/file-list.js')->instance()
- //       );
-
-//$this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/tree-init.js');
-
-//$this->initializeModule($this->request);
+        //$this->initializeModule($this->request);
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
@@ -413,9 +405,11 @@ unset($extensionData['depends']);
     /**
      * @since 0.12
      */
-    public function deleteAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function deleteAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -424,11 +418,11 @@ unset($extensionData['depends']);
             $this->ebBackendService->assertCanAccessVendor($vendorName);
         } catch (\RuntimeException $exception) {
             $this->flashMessage(
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.extension.xlf:noAccess.info1'
                 ),
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.extension.xlf:noAccess.info2'
                 ) . $extensionName,
@@ -457,9 +451,11 @@ unset($extensionData['depends']);
     /**
      * @since 0.12
      */
-    public function buildAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    public function buildAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -468,11 +464,11 @@ unset($extensionData['depends']);
             $this->ebBackendService->assertCanAccessVendor($vendorName);
         } catch (\RuntimeException $exception) {
             $this->flashMessage(
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.extension.xlf:noAccess.info1'
                 ),
-				$this->getTranslatedLabel(
+                $this->getTranslatedLabel(
                     $this->request,
                     $this->ebBackendService->lll . '.extension.xlf:noAccess.info2'
                 ) . $extensionName,
@@ -536,15 +532,16 @@ unset($extensionData['depends']);
         return $this->moduleTemplate->renderResponse('ExtensionEdit');
     }
 
-// ToDo Build zeite wird nich korrekt angezeigt
+    // ToDo Build zeite wird nich korrekt angezeigt
 
     /**
      * @since 0.12
      */
-    public function listBuildAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+    public function listBuildAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
 
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -573,10 +570,12 @@ unset($extensionData['depends']);
     /**
      * @since 0.12
      */
-// ToDo Refactory
-    public function uploadAction(): ResponseInterface {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
-		$this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+    // ToDo Refactory
+    public function uploadAction(): ResponseInterface
+    {
+        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -598,18 +597,18 @@ unset($extensionData['depends']);
                 if (Tools\Github::findRepo($organization, $repo)) {
                     $this->flashMessage('', 'Repro found'); // ToDo LLL
 
-// ToDo Upload
+                    // ToDo Upload
 
                 } else {
                     $this->flashMessage('', 'Repro not found'); // ToDo LLL
                 }
             } else {
                 $this->flashMessage('', 'No Repro '); // ToDo LLL
-			}
+            }
 
         } else {
             $this->flashMessage('', 'No Github config'); // ToDo LLL
-		}
+        }
 
         return $this->redirect('list', 'Extension');
     }

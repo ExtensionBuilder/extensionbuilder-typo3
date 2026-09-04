@@ -4,44 +4,41 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
 use Psr\Http\Message\ServerRequestInterface;
+
+use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+use TYPO3\CMS\Backend\Template\Components\Buttons\DropDown\DropDownRadio;
+
+use TYPO3\CMS\Backend\Template\Components\ComponentFactory;
+
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+
+// Deprecation: #107823 - ButtonBar, Menu, and MenuRegistry make* methods deprecated 14.0
+use TYPO3\CMS\Core\Imaging\IconSize;
 
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
-use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
-
-use TYPO3\CMS\Backend\Template\Components\ComponentFactory;
-use TYPO3\CMS\Backend\Template\Components\Buttons\DropDown\DropDownRadio;
-
-// Deprecation: #107823 - ButtonBar, Menu, and MenuRegistry make* methods deprecated 14.0
-use TYPO3\CMS\Backend\Template\Components\ButtonBar;
-use TYPO3\CMS\Backend\Template\Components\Buttons\DropDown\DropDownItem;
-
-use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Imaging\IconSize;
-
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
-
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 //use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools;
-use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
- *
  * Migration:
  * - Target: ExtensionBuilder Core 1.x
  * - Status: legacy
@@ -53,13 +50,15 @@ use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
  */
 class ExtensionBuilderController extends ActionController
 {
+    /** @var array<string, mixed> */
     public array $coreStatus = [];
+    /** @var array<string, mixed> */
     public array $keyStatus = [];
-    public bool $isProKey = false;
-
+    /** @var array<string, mixed> */
     public array $todo = [];
+    /** @var array<string, mixed> */
     public array $changeLog = [];
-
+    public bool $isProKey = false;
     public ModuleTemplate $moduleTemplate;
 
     private ?object $componentFactory = null;
@@ -67,7 +66,7 @@ class ExtensionBuilderController extends ActionController
     /**
      * @since 0.12
      */
-    function __construct(
+    public function __construct(
         protected readonly LanguageServiceFactory $languageServiceFactory,
         protected readonly PageRenderer $pageRenderer,
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
@@ -85,7 +84,7 @@ class ExtensionBuilderController extends ActionController
     /**
      * @since 0.12
      */
-    final function getTranslatedLabel(
+    final public function getTranslatedLabel(
         ServerRequestInterface $request,
         string $key,
     ): string {
@@ -119,7 +118,7 @@ class ExtensionBuilderController extends ActionController
     /**
      * @since 0.12
      */
-    final function addDocHeaderModuleDropDown(
+    final public function addDocHeaderModuleDropDown(
         string $activeEntry,
         string $activeProject = '',
         string $activeVendor = '',
@@ -142,7 +141,7 @@ class ExtensionBuilderController extends ActionController
             'Info' => 'show',
         ];
 
-        if (!($this->ebBackendService->beUserIsAdmin ?? false)) {
+        if (!($this->ebBackendService->beUserIsAdmin)) {
             unset($dropdown['Configuration']);
         }
 
@@ -224,7 +223,7 @@ class ExtensionBuilderController extends ActionController
             //         )
             //     )
             // ) {
-                $projectCount++;
+            $projectCount++;
             // }
         }
 
@@ -403,7 +402,7 @@ class ExtensionBuilderController extends ActionController
         }
     }
 
-    final function addDocHeaderCloseButton(
+    final public function addDocHeaderCloseButton(
         string $action,
         string $controller,
         string $vendorName = '',
@@ -484,7 +483,7 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
-    final function addDocHeaderSaveButton(
+    final public function addDocHeaderSaveButton(
         string $saveFromId,
         string $saveController,
     ): void {
@@ -534,7 +533,7 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
-    final function addDocHeaderAddButton(
+    final public function addDocHeaderAddButton(
         string $action,
         string $controller,
         array $parameters = [],
@@ -550,8 +549,8 @@ class ExtensionBuilderController extends ActionController
             IconSize::SMALL
         );
 
-        $lll =
-            $this->ebBackendService->lll
+        $lll
+            = $this->ebBackendService->lll
             . '.'
             . strtolower($controller)
             . '.xlf:link.'
@@ -592,7 +591,7 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
-    final function addDocHeaderBuildButton(
+    final public function addDocHeaderBuildButton(
         string $action,
         string $controller,
         string $vendorName,
@@ -619,8 +618,8 @@ class ExtensionBuilderController extends ActionController
             IconSize::SMALL
         );
 
-        $lll =
-            $this->ebBackendService->lll
+        $lll
+            = $this->ebBackendService->lll
             . '.'
             . strtolower($controller)
             . '.xlf:link.'
@@ -665,7 +664,7 @@ class ExtensionBuilderController extends ActionController
     }
 
     // ToDo Refactoring
-    final function addDocHeaderImportExampleVendorToDoRemove(
+    final public function addDocHeaderImportExampleVendorToDoRemove(
         string $importAction,
         string $importController,
     ): void {
@@ -717,7 +716,7 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
-    final function flashMessage(
+    final public function flashMessage(
         string $flashMessage1,
         string $flashMessage2,
         ContextualFeedbackSeverity $feedback = ContextualFeedbackSeverity::OK
@@ -726,8 +725,8 @@ class ExtensionBuilderController extends ActionController
             FlashMessageService::class
         );
 
-        $notificationQueue =
-            $flashMessageService->getMessageQueueByIdentifier(
+        $notificationQueue
+            = $flashMessageService->getMessageQueueByIdentifier(
                 FlashMessageQueue::NOTIFICATION_QUEUE
             );
 
@@ -741,7 +740,7 @@ class ExtensionBuilderController extends ActionController
         $notificationQueue->enqueue($flashMessage);
     }
 
-    final function addDocHeaderTypo3Command(
+    final public function addDocHeaderTypo3Command(
         string $action,
         string $controller,
         string $vendorName = '',
@@ -788,8 +787,8 @@ class ExtensionBuilderController extends ActionController
                 '>='
             )
         ) {
-            $typo3CommandButton =
-                $this->componentFactory->createInputButton();
+            $typo3CommandButton
+                = $this->componentFactory->createInputButton();
         } else {
             // @extensionScannerIgnoreLine
             $typo3CommandButton = $buttonBar->makeLinkButton();
