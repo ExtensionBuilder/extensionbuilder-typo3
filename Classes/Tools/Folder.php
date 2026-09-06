@@ -7,12 +7,7 @@ namespace ExtensionBuilder\ExtensionBuilderTypo3\Tools;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -88,7 +83,6 @@ class Folder
     ): array {
         $return = [];
 
-        $returnFolderContent = self::scanContent($path);
         foreach (self::scanContent($path) ?? [] as $folderContent) {
             if (is_file($path . DIRECTORY_SEPARATOR . $folderContent)) {
                 $found = true;
@@ -151,7 +145,6 @@ class Folder
         // ToDo Improve filter see function scanFor File
         $returnFile = [];
 
-        $returnFolderContent = self::scanContent($path);
         foreach (self::scanContent($path) ?? [] as $folderContent) {
             if (is_file($path . DIRECTORY_SEPARATOR . $folderContent)) {
                 if (strlen($filter) > 0) {
@@ -259,5 +252,4 @@ class Folder
         return false;
 
     }
-
 }

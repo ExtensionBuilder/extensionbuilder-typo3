@@ -7,6 +7,10 @@
     <f:layout name="Module" />
 
     <f:section name="Content">
-        <f:format.raw>{markdownHtml}</f:format.raw>
+        <div class="documentation-content">
+            <div class="markdown-body">
+                <f:format.raw>{content}</f:format.raw>
+            </div>
+        </div>
     </f:section>
 </html>

@@ -10,12 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -27,7 +22,10 @@ final class ProjectController extends ExtensionBuilderController
      */
     public function listAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -60,7 +58,7 @@ final class ProjectController extends ExtensionBuilderController
             'Project',
         );
 
-        return $this->moduleTemplate->renderResponse('ProjectList');
+        return $this->moduleTemplate->renderResponse('Project/List');
     }
 
     /**
@@ -68,7 +66,11 @@ final class ProjectController extends ExtensionBuilderController
      */
     final public function addAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
+
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
@@ -140,7 +142,7 @@ final class ProjectController extends ExtensionBuilderController
             'Project',
         );
 
-        return $this->moduleTemplate->renderResponse('ProjectAdd');
+        return $this->moduleTemplate->renderResponse('Project/Add');
     }
 
     /**
@@ -148,7 +150,11 @@ final class ProjectController extends ExtensionBuilderController
      */
     final public function editAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
+
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
@@ -212,7 +218,7 @@ final class ProjectController extends ExtensionBuilderController
             'Project',
         );
 
-        return $this->moduleTemplate->renderResponse('ProjectEdit');
+        return $this->moduleTemplate->renderResponse('Project/Edit');
     }
 
     /**
@@ -220,7 +226,11 @@ final class ProjectController extends ExtensionBuilderController
      */
     final public function deleteAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
+
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
@@ -244,7 +254,11 @@ final class ProjectController extends ExtensionBuilderController
      */
     final public function addExtensionAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
+
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
@@ -296,7 +310,7 @@ final class ProjectController extends ExtensionBuilderController
             projectKey: $projectKey,
         );
 
-        return $this->moduleTemplate->renderResponse('ProjectAddExtesion');
+        return $this->moduleTemplate->renderResponse('Project/AddExtesion');
     }
 
     /**
@@ -304,7 +318,11 @@ final class ProjectController extends ExtensionBuilderController
      */
     final public function deleteExtensionAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams() ?? [], $this->request->getParsedBody() ?? []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
+
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
@@ -336,7 +354,6 @@ final class ProjectController extends ExtensionBuilderController
             'Project',
         );
 
-        return $this->moduleTemplate->renderResponse('ProjectEdit');
+        return $this->moduleTemplate->renderResponse('Project/Edit');
     }
-
 }

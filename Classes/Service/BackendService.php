@@ -27,12 +27,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -71,7 +66,7 @@ class BackendService extends BuildService
         public array $extension = [],
         public array $vendorsAndExtensions = [],
         public string $buildResult = '',
-        //
+
         public array $projects = [],
         public bool $noProjects = true,
         public array $systemExtensions = [],
@@ -354,9 +349,6 @@ class BackendService extends BuildService
         }
     }
 
-    //
-
-    // ToDo
     /**
      * @since 0.12
      */
@@ -580,7 +572,6 @@ class BackendService extends BuildService
         foreach ($this->vendors ?? [] as $vendorKey => $vendorValue) {
             foreach ($vendorValue['projects'] ?? [] as $projectKey => $projectValue) {
                 $this->projects[$projectKey] = $projectValue;
-
             }
         }
 
@@ -1404,8 +1395,6 @@ class BackendService extends BuildService
         }
     }
 
-    // Private function
-
     /**
      * @since 0.12
      */
@@ -1589,5 +1578,4 @@ class BackendService extends BuildService
             ['uid' => (int)$GLOBALS['BE_USER']->user['uid']]
         );
     }
-
 }

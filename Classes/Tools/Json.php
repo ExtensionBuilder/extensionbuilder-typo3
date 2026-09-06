@@ -11,12 +11,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -124,5 +119,4 @@ class Json
 
         return $return;
     }
-
 }

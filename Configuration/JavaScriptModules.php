@@ -3,13 +3,7 @@
 declare(strict_types=1);
 
 /**
- *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */

@@ -1,13 +1,7 @@
 <?php
 
 /**
- *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.13
  */
@@ -63,9 +57,6 @@ $standardFields['ebDevIssue'] = ['type' => 'textarea', 'tab' => 'issue'];
 //    $components['']['componentName'] = '';
 //    $components['']['title'] = '';
 //    $components['']['disable'] = false;
-//    $components['']['controller'] = 'Component';
-//    $components['']['add'] = 'ComponentAdd';
-//    $components['']['edit'] = 'ComponentEdit';
 //    $components['']['fieldsTabs'] = $standardFieldsTabs;
 //    $components['']['fields'] = $standardFields;
 //    $components['']['propertys'] = [];
@@ -76,9 +67,6 @@ $standardFields['ebDevIssue'] = ['type' => 'textarea', 'tab' => 'issue'];
 //    $components['']['propertys']['']['title'] = '';
 //    $components['']['propertys']['']['disable'] = false;
 //    $components['']['propertys']['']['select'] = false;
-//    $components['']['propertys']['']['controller'] = 'Property';
-//    $components['']['propertys']['']['add'] = 'PropertyAdd';
-//    $components['']['propertys']['']['edit'] = 'PropertyEdit';
 //    $components['']['propertys']['']['fieldsTabs'] = $standardFieldsTabs;
 //    $components['']['propertys']['']['fields'] = $standardFields;
 
@@ -123,9 +111,6 @@ $components['constraints'] = [];
 $components['constraints']['componentName'] = 'constraints';
 $components['constraints']['title'] = 'Constraints';
 $components['constraints']['disable'] = true;
-$components['constraints']['controller'] = 'Component';
-$components['constraints']['add'] = 'ComponentAdd';
-$components['constraints']['edit'] = 'ComponentEdit';
 $components['constraints'][''] = true;
 $components['constraints']['fieldsTabs'] = $standardFieldsTabs;
 
@@ -155,9 +140,6 @@ $components['constraints']['propertys'] = [];
 $components['authors']['componentName'] = 'authors';
 $components['authors']['title'] = 'Authors';
 $components['authors']['disable'] = true;
-$components['authors']['controller'] = 'Component';
-$components['authors']['add'] = 'ComponentAdd';
-$components['authors']['edit'] = 'ComponentEdit';
 $components['authors']['fieldsTabs'] = $standardFieldsTabs;
 unset($components['authors']['fieldsTabs']['todo']);
 unset($components['authors']['fieldsTabs']['issue']);
@@ -172,28 +154,11 @@ $components['authors']['fields']['description'] = ['type' => 'input', 'tab' => '
 
 $components['authors']['propertys'] = [];
 
-
-require $ControllerComponetsPath . 'Ajaxs.php';
-
-require $ControllerComponetsPath . 'BackendModules.php';
-
-require $ControllerComponetsPath . 'Commands.php';
-require $ControllerComponetsPath . 'ContentBlocks.php';
-require $ControllerComponetsPath . 'ContentElements.php';
-require $ControllerComponetsPath . 'ContentSecurityPolicies.php';
-require $ControllerComponetsPath . 'Controllers.php';
-
-require $ControllerComponetsPath . 'Enums.php';
-require $ControllerComponetsPath . 'EventListeners.php';
-require $ControllerComponetsPath . 'ExtConfTemplates.php';
-
-require $ControllerComponetsPath . 'FrontendPlugins.php';
-require $ControllerComponetsPath . 'ItemGroups.php';
-require $ControllerComponetsPath . 'Models.php';
-require $ControllerComponetsPath . 'Properties.php';
-require $ControllerComponetsPath . 'Tasks.php';
-require $ControllerComponetsPath . 'ViewHelpers.php';
-
+$files = scandir($ControllerComponetsPath);
+$files = array_diff($files, ['.', '..']);
+foreach ($files as $fileKey => $fileValue) {
+    require_once $ControllerComponetsPath . $fileValue;
+}
 
 // Remove all inactive elements from the array and set lllPath
 $componentsReturn = [];

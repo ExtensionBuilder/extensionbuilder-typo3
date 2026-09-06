@@ -12,180 +12,81 @@ use TYPO3\CMS\Dashboard\Widgets\RequestAwareWidgetInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetInterface;
 
+use ExtensionBuilder\ExtensionBuilderTypo3\Service\BackendService;
+
+/**
+ * @extensionbuilderCoreMajorVersion 1
+ *
+ * @since 0.14
+ */
+
 final class Typo3OverviewWidget implements WidgetInterface, RequestAwareWidgetInterface
 {
     private ServerRequestInterface $request;
 
+    /**
+     * @since 0.14
+     */
     public function __construct(
         private readonly WidgetConfigurationInterface $configuration,
         private readonly BackendViewFactory $backendViewFactory,
+        private readonly BackendService $backendService,
         /** @var array<string, mixed> */
         private readonly array $options = [],
     ) {}
 
+    /**
+     * @since 0.14
+     */
     public function renderWidgetContent(): string
     {
-        $view = $this->backendViewFactory->create($this->request);
+        $view = $this->backendViewFactory->create(
+            $this->request,
+            [
+                'typo3/cms-dashboard',
+                'extensionbuilder/extensionbuilder-typo3',
+            ]
+        );
+
+        $developerCount = $this->backendService->countDeveloper();
+        $projectCount = count($this->backendService->projects);
+        $vendorCount = count($this->backendService->vendorsAndExtensions ?? []);
+
+        $extensionCount = 0;
+        foreach ($this->backendService->vendorsAndExtensions as $vendorValue) {
+            $extensionCount += count($vendorValue['extensions'] ?? []);
+        }
+
 
         $view->assignMultiple([
             'configuration' => $this->configuration,
             'options' => $this->options,
-            'projectTodos' => [
-                'test' => [
-                    'name' => 'Testprojekt',
-                    'todo' => 'Das ist ein Test-To-do',
-                    'scope' => 'Test',
-                ],
-            ],
             'stats' => [
-                'projectsWithTodos' => 1,
-                'lastUpdated' => (new \DateTimeImmutable())->format('d.m.Y H:i'),
+                'developers' => $developerCount,
+                'vendors' => $vendorCount,
+                'extensions' => $extensionCount,
+                'projects' => $projectCount,
             ],
         ]);
 
-        return $view->render(
-            'EXT:extensionbuilder_typo3/Resources/Private/Templates/Widget/Typo3OverviewWidget'
-        );
+        return $view->render('Typo3OverviewWidget');
     }
 
-    public function renderWidgetContent1(): string
-    {
-        return '<div class="widget-content-main">
-            <h3>Extension Builder</h3>
-            <p>Dashboard-Widget funktioniert.</p>
-        </div>';
-    }
-
-    /** @return array<string, mixed> */
+    /**
+     * @since 0.14
+     *
+     * @return array<string, mixed>
+     */
     public function getOptions(): array
     {
         return $this->options;
     }
 
+    /**
+     * @since 0.14
+     */
     public function setRequest(ServerRequestInterface $request): void
     {
         $this->request = $request;
-    }
-
-    public function renderWidgetContentAlt(): string
-    {
-        $projectTodos = $this->getProjectTodos();
-
-        $view = $this->backendViewFactory->create($this->request);
-
-        $view->assignMultiple([
-            'configuration' => $this->configuration,
-            'options' => $this->options,
-            'projectTodos' => $projectTodos,
-            'stats' => [
-                'projectsWithTodos' => count($projectTodos),
-                'lastUpdated' => (new \DateTimeImmutable())->format('d.m.Y H:i'),
-            ],
-        ]);
-
-        return $view->render('Widget/Typo3OverviewWidget');
-    }
-
-    /** @return array<string, mixed> */
-    private function getProjectTodos(): array
-    {
-        $projects = [];
-
-        /*
-         * ExtensionBuilder Repository bestimmen
-         */
-        $repositoryPath = Environment::getProjectPath()
-            . DIRECTORY_SEPARATOR
-            . (Environment::isComposerMode() ? 'ExtensionBuilder' : '.ExtensionBuilder')
-            . DIRECTORY_SEPARATOR;
-
-        /*
-         * Globale Projekte
-         */
-        $globalProjectsFile = $repositoryPath . 'globalProjects.json';
-
-        if (is_file($globalProjectsFile)) {
-            $data = Tools\Json::read($globalProjectsFile);
-
-            foreach (($data['projects'] ?? []) as $projectKey => $project) {
-                $projects[$projectKey] = $project;
-            }
-        }
-
-        /*
-         * Vendor-Projekte
-         */
-        if (is_dir($repositoryPath)) {
-            foreach (scandir($repositoryPath) ?: [] as $vendorName) {
-                if ($vendorName === '.' || $vendorName === '..') {
-                    continue;
-                }
-
-                $vendorFile = $repositoryPath
-                    . $vendorName
-                    . DIRECTORY_SEPARATOR
-                    . 'vendor.json';
-
-                if (!is_file($vendorFile)) {
-                    continue;
-                }
-
-                $data = Tools\Json::read($vendorFile);
-
-                foreach (($data['vendor']['projects'] ?? []) as $projectKey => $project) {
-                    $projects[$projectKey] = $project;
-                }
-            }
-        }
-
-        /*
-         * Projekte des aktuellen Backend-Benutzers
-         */
-        $username = (string)($GLOBALS['BE_USER']->user['username'] ?? '');
-
-        if ($username !== '') {
-            $developerFile = $repositoryPath
-                . 'developer.'
-                . $username
-                . '.json';
-
-            if (is_file($developerFile)) {
-                $data = Tools\Json::read($developerFile);
-
-                foreach (($data['developer']['projects'] ?? []) as $projectKey => $project) {
-                    $projects[$projectKey] = $project;
-                }
-            }
-        }
-
-        /*
-         * Nur Projekte mit To-do zurückgeben
-         */
-        $projectTodos = [];
-
-        foreach ($projects as $projectKey => $project) {
-
-            if ((bool)($project['ebDisable'] ?? false)) {
-                continue;
-            }
-
-            $todo = trim((string)($project['ebDevTodo'] ?? ''));
-
-            if ($todo === '') {
-                continue;
-            }
-
-            $projectTodos[(string)$projectKey] = [
-                'name' => (string)(
-                    $project['name']
-                    ?? $project['projectName']
-                    ?? $projectKey
-                ),
-                'todo' => $todo,
-                'scope' => (string)($project['scope'] ?? ''),
-            ];
-        }
-
-        return $projectTodos;
     }
 }

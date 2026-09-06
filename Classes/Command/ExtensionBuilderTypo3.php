@@ -16,14 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
- *
- * @since 0.12
+ * @since 0.14
  */
 
 // Activate only when V13 support is discontinued.
@@ -132,8 +127,8 @@ class ExtensionBuilderTypo3 extends Command
 
         $this->buildService->build($developer, $vendor, $extension);
 
-        $buildInfo
-            = "Extension Builder for TYPO3\n\n"
+        $buildInfo = ''
+            . "Extension Builder for TYPO3\n\n"
             . 'Developer ' . $developer . "\n"
             . 'Vendor    ' . $vendor . "\n"
             . 'Extension ' . $extension . "\n\n"
@@ -147,5 +142,4 @@ class ExtensionBuilderTypo3 extends Command
         return Command::FAILURE;
 
     }
-
 }

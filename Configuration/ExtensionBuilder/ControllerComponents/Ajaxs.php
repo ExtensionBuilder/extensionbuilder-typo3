@@ -1,13 +1,7 @@
 <?php
 
 /**
- *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.13
  */
@@ -21,9 +15,6 @@ $components['ajaxs'] = [];
 $components['ajaxs']['componentName'] = 'ajaxs';
 $components['ajaxs']['title'] = 'AJAX';
 $components['ajaxs']['disable'] = true;
-$components['ajaxs']['controller'] = 'Component';
-$components['ajaxs']['add'] = 'ComponentAdd';
-$components['ajaxs']['edit'] = 'ComponentEdit';
 $components['ajaxs']['fieldsTabs'] = $standardFieldsTabs;
 $components['ajaxs']['fields'] = $standardFields;
 
@@ -59,9 +50,6 @@ $components['ajaxs']['propertys']['requests']['propertysName'] = 'requests';
 $components['ajaxs']['propertys']['requests']['title'] = 'Request';
 $components['ajaxs']['propertys']['requests']['disable'] = false;
 $components['ajaxs']['propertys']['requests']['select'] = false;
-$components['ajaxs']['propertys']['requests']['controller'] = 'Property';
-$components['ajaxs']['propertys']['requests']['add'] = 'PropertyAdd';
-$components['ajaxs']['propertys']['requests']['edit'] = 'PropertyEdit';
 $components['ajaxs']['propertys']['requests']['fieldsTabs'] = $standardFieldsTabs;
 $components['ajaxs']['propertys']['requests']['fields'] = $standardFields;
 
@@ -72,8 +60,5 @@ $components['ajaxs']['propertys']['responses']['propertysName'] = 'responses';
 $components['ajaxs']['propertys']['responses']['title'] = 'Response';
 $components['ajaxs']['propertys']['responses']['disable'] = false;
 $components['ajaxs']['propertys']['responses']['select'] = false;
-$components['ajaxs']['propertys']['responses']['controller'] = 'Property';
-$components['ajaxs']['propertys']['responses']['add'] = 'PropertyAdd';
-$components['ajaxs']['propertys']['responses']['edit'] = 'PropertyEdit';
 $components['ajaxs']['propertys']['responses']['fieldsTabs'] = $standardFieldsTabs;
 $components['ajaxs']['propertys']['responses']['fields'] = $standardFields;

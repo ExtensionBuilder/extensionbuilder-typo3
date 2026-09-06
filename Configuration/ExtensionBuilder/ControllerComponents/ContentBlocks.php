@@ -1,13 +1,7 @@
 <?php
 
 /**
- *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.13
  */
@@ -17,14 +11,9 @@ $components['contentBlocks']['componentName'] = 'contentBlocks';
 $components['contentBlocks']['docUrl'] = 'https://docs.typo3.org/p/friendsoftypo3/content-blocks/main/en-us/';
 $components['contentBlocks']['title'] = 'Content Blocks';
 $components['contentBlocks']['disable'] = true;
-$components['contentBlocks']['controller'] = 'Component';
-$components['contentBlocks']['add'] = 'ComponentAdd';
-$components['contentBlocks']['edit'] = 'ComponentEdit';
 $components['contentBlocks']['fieldsTabs'] = $standardFieldsTabs;
 $components['contentBlocks']['fields'] = $standardFields;
 
-// Content Blocks
-// 9999
 $components['contentBlocks']['fields']['contentType'] = ['type' => 'select', 'tab' => 'general', 'required' => true];
 $components['contentBlocks']['fields']['contentType']['selects'] = [
     'content-element' => 'Content Element',
@@ -33,16 +22,11 @@ $components['contentBlocks']['fields']['contentType']['selects'] = [
     'record-type' => 'Record Type',
 ];
 
-
-
 $components['contentBlocks']['propertys'] = [];
 $components['contentBlocks']['propertys']['fields'] = [];
 $components['contentBlocks']['propertys']['fields']['propertysName'] = 'fields';
 $components['contentBlocks']['propertys']['fields']['title'] = 'Fields';
 $components['contentBlocks']['propertys']['fields']['disable'] = false;
-$components['contentBlocks']['propertys']['fields']['controller'] = 'Property';
-$components['contentBlocks']['propertys']['fields']['add'] = 'PropertyAdd';
-$components['contentBlocks']['propertys']['fields']['edit'] = 'PropertyEdit';
 $components['contentBlocks']['propertys']['fields']['fieldsTabs'] = $standardFieldsTabs;
 $components['contentBlocks']['propertys']['fields']['fieldsTabs']['tab'] = [];
 $components['contentBlocks']['propertys']['fields']['fields'] = $standardFields;

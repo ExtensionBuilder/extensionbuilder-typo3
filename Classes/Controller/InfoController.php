@@ -12,12 +12,7 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Utility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -29,7 +24,10 @@ final class InfoController extends ExtensionBuilderController
      */
     final public function showAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -91,5 +89,4 @@ final class InfoController extends ExtensionBuilderController
 
         return $this->moduleTemplate->renderResponse('Info');
     }
-
 }

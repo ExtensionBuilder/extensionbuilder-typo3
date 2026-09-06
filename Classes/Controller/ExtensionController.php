@@ -14,12 +14,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -31,13 +26,12 @@ final class ExtensionController extends ExtensionBuilderController
      */
     public function listAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
 
         // ToDo maintenance mode
         $maintenanceActive = false;
@@ -78,6 +72,11 @@ final class ExtensionController extends ExtensionBuilderController
      */
     private function extensionList(): ResponseInterface
     {
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildmodal.js');
+
         // There is no developer forwarding to create this
         if ($this->ebBackendService->noDeveloper) {
             return $this->redirect('edit', 'Developer');
@@ -150,7 +149,7 @@ final class ExtensionController extends ExtensionBuilderController
             'add',
             'Extension',
         );
-        return $this->moduleTemplate->renderResponse('ExtensionList');
+        return $this->moduleTemplate->renderResponse('Extension/List');
     }
 
     /**
@@ -158,7 +157,10 @@ final class ExtensionController extends ExtensionBuilderController
      */
     public function addAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -271,7 +273,7 @@ final class ExtensionController extends ExtensionBuilderController
             'Extension',
         );
 
-        return $this->moduleTemplate->renderResponse('ExtensionAdd');
+        return $this->moduleTemplate->renderResponse('Extension/Add');
     }
 
     /**
@@ -279,9 +281,14 @@ final class ExtensionController extends ExtensionBuilderController
      */
     public function editAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
 
         $vendorName = (string)($bodyParams['vendorName'] ?? '');
         $extensionName = (string)($bodyParams['extensionName'] ?? '');
@@ -303,14 +310,6 @@ final class ExtensionController extends ExtensionBuilderController
 
             return $this->extensionList();
         }
-
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/modulestate.js');
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildmodal.js');
-
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
-
-        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
 
         $this->ebBackendService->readExtension($vendorName, $extensionName);
 
@@ -399,7 +398,7 @@ final class ExtensionController extends ExtensionBuilderController
             $extensionName,
         );
 
-        return $this->moduleTemplate->renderResponse('ExtensionEdit');
+        return $this->moduleTemplate->renderResponse('Extension/Edit');
     }
 
     /**
@@ -407,7 +406,10 @@ final class ExtensionController extends ExtensionBuilderController
      */
     public function deleteAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -451,9 +453,13 @@ final class ExtensionController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    public function buildAction(): ResponseInterface
+    public function buildActionToRemove(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+//Superfluous
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -529,17 +535,19 @@ final class ExtensionController extends ExtensionBuilderController
             $extensionName,
         );
 
-        return $this->moduleTemplate->renderResponse('ExtensionEdit');
+        return $this->moduleTemplate->renderResponse('Extension/Edit');
     }
-
-    // ToDo Build zeite wird nich korrekt angezeigt
 
     /**
      * @since 0.12
      */
-    public function listBuildAction(): ResponseInterface
+    public function listBuildActionToRemove(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+//Superfluous
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -570,10 +578,14 @@ final class ExtensionController extends ExtensionBuilderController
     /**
      * @since 0.12
      */
-    // ToDo Refactory
     public function uploadAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        // ToDo Refactory
+
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -612,5 +624,4 @@ final class ExtensionController extends ExtensionBuilderController
 
         return $this->redirect('list', 'Extension');
     }
-
 }

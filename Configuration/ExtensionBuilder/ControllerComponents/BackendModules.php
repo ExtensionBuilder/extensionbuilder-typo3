@@ -1,13 +1,7 @@
 <?php
 
 /**
- *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.13
  */
@@ -20,9 +14,6 @@ $components['beModules']['title'] = 'Backend module';
 $components['beModules']['disable'] = false;
 $components['beModules']['docUrl'] = 
     'https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ExtensionArchitecture/HowTo/BackendModule/Index.html';
-$components['beModules']['controller'] = 'Component';
-$components['beModules']['add'] = 'ComponentAdd';
-$components['beModules']['edit'] = 'ComponentEdit';
 $components['beModules']['fieldsTabs'] = $standardFieldsTabs;
 $components['beModules']['fields'] = $standardFields;
 
@@ -53,22 +44,13 @@ $components['beModules']['fields']['labels'] = ['type' => 'input', 'tab' => 'gen
 //        'iconIdentifier' => 'mimetypes-x-content-form',
 //        'labels' => $lllBase . ':title.extensionbuilder',
 
-
 $components['beModules']['propertys']['modules'] = [];
 $components['beModules']['propertys']['modules']['propertysName'] = 'modules';
 $components['beModules']['propertys']['modules']['disable'] = false;
 $components['beModules']['propertys']['modules']['title'] = 'Module';
-$components['beModules']['propertys']['modules']['controller'] = 'Property';
-$components['beModules']['propertys']['modules']['add'] = 'PropertyAdd';
-$components['beModules']['propertys']['modules']['edit'] = 'PropertyEdit';
 $components['beModules']['propertys']['modules']['fieldsTabs'] = $standardFieldsTabs;
 $components['beModules']['propertys']['modules']['fields'] = $standardFields;
-
-// 8888
-
-
 $components['beModules']['propertys']['modules']['fields']['controllerActions'] = ['type' => 'lll', 'tab' => 'general'];
-
 $components['beModules']['propertys']['modules']['fields']['language'] = ['type' => 'lll', 'tab' => 'general'];
 
 //controller
@@ -76,9 +58,6 @@ $components['beModules']['propertys']['controller'] = [];
 $components['beModules']['propertys']['controller']['propertysName'] = 'controller';
 $components['beModules']['propertys']['controller']['disable'] = false;
 $components['beModules']['propertys']['controller']['title'] = 'Controller';
-$components['beModules']['propertys']['controller']['controller'] = 'Property';
-$components['beModules']['propertys']['controller']['add'] = 'PropertyAdd';
-$components['beModules']['propertys']['controller']['edit'] = 'PropertyEdit';
 $components['beModules']['propertys']['controller']['fieldsTabs'] = $standardFieldsTabs;
 $components['beModules']['propertys']['controller']['fields'] = $standardFields;
 
@@ -86,8 +65,5 @@ $components['beModules']['propertys']['language'] = [];
 $components['beModules']['propertys']['language']['propertysName'] = 'language';
 $components['beModules']['propertys']['language']['disable'] = false;
 $components['beModules']['propertys']['language']['title'] = 'Language';
-$components['beModules']['propertys']['language']['controller'] = 'Property';
-$components['beModules']['propertys']['language']['add'] = 'PropertyAdd';
-$components['beModules']['propertys']['language']['edit'] = 'PropertyEdit';
 $components['beModules']['propertys']['language']['fieldsTabs'] = $standardFieldsTabs;
 $components['beModules']['propertys']['language']['fields'] = $standardFields;

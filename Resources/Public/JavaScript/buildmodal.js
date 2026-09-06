@@ -3,7 +3,7 @@ import DocumentService from '@typo3/core/document-service.js';
 import Modal from '@typo3/backend/modal.js';
 import Severity from '@typo3/backend/severity.js';
 
-// Developer Info: Beta modal build info ExtensionController
+// Developer Info: Build modal for ExtensionController
 
 DocumentService.ready().then(() => {
   document.addEventListener('click', async (event) => {
@@ -27,20 +27,57 @@ DocumentService.ready().then(() => {
       return;
     }
 
-    const modal = Modal.advanced({
-      title: 'Build läuft',
-      content: `
-        <div class="extensionbuilder-build-modal">
-          <p data-extensionbuilder-build-status>Build wird vorbereitet...</p>
+    const content = document.createElement('div');
+    content.className = 'extensionbuilder-build-modal';
 
-          <ol>
-            <li data-extensionbuilder-build-step="prepare">Vorbereitung...</li>
-            <li data-extensionbuilder-build-step="request">Build-Request...</li>
-            <li data-extensionbuilder-build-step="response">Antwort verarbeiten...</li>
-            <li data-extensionbuilder-build-step="finish">Abschluss...</li>
-          </ol>
-        </div>
-      `,
+    const info = document.createElement('div');
+    info.className = 'mb-3';
+
+    const vendorLine = document.createElement('div');
+    vendorLine.innerHTML = '<strong>Vendor:</strong> ';
+
+    const vendorValue = document.createElement('span');
+    vendorValue.textContent = vendorName;
+    vendorLine.appendChild(vendorValue);
+
+    const extensionLine = document.createElement('div');
+    extensionLine.innerHTML = '<strong>Extension:</strong> ';
+
+    const extensionValue = document.createElement('span');
+    extensionValue.textContent = extensionName;
+    extensionLine.appendChild(extensionValue);
+
+    info.appendChild(vendorLine);
+    info.appendChild(extensionLine);
+
+    const status = document.createElement('div');
+    status.className = 'alert alert-info mb-3';
+    status.setAttribute('role', 'status');
+    status.textContent = 'Build wird vorbereitet...';
+
+    const steps = document.createElement('ol');
+    steps.className = 'mb-0';
+
+    const createStep = (name, text) => {
+      const item = document.createElement('li');
+      item.dataset.extensionbuilderBuildStep = name;
+      item.textContent = text;
+      steps.appendChild(item);
+      return item;
+    };
+
+    const prepareStep = createStep('prepare', 'Vorbereitung...');
+    const requestStep = createStep('request', 'Build-Request...');
+    const responseStep = createStep('response', 'Antwort verarbeiten...');
+    const finishStep = createStep('finish', 'Abschluss...');
+
+    content.appendChild(info);
+    content.appendChild(status);
+    content.appendChild(steps);
+
+    const modal = Modal.advanced({
+      title: 'Extension Build',
+      content,
       severity: Severity.info,
       staticBackdrop: true,
       buttons: []
@@ -48,131 +85,104 @@ DocumentService.ready().then(() => {
 
     const modalElement = modal[0] || modal;
 
-    const setStatus = (text) => {
-      const status = modalElement.querySelector('[data-extensionbuilder-build-status]');
-      if (status) {
-        status.textContent = text;
-      }
+    const setStatus = (text, type = 'info') => {
+      status.className = `alert alert-${type} mb-3`;
+      status.textContent = text;
     };
 
-    const markStep = (stepName, text) => {
-      const step = modalElement.querySelector(`[data-extensionbuilder-build-step="${stepName}"]`);
-      if (step) {
-        step.textContent = text;
+    const addFooterButtons = (success) => {
+      const footer = modalElement.querySelector('.modal-footer');
+
+      if (!footer) {
+        return;
       }
+
+      footer.innerHTML = '';
+
+      if (success) {
+        const reloadButton = document.createElement('button');
+        reloadButton.type = 'button';
+        reloadButton.className = 'btn btn-primary';
+        reloadButton.textContent = 'Seite neu laden';
+        reloadButton.addEventListener('click', () => {
+          window.location.reload();
+        });
+        footer.appendChild(reloadButton);
+      }
+
+      const closeButton = document.createElement('button');
+      closeButton.type = 'button';
+      closeButton.className = success ? 'btn btn-default' : 'btn btn-primary';
+      closeButton.textContent = 'Schließen';
+
+      closeButton.addEventListener('click', () => {
+        if (typeof modalElement.hideModal === 'function') {
+          modalElement.hideModal();
+        } else {
+          Modal.dismiss();
+        }
+      });
+
+      footer.appendChild(closeButton);
     };
 
     try {
+      prepareStep.textContent = '✓ Vorbereitung abgeschlossen';
       setStatus('Build wird gestartet...');
-      markStep('prepare', '✓ Vorbereitung abgeschlossen');
 
       const ajaxUrl = TYPO3.settings.ajaxUrls.extensionbuilder_typo3_build;
 
       if (!ajaxUrl) {
-        throw new Error('AJAX URL "extensionbuilder_typo3_build" wurde nicht gefunden.');
+        throw new Error(
+          'AJAX URL "extensionbuilder_typo3_build" wurde nicht gefunden.'
+        );
       }
 
-      markStep('request', 'Build-Request läuft...');
+      requestStep.textContent = 'Build-Request läuft...';
 
-    const buildUrl = new URL(ajaxUrl, window.location.origin);
-    buildUrl.searchParams.set('vendorName', vendorName);
-    buildUrl.searchParams.set('extensionName', extensionName);
+      const buildUrl = new URL(ajaxUrl, window.location.origin);
+      buildUrl.searchParams.set('vendorName', vendorName);
+      buildUrl.searchParams.set('extensionName', extensionName);
 
-    const response = await new AjaxRequest(buildUrl.toString()).post({});
+      const response = await new AjaxRequest(buildUrl.toString()).post({});
 
-console.log("Log 9" + response);
-
-      markStep('request', '✓ Build-Request abgeschlossen');
-      markStep('response', 'Antwort wird verarbeitet...');
-
-console.log("Log 10");
-console.log(response);
+      requestStep.textContent = '✓ Build-Request abgeschlossen';
+      responseStep.textContent = 'Antwort wird verarbeitet...';
+      setStatus('Antwort des Build-Service wird verarbeitet...');
 
       const data = await response.resolve();
 
-console.log("Log 11");
+      if (data?.success) {
+        responseStep.textContent = '✓ Antwort erfolgreich';
+        finishStep.textContent = '✓ Build erfolgreich abgeschlossen';
 
-      if (data.success) {
-
-console.log("Log 12");
-
-        markStep('response', '✓ Antwort erfolgreich');
-        markStep('finish', '✓ Build erfolgreich abgeschlossen');
-        setStatus(data.message || 'Build erfolgreich abgeschlossen.');
-
-        Modal.dismiss();
-
-        Modal.confirm(
-          'Build erfolgreich',
+        setStatus(
           data.message || 'Die Extension wurde erfolgreich gebaut.',
-          Severity.ok,
-          [
-            {
-              text: 'Seite neu laden',
-              active: true,
-              btnClass: 'btn-primary',
-              trigger: () => {
-                window.location.reload();
-              }
-            },
-            {
-              text: 'Schließen',
-              btnClass: 'btn-default',
-              trigger: (event, modal) => {
-                modal.hideModal();
-              }
-            }
-          ]
+          'success'
         );
 
+        addFooterButtons(true);
         return;
       }
 
-      markStep('response', 'Antwort enthält Fehler');
-      markStep('finish', 'Build fehlgeschlagen');
-      setStatus(data.message || 'Build fehlgeschlagen.');
+      responseStep.textContent = '✗ Antwort enthält Fehler';
+      finishStep.textContent = '✗ Build fehlgeschlagen';
 
-
-      Modal.dismiss();
-
-      Modal.confirm(
-        'Build fehlgeschlagen',
-        data.message || 'Beim Build ist ein Fehler aufgetreten.',
-        Severity.error,
-        [
-          {
-            text: 'Schließen',
-            active: true,
-            btnClass: 'btn-primary',
-            trigger: (event, modal) => {
-              modal.hideModal();
-            }
-          }
-        ]
+      setStatus(
+        data?.message || 'Beim Build ist ein Fehler aufgetreten.',
+        'danger'
       );
+
+      addFooterButtons(false);
     } catch (error) {
-      markStep('finish', 'Build-Fehler');
-      setStatus(error?.message || 'Der Build konnte nicht ausgeführt werden.');
+      finishStep.textContent = '✗ Build-Fehler';
 
-console.log("Catch - Modal.dismiss()");
-
-      Modal.dismiss();
-
-      Modal.confirm(
-        'Build-Fehler',
+      setStatus(
         error?.message || 'Der Build konnte nicht ausgeführt werden.',
-        Severity.error,
-        [
-          {
-            text: 'Schließen',
-            active: true,
-            btnClass: 'btn-primary',
-            trigger: (event, modal) => {
-              modal.hideModal();
-            }
-          }
-        ]
+        'danger'
       );
+
+      addFooterButtons(false);
     }
   });
 });

@@ -1,0 +1,503 @@
+.documentation-content {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/*
+ * Markdown rendering for TYPO3 Backend
+ *
+ * Supports:
+ *   html[data-color-scheme="light"]
+ *   html[data-color-scheme="dark"]
+ *   html[data-color-scheme="auto"]
+ *
+ * Initial-load fallback:
+ * If TYPO3 has not yet set data-color-scheme, the OS preference
+ * is used via prefers-color-scheme.
+ */
+
+.markdown-body {
+    /* Light mode defaults */
+    --md-color-text: #1f2328;
+    --md-color-muted: #59636e;
+    --md-color-link: #0969da;
+    --md-color-border: #d0d7de;
+    --md-color-border-muted: #afb8c1;
+    --md-color-background: transparent;
+    --md-color-background-secondary: #f6f8fa;
+    --md-color-code-background: rgba(175, 184, 193, 0.2);
+    --md-color-anchor: #59636e;
+
+    display: block;
+    width: 100%;
+    max-width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+
+    color: var(--md-color-text);
+    background-color: var(--md-color-background);
+}
+
+/* Explicit TYPO3 dark mode */
+html[data-color-scheme="dark"] .markdown-body {
+    --md-color-text: #f0f3f6;
+    --md-color-muted: #b7c0ca;
+    --md-color-link: #6cb6ff;
+    --md-color-border: #4b5563;
+    --md-color-border-muted: #5f6b7a;
+    --md-color-background: transparent;
+    --md-color-background-secondary: #252b33;
+    --md-color-code-background: rgba(255, 255, 255, 0.10);
+    --md-color-anchor: #b7c0ca;
+}
+
+/* TYPO3 auto mode + initial load fallback */
+@media (prefers-color-scheme: dark) {
+    html[data-color-scheme="auto"] .markdown-body,
+    html:not([data-color-scheme]) .markdown-body {
+        --md-color-text: #f0f3f6;
+        --md-color-muted: #b7c0ca;
+        --md-color-link: #6cb6ff;
+        --md-color-border: #4b5563;
+        --md-color-border-muted: #5f6b7a;
+        --md-color-background: transparent;
+        --md-color-background-secondary: #252b33;
+        --md-color-code-background: rgba(255, 255, 255, 0.10);
+        --md-color-anchor: #b7c0ca;
+    }
+}
+
+.markdown-body::before,
+.markdown-body::after {
+    display: table;
+    content: "";
+}
+
+.markdown-body::after {
+    clear: both;
+}
+
+.markdown-body > :first-child {
+    margin-top: 0 !important;
+}
+
+.markdown-body > :last-child {
+    margin-bottom: 0 !important;
+}
+
+
+/* Headings */
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    position: relative;
+    margin-top: 24px;
+    margin-bottom: 16px;
+
+    color: inherit;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.markdown-body h1 {
+    padding-bottom: 0.3em;
+    font-size: 2em;
+    border-bottom: 1px solid var(--md-color-border);
+}
+
+.markdown-body h2 {
+    padding-bottom: 0.3em;
+    font-size: 1.5em;
+    border-bottom: 1px solid var(--md-color-border);
+}
+
+.markdown-body h3 {
+    font-size: 1.25em;
+}
+
+.markdown-body h4 {
+    font-size: 1em;
+}
+
+.markdown-body h5 {
+    font-size: 0.875em;
+}
+
+.markdown-body h6 {
+    font-size: 0.85em;
+    color: var(--md-color-muted);
+}
+
+
+/* Paragraphs */
+
+.markdown-body p {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+
+/* Links */
+
+.markdown-body a {
+    color: var(--md-color-link);
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+
+/* Strong / emphasis */
+
+.markdown-body strong {
+    font-weight: 600;
+}
+
+
+/* Lists */
+
+.markdown-body ul,
+.markdown-body ol {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-left: 2em;
+}
+
+.markdown-body li + li {
+    margin-top: 0.25em;
+}
+
+.markdown-body li > p {
+    margin-top: 16px;
+}
+
+
+/* Task lists */
+
+.markdown-body .task-list-item {
+    list-style-type: none;
+}
+
+.markdown-body .task-list-item input[type="checkbox"] {
+    margin: 0 0.2em 0.25em -1.4em;
+    vertical-align: middle;
+}
+
+
+/* Blockquote */
+
+.markdown-body blockquote {
+    margin: 0 0 16px;
+    padding: 0 1em;
+
+    color: var(--md-color-muted);
+    border-left: 0.25em solid var(--md-color-border);
+}
+
+.markdown-body blockquote > :first-child {
+    margin-top: 0;
+}
+
+.markdown-body blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+
+/* Horizontal rule */
+
+.markdown-body hr {
+    height: 0.25em;
+    padding: 0;
+    margin: 24px 0;
+
+    background-color: var(--md-color-border);
+    border: 0;
+}
+
+
+/* Inline code */
+
+.markdown-body code,
+.markdown-body tt {
+    padding: 0.2em 0.4em;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        "SF Mono",
+        Menlo,
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-size: 85%;
+    white-space: break-spaces;
+
+    color: inherit;
+    background-color: var(--md-color-code-background);
+    border-radius: 6px;
+}
+
+
+/* Code blocks */
+
+.markdown-body pre {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding: 16px;
+
+    overflow: auto;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        "SF Mono",
+        Menlo,
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-size: 85%;
+    line-height: 1.45;
+
+    color: inherit;
+    background-color: var(--md-color-background-secondary);
+    border: 1px solid var(--md-color-border);
+    border-radius: 6px;
+}
+
+.markdown-body pre code {
+    display: inline;
+    padding: 0;
+    margin: 0;
+
+    overflow: visible;
+
+    font-size: 100%;
+    line-height: inherit;
+    word-wrap: normal;
+
+    color: inherit;
+    background-color: transparent;
+    border: 0;
+}
+
+
+/* Tables */
+
+.markdown-body table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin-top: 0;
+    margin-bottom: 16px;
+
+    overflow: auto;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.markdown-body table th {
+    font-weight: 600;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+    padding: 8px 13px;
+    border: 1px solid var(--md-color-border);
+}
+
+.markdown-body table tr {
+    color: inherit;
+    background-color: var(--md-color-background);
+    border-top: 1px solid var(--md-color-border);
+}
+
+.markdown-body table tr:nth-child(2n) {
+    background-color: var(--md-color-background-secondary);
+}
+
+
+/* Explicit dark table styling for better readability */
+
+html[data-color-scheme="dark"] .markdown-body table th {
+    color: #f7f9fb;
+    background-color: #303741;
+}
+
+html[data-color-scheme="dark"] .markdown-body table td {
+    color: #eef2f6;
+}
+
+html[data-color-scheme="dark"] .markdown-body table tr {
+    background-color: #20262d;
+}
+
+html[data-color-scheme="dark"] .markdown-body table tr:nth-child(2n) {
+    background-color: #2a313a;
+}
+
+@media (prefers-color-scheme: dark) {
+    html[data-color-scheme="auto"] .markdown-body table th,
+    html:not([data-color-scheme]) .markdown-body table th {
+        color: #f7f9fb;
+        background-color: #303741;
+    }
+
+    html[data-color-scheme="auto"] .markdown-body table td,
+    html:not([data-color-scheme]) .markdown-body table td {
+        color: #eef2f6;
+    }
+
+    html[data-color-scheme="auto"] .markdown-body table tr,
+    html:not([data-color-scheme]) .markdown-body table tr {
+        background-color: #20262d;
+    }
+
+    html[data-color-scheme="auto"] .markdown-body table tr:nth-child(2n),
+    html:not([data-color-scheme]) .markdown-body table tr:nth-child(2n) {
+        background-color: #2a313a;
+    }
+}
+
+
+/* Images */
+
+.markdown-body img {
+    max-width: 100%;
+    height: auto;
+    box-sizing: content-box;
+    background-color: transparent;
+}
+
+
+/* Definition lists */
+
+.markdown-body dl {
+    padding: 0;
+}
+
+.markdown-body dl dt {
+    padding: 0;
+    margin-top: 16px;
+
+    font-size: 1em;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.markdown-body dl dd {
+    padding: 0 16px;
+    margin-bottom: 16px;
+}
+
+
+/* Keyboard */
+
+.markdown-body kbd {
+    display: inline-block;
+    padding: 3px 5px;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        "SF Mono",
+        Menlo,
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-size: 11px;
+    line-height: 10px;
+    color: var(--md-color-text);
+    vertical-align: middle;
+
+    background-color: var(--md-color-background-secondary);
+    border: 1px solid var(--md-color-border);
+    border-bottom-color: var(--md-color-border-muted);
+    border-radius: 6px;
+    box-shadow: inset 0 -1px 0 var(--md-color-border-muted);
+}
+
+
+/* Details */
+
+.markdown-body details {
+    display: block;
+    margin-bottom: 16px;
+}
+
+.markdown-body summary {
+    cursor: pointer;
+}
+
+
+/* Heading anchor */
+
+.markdown-body .anchor {
+    position: absolute;
+    top: 50%;
+    left: -24px;
+
+    width: 16px;
+    height: 16px;
+
+    transform: translateY(-50%);
+    visibility: hidden;
+
+    color: var(--md-color-anchor);
+    text-decoration: none;
+}
+
+.markdown-body .anchor::before {
+    display: block;
+    width: 16px;
+    height: 16px;
+
+    content: "";
+
+    background-color: currentColor;
+
+    mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M7.775 3.275a.75.75 0 0 0 1.06 1.06l1.25-1.25a2 2 0 1 1 2.83 2.83l-2.5 2.5a2 2 0 0 1-2.83 0 .75.75 0 0 0-1.06 1.06 3.5 3.5 0 0 0 4.95 0l2.5-2.5a3.5 3.5 0 0 0-4.95-4.95l-1.25 1.25Z'/%3E%3Cpath d='M8.415 7.585a2 2 0 0 0-2.83 0l-2.5 2.5a2 2 0 1 0 2.83 2.83l1.25-1.25a.75.75 0 0 1 1.06 1.06l-1.25 1.25a3.5 3.5 0 0 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .75.75 0 0 1-1.06 1.06Z'/%3E%3C/svg%3E");
+
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 16px 16px;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor,
+.markdown-body .anchor:focus {
+    visibility: visible;
+}
+
+
+/* Responsive */
+
+@media (max-width: 767px) {
+    .markdown-body {
+        padding: 15px;
+    }
+
+    .markdown-body .anchor {
+        position: static;
+        display: inline-block;
+        margin-right: 4px;
+
+        transform: none;
+    }
+}

@@ -13,12 +13,7 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Http\JsonResponse;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -37,13 +32,11 @@ final class ExtensionBuilderAjaxController
      */
     public function getFieldsValuesAction(ServerRequestInterface $request): JsonResponse
     {
-        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
-
-        $name = (string)($bodyParams['name'] ?? '');
-        $config = (string)($bodyParams['config'] ?? '');
-        $key = (string)($bodyParams['key'] ?? '');
-        $base = (string)($bodyParams['base'] ?? '');
-        $fields = (string)($bodyParams['fields'] ?? '');
+        $name = (string)($request['name'] ?? '');
+        $config = (string)($request['config'] ?? '');
+        $key = (string)($request['key'] ?? '');
+        $base = (string)($request['base'] ?? '');
+        $fields = (string)($request['fields'] ?? '');
 
         $value = [];
 
@@ -259,8 +252,7 @@ final class ExtensionBuilderAjaxController
 
         $codeContent = (string)($bodyParams['content'] ?? '');
 
-        $developerCodeFile = $this->buildSafePath(
-            ''
+        $developerCodeFile = $this->buildSafePath( ''
             . $this->ebBackendService->repositoryPath
             . $vendorName . DIRECTORY_SEPARATOR
             . 'TYPO3' . DIRECTORY_SEPARATOR
@@ -473,5 +465,4 @@ final class ExtensionBuilderAjaxController
 
         return new JsonResponse($payload, $statusCode);
     }
-
 }

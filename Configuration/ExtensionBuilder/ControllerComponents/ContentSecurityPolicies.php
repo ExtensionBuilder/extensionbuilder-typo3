@@ -1,13 +1,7 @@
 <?php
 
 /**
- *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.13
  */
@@ -19,9 +13,6 @@ $components['contentSecurityPolicys']['askai'] = true;
 
 $components['contentSecurityPolicys']['title'] = 'ContentSecurityPolicy';
 $components['contentSecurityPolicys']['disable'] = false;
-$components['contentSecurityPolicys']['controller'] = 'Component';
-$components['contentSecurityPolicys']['add'] = 'ComponentAdd';
-$components['contentSecurityPolicys']['edit'] = 'ComponentEdit';
 $components['contentSecurityPolicys']['max'] = 2;
 $components['contentSecurityPolicys']['fieldsTabs'] = $standardFieldsTabs;
 $components['contentSecurityPolicys']['fields'] = $standardFields;
@@ -38,9 +29,6 @@ $components['contentSecurityPolicys']['propertys']['mutation'] = [];
 $components['contentSecurityPolicys']['propertys']['mutation']['propertysName'] = 'mutation';
 $components['contentSecurityPolicys']['propertys']['mutation']['title'] = 'Mutation';
 $components['contentSecurityPolicys']['propertys']['mutation']['disable'] = false;
-$components['contentSecurityPolicys']['propertys']['mutation']['controller'] = 'Property';
-$components['contentSecurityPolicys']['propertys']['mutation']['add'] = 'PropertyAdd';
-$components['contentSecurityPolicys']['propertys']['mutation']['edit'] = 'PropertyEdit';
 $components['contentSecurityPolicys']['propertys']['mutation']['fieldsTabs'] = $standardFieldsTabs;
 $components['contentSecurityPolicys']['propertys']['mutation']['fields'] = $standardFields;
 

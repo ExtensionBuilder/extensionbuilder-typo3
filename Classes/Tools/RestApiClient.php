@@ -12,12 +12,7 @@ use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -48,54 +43,25 @@ class RestApiClient
         string $path,
         array $multipart,
     ): array {
-        // 9999
         return self::executeClientJsonResponse($authority, $path, $multipart);
     }
 
     /**
      * @since 0.12
      */
-    public static function checkKey(
+    public static function getServiceAccess(
         string $authority,
         string $path,
         string $systemId,
-        string $systemProKey,
         string $developerId,
-        string $developerProKey,
     ): array {
         $multipart = [];
         $multipart['multipart'] = [];
-        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'checkProKey'];
+        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'getServiceAccess'];
         $multipart['multipart'][] = ['name' => 'systemId', 'contents' => $systemId];
-        $multipart['multipart'][] = ['name' => 'systemProKey', 'contents' => $systemProKey];
         $multipart['multipart'][] = ['name' => 'developerId', 'contents' => $developerId];
-        $multipart['multipart'][] = ['name' => 'developerProKey', 'contents' => $developerProKey];
+
         return self::executeClientJsonResponse($authority, $path, $multipart);
-    }
-
-    /**
-     * @since 0.12
-     */
-    public static function checkToRemove(
-        string $authority,
-        string $path,
-        array $multipart,
-    ): array {
-        $client = new \GuzzleHttp\Client();
-
-        $multipart = [];
-        $multipart['multipart'] = [];
-        $multipart['multipart'][] = ['name' => 'command', 'contents' => 'check'];
-
-        $response = $client->request(
-            'POST',
-            $authority . $path,
-            $multipart,
-        );
-
-        $string = (string)$response->getBody();
-
-        return (array)json_decode($string, true);
     }
 
     /**
@@ -284,5 +250,4 @@ class RestApiClient
             }
         }
     }
-
 }

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
-use ExtensionBuilder\ExtensionBuilderTypo3\Tools\MarkdownRenderer;
 use Psr\Http\Message\ResponseInterface;
+
+use ExtensionBuilder\ExtensionBuilderTypo3\Markdown\CommonMarkLoader;
+use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\GithubFlavoredMarkdownConverter;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.14
  */
@@ -29,11 +29,16 @@ final class DeveloperHubController extends ExtensionBuilderController
      */
     final public function showAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
+
+        $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/markdown.css');
 
         $mdFile = self::sanitizeMarkdownPath((string)($bodyParams['mdFile'] ?? 'index.md'));
         $markdownFile = GeneralUtility::getFileAbsFileName(
@@ -47,11 +52,11 @@ final class DeveloperHubController extends ExtensionBuilderController
 
         $markdown = $this->rewriteMarkdownLinksToBackendLinks($markdown);
 
-        $markdownHtml = $this->renderMarkdown($markdown);
+        $content = $this->renderMarkdown($markdown);
 
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
-            'markdownHtml' => $markdownHtml,
+            'content' => $content,
         ]);
 
         $this->addDocHeaderModuleDropDown('DeveloperHub');
@@ -65,14 +70,35 @@ final class DeveloperHubController extends ExtensionBuilderController
      */
     private function renderMarkdown(string $markdown): string
     {
-        $renderer = new MarkdownRenderer([
-            'html_input'         => 'strip',
+        CommonMarkLoader::load();
+/**
+        $converter = new CommonMarkConverter([
+            'html_input' => 'strip',
             'allow_unsafe_links' => false,
-            'heading_permalink'  => true,
-            'heading_html_class' => 'documentation-heading-permalink',
+
+'heading_permalink' => [
+    'html_class' => 'anchor',
+    'id_prefix' => 'user-content',
+    'fragment_prefix' => '',
+    'apply_id_to_heading' => true,
+    'insert' => 'before',
+    'symbol' => '',
+    'title' => 'Permalink',
+],
         ]);
 
-        return (string)$renderer->convert($markdown);
+
+        $environment = $converter->getEnvironment();
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
+        $environment->addExtension(new HeadingPermalinkExtension());
+*/
+
+    $converter = new GithubFlavoredMarkdownConverter([
+        'html_input' => 'strip',
+        'allow_unsafe_links' => false,
+    ]);
+
+        return (string)$converter->convert($markdown);
     }
 
     /**
@@ -127,5 +153,4 @@ final class DeveloperHubController extends ExtensionBuilderController
 
         return $mdFile;
     }
-
 }

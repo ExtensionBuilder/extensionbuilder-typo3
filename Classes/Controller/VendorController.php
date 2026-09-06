@@ -14,12 +14,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -31,7 +26,10 @@ final class VendorController extends ExtensionBuilderController
      */
     final public function listAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -85,7 +83,7 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-        return $this->moduleTemplate->renderResponse('VendorList');
+        return $this->moduleTemplate->renderResponse('Vendor/List');
     }
 
     /**
@@ -93,7 +91,10 @@ final class VendorController extends ExtensionBuilderController
      */
     final public function addAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -186,7 +187,7 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-        return $this->moduleTemplate->renderResponse('VendorAdd');
+        return $this->moduleTemplate->renderResponse('Vendor/Add');
     }
 
     /**
@@ -194,7 +195,10 @@ final class VendorController extends ExtensionBuilderController
      */
     final public function editAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -269,7 +273,7 @@ final class VendorController extends ExtensionBuilderController
             'Vendor',
         );
 
-        return $this->moduleTemplate->renderResponse('VendorEdit');
+        return $this->moduleTemplate->renderResponse('Vendor/Edit');
     }
 
     /**
@@ -277,7 +281,10 @@ final class VendorController extends ExtensionBuilderController
      */
     final public function deleteAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -309,5 +316,4 @@ final class VendorController extends ExtensionBuilderController
 
         return $this->vendorList();
     }
-
 }

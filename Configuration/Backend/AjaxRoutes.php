@@ -5,13 +5,7 @@ declare(strict_types=1);
 use ExtensionBuilder\ExtensionBuilderTypo3\Controller;
 
 /**
- *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */

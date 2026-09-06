@@ -39,12 +39,7 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -402,6 +397,9 @@ class ExtensionBuilderController extends ActionController
         }
     }
 
+    /**
+     * @since 0.12
+     */
     final public function addDocHeaderCloseButton(
         string $action,
         string $controller,
@@ -483,6 +481,9 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
+    /**
+     * @since 0.12
+     */
     final public function addDocHeaderSaveButton(
         string $saveFromId,
         string $saveController,
@@ -533,6 +534,9 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
+    /**
+     * @since 0.12
+     */
     final public function addDocHeaderAddButton(
         string $action,
         string $controller,
@@ -591,6 +595,9 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
+    /**
+     * @since 0.12
+     */
     final public function addDocHeaderBuildButton(
         string $action,
         string $controller,
@@ -663,11 +670,15 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
-    // ToDo Refactoring
+    /**
+     * @since 0.12
+     */
     final public function addDocHeaderImportExampleVendorToDoRemove(
         string $importAction,
         string $importController,
     ): void {
+        // ToDo Refactoring
+
         $languageService = self::getLanguageService();
 
         $buttonBar = $this->moduleTemplate
@@ -716,6 +727,9 @@ class ExtensionBuilderController extends ActionController
         );
     }
 
+    /**
+     * @since 0.12
+     */
     final public function flashMessage(
         string $flashMessage1,
         string $flashMessage2,
@@ -740,6 +754,9 @@ class ExtensionBuilderController extends ActionController
         $notificationQueue->enqueue($flashMessage);
     }
 
+    /**
+     * @since 0.12
+     */
     final public function addDocHeaderTypo3Command(
         string $action,
         string $controller,

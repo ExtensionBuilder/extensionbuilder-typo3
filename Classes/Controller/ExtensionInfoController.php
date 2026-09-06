@@ -8,12 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -25,12 +20,15 @@ final class ExtensionInfoController extends ExtensionBuilderController
      */
     public function infoAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
-        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/extensioninfo.js');
+        $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/litegraph.js');
 
         $vendorName = $bodyParams['vendorName'];
         $extensionName = $bodyParams['extensionName'];
@@ -59,7 +57,6 @@ final class ExtensionInfoController extends ExtensionBuilderController
             'Extension',
         );
 
-        return $this->moduleTemplate->renderResponse('ExtensionInfo/Extension');
+        return $this->moduleTemplate->renderResponse('Litegraph');
     }
-
 }

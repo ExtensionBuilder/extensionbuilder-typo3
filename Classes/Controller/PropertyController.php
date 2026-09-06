@@ -10,12 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -27,7 +22,10 @@ final class PropertyController extends ExtensionBuilderController
      */
     public function addAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -115,7 +113,7 @@ final class PropertyController extends ExtensionBuilderController
             'Property',
         );
 
-        return $this->moduleTemplate->renderResponse($propertysDev['add']);
+        return $this->moduleTemplate->renderResponse('Property/Add');
     }
 
     /**
@@ -123,7 +121,10 @@ final class PropertyController extends ExtensionBuilderController
      */
     public function editAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -220,7 +221,7 @@ final class PropertyController extends ExtensionBuilderController
             'Property',
         );
 
-        return $this->moduleTemplate->renderResponse($propertysDev['edit']);
+        return $this->moduleTemplate->renderResponse('Property/Edit');
     }
 
     /**
@@ -228,7 +229,10 @@ final class PropertyController extends ExtensionBuilderController
      */
     public function deleteAction(): ResponseInterface
     {
-        $bodyParams = array_merge($this->request->getQueryParams(), is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $this->request->getQueryParams(),
+            is_array($this->request->getParsedBody()) ? $this->request->getParsedBody() : []
+        );
 
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
@@ -297,7 +301,6 @@ final class PropertyController extends ExtensionBuilderController
             'Component',
         );
 
-        return $this->moduleTemplate->renderResponse($componentsDev['edit']);
+        return $this->moduleTemplate->renderResponse('Component/Edit');
     }
-
 }

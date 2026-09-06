@@ -218,19 +218,16 @@ Info
                                 <f:comment>Build</f:comment>
                                 <f:if condition="{extensionAs.extension.noBuild} != true">
                                     <div class="btn-group" role="group">
-                                        <f:link.action
-                                            action="listBuild"
-                                            controller="Extension"
+                                        <button
+                                            type="button"
                                             class="btn btn-default"
-                                            arguments="{
-                                                'vendorName': extensionAs.extension.vendorName,
-                                                'extensionName': extensionAs.extension.extensionNamespace
-                                            }"
-                                            data="{bs-toggle: 'tooltip'}"
+                                            data-extensionbuilder-build-button="1"
+                                            data-vendor-name="{extensionAs.extension.vendorName}"
+                                            data-extension-name="{extensionAs.extension.extensionNamespace}"
                                             title="{f:translate(key:'{lllBase}.xlf:build')}"
                                         >
-                                            <core:icon identifier="actions-play" />
-                                        </f:link.action>
+                                            <core:icon identifier="actions-play" />Build
+                                        </button>
                                     </div>
                                 </f:if>
 

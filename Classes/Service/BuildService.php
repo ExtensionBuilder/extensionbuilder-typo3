@@ -13,12 +13,7 @@ use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
+ * @extensionbuilderCoreMajorVersion 1
  *
  * @since 0.12
  */
@@ -124,7 +119,6 @@ class BuildService
         if (
             ($this->configuration['typo3']['builderUrl'] ?? false)
             && ($this->configuration['typo3']['builderApi'] ?? false)
-
         ) {
             $this->coreStatus = Tools\RestApiClient::getStatus(
                 $this->configuration['typo3']['builderUrl'],
@@ -299,7 +293,8 @@ class BuildService
                 $vendorsAndExtensions[$vendorValue]['extensions'] = [];
 
                 $extensionList = Tools\Folder::scanForDirectory(
-                    $this->repositoryPath
+                    ''
+                    . $this->repositoryPath
                     . $vendorValue . DIRECTORY_SEPARATOR
                     . 'TYPO3'
                 );
@@ -544,7 +539,6 @@ class BuildService
         GeneralUtility::mkdir_deep($exportPath . 'source');
         GeneralUtility::mkdir_deep($exportPath . 'debug');
         GeneralUtility::mkdir_deep($exportPath . 'import');
-        GeneralUtility::mkdir_deep($exportPath . 'import');
 
         $extensionSourceExportPath = $exportPath . 'source' . DIRECTORY_SEPARATOR;
 
@@ -554,11 +548,13 @@ class BuildService
         $extConf = self::readExtensionHelper($extensionDevelopmentSourcePath);
         if ($extConf['extensionBuild']['copyBack'] ?? false) {
             $extensionName = $extConf['extension']['extensionName'];
+
             $extPath = ''
                 . Environment::getPublicPath() . DIRECTORY_SEPARATOR
                 . 'typo3conf' . DIRECTORY_SEPARATOR
                 . 'ext' . DIRECTORY_SEPARATOR
                 . $this->extensionName . DIRECTORY_SEPARATOR;
+
             $developerCodePath = ''
                 . $extensionDevelopmentSourcePath
                 . 'DeveloperCode' . DIRECTORY_SEPARATOR;
@@ -696,5 +692,4 @@ class BuildService
         return false;
 
     }
-
 }

@@ -7,7 +7,7 @@
     "extra": {
         "typo3/cms": {
             "extension-key": "extensionbuilder_typo3",
-            "version": "0.14.261",
+            "version": "0.14.262",
             "Package": {
                 "providesPackages": {}
             }
@@ -26,7 +26,8 @@
     },
     "require": {
         "php": "^8.2",
-        "typo3/cms-core": "^13.4 || ^14.3"
+        "typo3/cms-core": "^13.4 || ^14.3",
+        "league/commonmark": "^2.10"
     },
     "autoload": {
         "psr-4": {

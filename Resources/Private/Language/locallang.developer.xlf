@@ -4,12 +4,11 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.developer.xlf"
-		date="2025-07-11T12:00:00Z"
+		date="2026-09-06T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
-
 			<trans-unit id="developerSettings" resname="developerSettings">
 				<source>Developer settings</source>
 			</trans-unit>
@@ -80,7 +79,6 @@
 			<trans-unit id="tooltip." resname="tooltip.">
 				<source>Build local tooltip </source>
 			</trans-unit>
-
 		</body>
 	</file>
 </xliff>

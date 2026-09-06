@@ -4,12 +4,11 @@
 		source-language="en"
 		datatype="plaintext"
 		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.componentproperty.xlf"
-		date="2025-07-11T12:00:00Z"
+		date="2026-09-06T12:00:00Z"
 		product-name="extensionbuilder_typo3"
 	>
 		<header />
 		<body>
-
 			<trans-unit id="h1.add" resname="h1.add">
 				<source>Add new %s</source>
 			</trans-unit>
@@ -85,7 +84,6 @@
 			<trans-unit id="label.ebDevIssue" resname="label.ebDevIssue">
 				<source>Issue</source>
 			</trans-unit>
-
 
 
 			<trans-unit id="label.escape" resname="label.escape">

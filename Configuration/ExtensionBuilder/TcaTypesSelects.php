@@ -1,15 +1,9 @@
 <?php
 
 /**
+ * @extensionbuilderCoreMajorVersion 1
  *
- * Migration:
- * - Target: ExtensionBuilder Core 1.x
- * - Status: legacy
- *
- * @extensionbuilderCoreMajorVersion 0
- * @extensionbuilderMigrationStatus legacy
- *
- * @since 0.13
+ * @since 0.12
  */
 
 $tcaTypesSelects = [];
