@@ -621,7 +621,7 @@ class ExtensionBuilderController extends ActionController
         }
 
         $icon = $this->iconFactory->getIcon(
-            'actions-archive',
+            'actions-play',
             IconSize::SMALL
         );
 
@@ -645,22 +645,18 @@ class ExtensionBuilderController extends ActionController
             $linkButton = $buttonBar->makeLinkButton();
         }
 
-        $linkButton
-            ->setTitle($languageService->sL($lll))
+        $linkButton = $this->componentFactory
+            ->createGenericButton()
+            ->setTag('button')
+            ->setLabel($languageService->sL($lll))
             ->setShowLabelText(true)
             ->setIcon($icon)
-            ->setHref(
-                $this->uriBuilder->uriFor(
-                    $action,
-                    $parameters,
-                    $controller
-                )
-            )
-            ->setDataAttributes([
+            ->setAttributes([
+                'type' => 'button',
                 'hotkey-action' => 'build',
-                'extensionbuilder-build-button' => '1',
-                'vendor-name' => $vendorName,
-                'extension-name' => $extensionName,
+                'data-extensionbuilder-build-button' => '1',
+                'data-vendor-name' => $vendorName,
+                'data-extension-name' => $extensionName,
             ]);
 
         $buttonBar->addButton(
@@ -668,6 +664,7 @@ class ExtensionBuilderController extends ActionController
             ButtonBar::BUTTON_POSITION_LEFT,
             4
         );
+
     }
 
     /**

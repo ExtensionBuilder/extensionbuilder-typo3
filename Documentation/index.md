@@ -4,6 +4,10 @@ Welcome to the internal developer area.
 
 Here you will find technical documentation, development information, and details about the architecture, components, and internal processes.
 
+# Privacy Policy
+
+[Privacy Policy](privacypolicy.md) 
+
 ## Available and Planned Code Generators
 
 | Code Generator | Status | Documentation | Description |

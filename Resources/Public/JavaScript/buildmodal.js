@@ -18,10 +18,19 @@ DocumentService.ready().then(() => {
     const vendorName = button.dataset.vendorName || '';
     const extensionName = button.dataset.extensionName || '';
 
-    if (!vendorName || !extensionName) {
+    if (!vendorName) {
       Modal.alert(
-        'Build nicht möglich',
-        'vendorName oder extensionName fehlt am Build-Button.',
+        'Build not possible',
+        'Vendor name is missing from the build button.',
+        Severity.error
+      );
+      return;
+    }
+
+    if (!extensionName) {
+      Modal.alert(
+        'Build not possible',
+        'Extension name is missing from the build button.',
         Severity.error
       );
       return;
@@ -53,7 +62,7 @@ DocumentService.ready().then(() => {
     const status = document.createElement('div');
     status.className = 'alert alert-info mb-3';
     status.setAttribute('role', 'status');
-    status.textContent = 'Build wird vorbereitet...';
+    status.textContent = 'Build is being prepared...';
 
     const steps = document.createElement('ol');
     steps.className = 'mb-0';
@@ -66,17 +75,17 @@ DocumentService.ready().then(() => {
       return item;
     };
 
-    const prepareStep = createStep('prepare', 'Vorbereitung...');
+    const prepareStep = createStep('prepare', 'Preparation...');
     const requestStep = createStep('request', 'Build-Request...');
-    const responseStep = createStep('response', 'Antwort verarbeiten...');
-    const finishStep = createStep('finish', 'Abschluss...');
+    const responseStep = createStep('response', 'Processing response...');
+    const finishStep = createStep('finish', 'Completion...');
 
     content.appendChild(info);
     content.appendChild(status);
     content.appendChild(steps);
 
     const modal = Modal.advanced({
-      title: 'Extension Build',
+      title: 'Extension Builder for TYPO3',
       content,
       severity: Severity.info,
       staticBackdrop: true,
@@ -127,18 +136,18 @@ DocumentService.ready().then(() => {
     };
 
     try {
-      prepareStep.textContent = '✓ Vorbereitung abgeschlossen';
-      setStatus('Build wird gestartet...');
+      prepareStep.textContent = '✓ Preparation completed';
+      setStatus('Starting build...');
 
       const ajaxUrl = TYPO3.settings.ajaxUrls.extensionbuilder_typo3_build;
 
       if (!ajaxUrl) {
         throw new Error(
-          'AJAX URL "extensionbuilder_typo3_build" wurde nicht gefunden.'
+          'AJAX URL "extensionbuilder_typo3_build" was not found.'
         );
       }
 
-      requestStep.textContent = 'Build-Request läuft...';
+      requestStep.textContent = 'Build request in progress...';
 
       const buildUrl = new URL(ajaxUrl, window.location.origin);
       buildUrl.searchParams.set('vendorName', vendorName);
@@ -146,18 +155,21 @@ DocumentService.ready().then(() => {
 
       const response = await new AjaxRequest(buildUrl.toString()).post({});
 
-      requestStep.textContent = '✓ Build-Request abgeschlossen';
-      responseStep.textContent = 'Antwort wird verarbeitet...';
-      setStatus('Antwort des Build-Service wird verarbeitet...');
+
+//console.log(response);
+
+      requestStep.textContent = '✓ Build request completed';
+      responseStep.textContent = 'Processing response...';
+      setStatus('Processing build service response...');
 
       const data = await response.resolve();
 
       if (data?.success) {
-        responseStep.textContent = '✓ Antwort erfolgreich';
-        finishStep.textContent = '✓ Build erfolgreich abgeschlossen';
+        responseStep.textContent = '✓ Response received successfully';
+        finishStep.textContent = '✓ Build completed successfully';
 
         setStatus(
-          data.message || 'Die Extension wurde erfolgreich gebaut.',
+          data.message || 'The extension was built successfully.',
           'success'
         );
 
@@ -165,20 +177,20 @@ DocumentService.ready().then(() => {
         return;
       }
 
-      responseStep.textContent = '✗ Antwort enthält Fehler';
-      finishStep.textContent = '✗ Build fehlgeschlagen';
+      responseStep.textContent = '✗ Response contains errors';
+      finishStep.textContent = '✗ Build failed';
 
       setStatus(
-        data?.message || 'Beim Build ist ein Fehler aufgetreten.',
+        data?.message || 'An error occurred during the build.',
         'danger'
       );
 
       addFooterButtons(false);
     } catch (error) {
-      finishStep.textContent = '✗ Build-Fehler';
+      finishStep.textContent = '✗ Build error';
 
       setStatus(
-        error?.message || 'Der Build konnte nicht ausgeführt werden.',
+        error?.message || 'The build could not be completed.',
         'danger'
       );
 

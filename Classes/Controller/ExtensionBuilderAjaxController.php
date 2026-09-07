@@ -304,17 +304,31 @@ final class ExtensionBuilderAjaxController
         $initialOutputBufferLevel = ob_get_level();
         ob_start();
 
+// 8888
+//        $flushT3andPhpCache = $this->ebBackendService->developer['typo3']['flushT3andPhpCache'] ?? false;
+//        $analyzeDatabaseStructure = $this->ebBackendService->developer['typo3']['analyzeDatabaseStructure'] ?? false;
+//        $rebuildPhpAutoload = $this->ebBackendService->developer['typo3']['rebuildPhpAutoload'] ?? false;
+// Error code from Core
+
         try {
             $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
 
             $vendorName = trim((string)($bodyParams['vendorName'] ?? ''));
             $extensionName = trim((string)($bodyParams['extensionName'] ?? ''));
 
-            if ($vendorName === '' || $extensionName === '') {
+            if ($vendorName === '') {
                 return $this->jsonResponseAndDiscardOutput([
                     'success' => false,
                     'status' => 'error',
-                    'message' => 'Missing vendorName or extensionName.',
+                    'message' => 'Missing vendorName.',
+                ], 400, $initialOutputBufferLevel);
+            }
+
+            if ($extensionName === '') {
+                return $this->jsonResponseAndDiscardOutput([
+                    'success' => false,
+                    'status' => 'error',
+                    'message' => 'Missing extensionName.',
                 ], 400, $initialOutputBufferLevel);
             }
 
