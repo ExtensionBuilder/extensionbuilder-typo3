@@ -58,6 +58,8 @@ class ExtensionBuilderController extends ActionController
     public bool $isProKey = false;
     public ModuleTemplate $moduleTemplate;
 
+    private bool $isTypo3V14OrHigher = false;
+
     private ?object $componentFactory = null;
 
     /**
@@ -71,7 +73,12 @@ class ExtensionBuilderController extends ActionController
         protected BackendService $ebBackendService,
     ) {
         // Deprecation: #107823 - ButtonBar, Menu, and MenuRegistry make* methods deprecated 14.0
-        if (version_compare(VersionNumberUtility::getNumericTypo3Version(), '14.0.0', '>=')) {
+        $this->isTypo3V14OrHigher = version_compare(
+            VersionNumberUtility::getNumericTypo3Version(),
+            '14.0.0',
+            '>='
+        );
+        if ($this->isTypo3V14OrHigher) {
             $this->componentFactory = GeneralUtility::makeInstance(ComponentFactory::class);
         }
     }
@@ -122,12 +129,6 @@ class ExtensionBuilderController extends ActionController
     ): void {
         $languageService = self::getLanguageService();
 
-        $isTypo3V14OrHigher = version_compare(
-            VersionNumberUtility::getNumericTypo3Version(),
-            '14.0.0',
-            '>='
-        );
-
         $dropdown = [
             'Extension' => 'list',
             'Project' => 'list',
@@ -160,7 +161,7 @@ class ExtensionBuilderController extends ActionController
         $buttonBar = $docHeaderComponent->getButtonBar();
 
         // Main module selector stays in MenuRegistry.
-        if ($isTypo3V14OrHigher) {
+        if ($this->isTypo3V14OrHigher) {
             $menu = $this->componentFactory->createMenu();
         } else {
             // @extensionScannerIgnoreLine
@@ -170,7 +171,7 @@ class ExtensionBuilderController extends ActionController
         $menu->setIdentifier('ExtensionbuilderJumpMenu');
 
         foreach ($dropdown as $dropdownName => $dropdownAction) {
-            if ($isTypo3V14OrHigher) {
+            if ($this->isTypo3V14OrHigher) {
                 $item = $this->componentFactory->createMenuItem();
             } else {
                 // @extensionScannerIgnoreLine
@@ -225,7 +226,7 @@ class ExtensionBuilderController extends ActionController
         }
 
         if ($projectCount > 0) {
-            if ($isTypo3V14OrHigher) {
+            if ($this->isTypo3V14OrHigher) {
                 $projectDropdown = $this->componentFactory->createDropDownButton();
             } else {
                 // @extensionScannerIgnoreLine
@@ -237,7 +238,7 @@ class ExtensionBuilderController extends ActionController
                 ->setTitle('Project') // ToDo LLL
                 ->setShowLabelText(true);
 
-            if ($isTypo3V14OrHigher) {
+            if ($this->isTypo3V14OrHigher) {
                 $item = $this->componentFactory->createDropDownRadio();
             } else {
                 $item = GeneralUtility::makeInstance(DropDownRadio::class);
@@ -258,7 +259,7 @@ class ExtensionBuilderController extends ActionController
             $projectDropdown->addItem($item);
 
             foreach ($this->ebBackendService->projects as $projectKey => $projectValue) {
-                if ($isTypo3V14OrHigher) {
+                if ($this->isTypo3V14OrHigher) {
                     $item = $this->componentFactory->createDropDownRadio();
                 } else {
                     $item = GeneralUtility::makeInstance(DropDownRadio::class);
@@ -304,7 +305,7 @@ class ExtensionBuilderController extends ActionController
         $vendorCount = count($visibleVendors);
 
         if ($vendorCount > 0) {
-            if ($isTypo3V14OrHigher) {
+            if ($this->isTypo3V14OrHigher) {
                 $vendorDropdown = $this->componentFactory->createDropDownButton();
             } else {
                 // @extensionScannerIgnoreLine
@@ -317,7 +318,7 @@ class ExtensionBuilderController extends ActionController
                 ->setShowLabelText(true);
 
             if ($vendorCount > 1 && $projectCount > 0) {
-                if ($isTypo3V14OrHigher) {
+                if ($this->isTypo3V14OrHigher) {
                     $item = $this->componentFactory->createDropDownRadio();
                 } else {
                     $item = GeneralUtility::makeInstance(DropDownRadio::class);
@@ -342,7 +343,7 @@ class ExtensionBuilderController extends ActionController
             }
 
             if ($vendorCount > 1) {
-                if ($isTypo3V14OrHigher) {
+                if ($this->isTypo3V14OrHigher) {
                     $item = $this->componentFactory->createDropDownRadio();
                 } else {
                     $item = GeneralUtility::makeInstance(DropDownRadio::class);
@@ -367,7 +368,7 @@ class ExtensionBuilderController extends ActionController
             }
 
             foreach ($visibleVendors as $vendorKey => $vendorValue) {
-                if ($isTypo3V14OrHigher) {
+                if ($this->isTypo3V14OrHigher) {
                     $item = $this->componentFactory->createDropDownRadio();
                 } else {
                     $item = GeneralUtility::makeInstance(DropDownRadio::class);
@@ -444,13 +445,7 @@ class ExtensionBuilderController extends ActionController
             IconSize::SMALL
         );
 
-        if (
-            version_compare(
-                VersionNumberUtility::getNumericTypo3Version(),
-                '14.0.0',
-                '>='
-            )
-        ) {
+        if ($this->isTypo3V14OrHigher) {
             $closeButton = $this->componentFactory->createLinkButton();
         } else {
             // @extensionScannerIgnoreLine
@@ -501,13 +496,7 @@ class ExtensionBuilderController extends ActionController
             IconSize::SMALL
         );
 
-        if (
-            version_compare(
-                VersionNumberUtility::getNumericTypo3Version(),
-                '14.0.0',
-                '>='
-            )
-        ) {
+        if ($this->isTypo3V14OrHigher) {
             $saveButton = $this->componentFactory->createInputButton();
         } else {
             // @extensionScannerIgnoreLine
@@ -562,13 +551,7 @@ class ExtensionBuilderController extends ActionController
             . '.xlf:link.'
             . strtolower($action);
 
-        if (
-            version_compare(
-                VersionNumberUtility::getNumericTypo3Version(),
-                '14.0.0',
-                '>='
-            )
-        ) {
+        if ($this->isTypo3V14OrHigher) {
             $linkButton = $this->componentFactory->createLinkButton();
         } else {
             // @extensionScannerIgnoreLine
@@ -634,47 +617,35 @@ class ExtensionBuilderController extends ActionController
             . '.xlf:link.'
             . strtolower($action);
 
-        if (
-            version_compare(
-                VersionNumberUtility::getNumericTypo3Version(),
-                '14.0.0',
-                '>='
-            )
-        ) {
-            $linkButton = $this->componentFactory->createLinkButton();
-        } else {
-            // @extensionScannerIgnoreLine
-            $linkButton = $buttonBar->makeLinkButton();
-        }
+        if ($this->isTypo3V14OrHigher) {
 
-/**
-// ToDo V14 selector
-        $linkButton = $this->componentFactory
-         xTag('button')
-            ->setLabel($languageService->sL($lll))
-            ->setShowLabelText(true)
-            ->setIcon($icon)
-            ->setAttributes([
-                'type' => 'button',
-                'hotkey-action' => 'build',
-                'data-extensionbuilder-build-button' => '1',
-                'data-vendor-name' => $vendorName,
-                'data-extension-name' => $extensionName,
-            ]);
-*/
-// ToDo V13 selector
-        $linkButton = GeneralUtility::makeInstance(GenericButton::class)
-            ->setTag('button')
-            ->setLabel($languageService->sL($lll))
-            ->setShowLabelText(true)
-            ->setIcon($icon)
-            ->setAttributes([
-                'type' => 'button',
-                'data-hotkey-action' => 'build',
-                'data-extensionbuilder-build-button' => '1',
-                'data-vendor-name' => $vendorName,
-                'data-extension-name' => $extensionName,
-            ]);
+            $linkButton = $this->componentFactory
+                ->createGenericButton()
+                ->setTag('button')
+                ->setLabel($languageService->sL($lll))
+                ->setShowLabelText(true)
+                ->setIcon($icon)
+                ->setAttributes([
+                    'type' => 'button',
+                    'data-hotkey-action' => 'build',
+                    'data-extensionbuilder-build-button' => '1',
+                    'data-vendor-name' => $vendorName,
+                    'data-extension-name' => $extensionName,
+                ]);
+        } else {
+            $linkButton = GeneralUtility::makeInstance(GenericButton::class)
+                ->setTag('button')
+                ->setLabel($languageService->sL($lll))
+                ->setShowLabelText(true)
+                ->setIcon($icon)
+                ->setAttributes([
+                    'type' => 'button',
+                    'data-hotkey-action' => 'build',
+                    'data-extensionbuilder-build-button' => '1',
+                    'data-vendor-name' => $vendorName,
+                    'data-extension-name' => $extensionName,
+                ]);
+        }
 
         $buttonBar->addButton(
             $linkButton,
@@ -703,13 +674,7 @@ class ExtensionBuilderController extends ActionController
             IconSize::SMALL
         );
 
-        if (
-            version_compare(
-                VersionNumberUtility::getNumericTypo3Version(),
-                '14.0.0',
-                '>='
-            )
-        ) {
+        if ($this->isTypo3V14OrHigher) {
             $addButton = $this->componentFactory->createLinkButton();
         } else {
             // @extensionScannerIgnoreLine
@@ -810,15 +775,8 @@ class ExtensionBuilderController extends ActionController
             IconSize::SMALL
         );
 
-        if (
-            version_compare(
-                VersionNumberUtility::getNumericTypo3Version(),
-                '14.0.0',
-                '>='
-            )
-        ) {
-            $typo3CommandButton
-                = $this->componentFactory->createInputButton();
+        if ($this->isTypo3V14OrHigher) {
+            $typo3CommandButton = $this->componentFactory->createInputButton();
         } else {
             // @extensionScannerIgnoreLine
             $typo3CommandButton = $buttonBar->makeLinkButton();

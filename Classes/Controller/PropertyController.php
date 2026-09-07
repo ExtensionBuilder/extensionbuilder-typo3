@@ -141,6 +141,7 @@ final class PropertyController extends ExtensionBuilderController
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/hotkeys.js');
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/buildfields.js');
 
+        // Developer Code
         $this->pageRenderer->loadJavaScriptModule('@extensionbuilder/typo3/monacoeditor.js');
 
         $this->pageRenderer->addCssFile('EXT:extensionbuilder_typo3/Resources/Public/Css/extensionbuilder.css');
