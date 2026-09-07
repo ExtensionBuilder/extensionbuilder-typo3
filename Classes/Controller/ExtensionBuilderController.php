@@ -36,6 +36,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 //use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
+use TYPO3\CMS\Backend\Template\Components\Buttons\GenericButton;
+
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -645,9 +647,10 @@ class ExtensionBuilderController extends ActionController
             $linkButton = $buttonBar->makeLinkButton();
         }
 
+/**
+// ToDo V14 selector
         $linkButton = $this->componentFactory
-            ->createGenericButton()
-            ->setTag('button')
+         xTag('button')
             ->setLabel($languageService->sL($lll))
             ->setShowLabelText(true)
             ->setIcon($icon)
@@ -658,13 +661,26 @@ class ExtensionBuilderController extends ActionController
                 'data-vendor-name' => $vendorName,
                 'data-extension-name' => $extensionName,
             ]);
+*/
+// ToDo V13 selector
+        $linkButton = GeneralUtility::makeInstance(GenericButton::class)
+            ->setTag('button')
+            ->setLabel($languageService->sL($lll))
+            ->setShowLabelText(true)
+            ->setIcon($icon)
+            ->setAttributes([
+                'type' => 'button',
+                'data-hotkey-action' => 'build',
+                'data-extensionbuilder-build-button' => '1',
+                'data-vendor-name' => $vendorName,
+                'data-extension-name' => $extensionName,
+            ]);
 
         $buttonBar->addButton(
             $linkButton,
             ButtonBar::BUTTON_POSITION_LEFT,
             4
         );
-
     }
 
     /**
