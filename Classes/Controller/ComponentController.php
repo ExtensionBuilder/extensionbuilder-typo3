@@ -256,8 +256,8 @@ final class ComponentController extends ExtensionBuilderController
 
         $this->ebBackendService->readExtension($vendorName, $extensionName);
 
-        $componentsName = (string)($bodyParams['componentsName'] ?? '');
         $componentName = (string)($bodyParams['componentName'] ?? '');
+        $componentsName = (string)($bodyParams['componentsName'] ?? '');
 
         $this->ebBackendService->deleteExtensionComponent(
             $this,

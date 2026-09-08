@@ -96,6 +96,9 @@ DocumentService.ready().then(() => {
 
     const setStatus = (text, type = 'info') => {
       status.className = `alert alert-${type} mb-3`;
+      status.style.whiteSpace = 'pre-wrap';
+      status.style.maxHeight = '500px';
+      status.style.overflow = 'auto';
       status.textContent = text;
     };
 
@@ -156,8 +159,6 @@ DocumentService.ready().then(() => {
       const response = await new AjaxRequest(buildUrl.toString()).post({});
 
 
-//console.log(response);
-
       requestStep.textContent = '✓ Build request completed';
       responseStep.textContent = 'Processing response...';
       setStatus('Processing build service response...');
@@ -187,14 +188,37 @@ DocumentService.ready().then(() => {
 
       addFooterButtons(false);
     } catch (error) {
-      finishStep.textContent = '✗ Build error';
+        finishStep.textContent = '✗ Build error';
 
-      setStatus(
-        error?.message || 'The build could not be completed.',
-        'danger'
-      );
+        let errorMessage =
+            error?.message ||
+            'The build could not be completed.';
 
-      addFooterButtons(false);
+        if (error?.response) {
+            try {
+                const responseText = await error.response.text();
+
+                if (responseText) {
+                    const data = JSON.parse(responseText)
+                    const message = data?.message || 'no message';
+                    const file = (data?.file || 'Unknown file').replace(/^.*?(extensionbuilder_typo3_core\/)/, '$1');
+                    const line = data?.line || 'no message';
+
+                    errorMessage += `\n\n${message}\n\n`;
+                    errorMessage += `File: ${file}\n`;
+                    errorMessage += `Line: ${line}\n`;
+                }
+            } catch (responseError) {
+                console.error(
+                    'Could not read AJAX response:',
+                    responseError
+                );
+            }
+        }
+
+        setStatus(errorMessage, 'danger');
+
+        addFooterButtons(false);
     }
   });
 });

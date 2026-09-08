@@ -29,6 +29,30 @@
  * 
  */
 
+
+
+
+
+//    $components[''] = [];
+//    $components['']['componentName'] = '';
+//    $components['']['title'] = '';
+//    $components['']['group'] = '';
+//    $components['']['disable'] = false;
+//    $components['']['fieldsTabs'] = $standardFieldsTabs;
+//    $components['']['fields'] = $standardFields;
+//    $components['']['propertys'] = [];
+
+
+//    $components['']['propertys'][''] = [];
+//    $components['']['propertys']['']['propertysName'] = '';
+//    $components['']['propertys']['']['title'] = '';
+//    $components['']['propertys']['']['group'] = ''; ToDO
+//    $components['']['propertys']['']['disable'] = false;
+//    $components['']['propertys']['']['select'] = false;
+//    $components['']['propertys']['']['fieldsTabs'] = $standardFieldsTabs;
+//    $components['']['propertys']['']['fields'] = $standardFields;
+
+
 $ControllerComponetsPath = $extensionConfigurationPath . 'ControllerComponents' . DIRECTORY_SEPARATOR;
 
 $extensionConfiguration = [];
@@ -48,28 +72,6 @@ $standardFields['ebDevDescriptionShort'] = ['type' => 'input', 'tab' => 'descrip
 $standardFields['ebDevDescription'] = ['type' => 'textarea', 'tab' => 'description'];
 $standardFields['ebDevTodo'] = ['type' => 'textarea', 'tab' => 'todo'];
 $standardFields['ebDevIssue'] = ['type' => 'textarea', 'tab' => 'issue'];
-
-// --------------------------------------------------
-
-
-
-//    $components[''] = [];
-//    $components['']['componentName'] = '';
-//    $components['']['title'] = '';
-//    $components['']['disable'] = false;
-//    $components['']['fieldsTabs'] = $standardFieldsTabs;
-//    $components['']['fields'] = $standardFields;
-//    $components['']['propertys'] = [];
-
-
-//    $components['']['propertys'][''] = [];
-//    $components['']['propertys']['']['propertysName'] = '';
-//    $components['']['propertys']['']['title'] = '';
-//    $components['']['propertys']['']['disable'] = false;
-//    $components['']['propertys']['']['select'] = false;
-//    $components['']['propertys']['']['fieldsTabs'] = $standardFieldsTabs;
-//    $components['']['propertys']['']['fields'] = $standardFields;
-
 
 // --------------------------------------------------
 
@@ -100,97 +102,67 @@ $components['sitePackage'] = [
     'propertys' => $sitePackagePropertys,
 ];
 
-
-// Extension components
-
-
-// Addon Extensions
-
-// ToDo move to extsenion config
-$components['constraints'] = [];
-$components['constraints']['componentName'] = 'constraints';
-$components['constraints']['title'] = 'Constraints';
-$components['constraints']['disable'] = true;
-$components['constraints'][''] = true;
-$components['constraints']['fieldsTabs'] = $standardFieldsTabs;
-
-$components['constraints']['fields'] = [];
-$components['constraints']['fields']['componentName'] = ['type' => 'select', 'tab' => 'general'];
-$components['constraints']['fields']['componentName']['selects'] = &$this->localExtensions;
-$components['constraints']['fields']['componentName']['tab'] = 'general';
-$components['constraints']['fields']['componentName']['required'] = true;
-
-$components['constraints']['fields']['constraint'] = ['type' => 'select', 'showInList' => true, 'tab' => 'general'];
-$components['constraints']['fields']['constraint']['selects'] = [
-    'depends' => 'Depends',
-    'conflicts' => 'Conflicts',
-    'suggests' => 'Suggests',
-];
-
-$components['constraints']['fields']['version'] = ['type' => 'input', 'showInList' => true, 'tab' => 'general'];
-
-$components['constraints']['fields']['description'] = ['type' => 'input', 'showInList' => true, 'tab' => 'general'];
-$components['constraints']['fields']['todo'] = ['type' => 'textarea', 'tab' => 'todo'];
-$components['constraints']['fields']['issue'] = ['type' => 'textarea', 'tab' => 'issue'];
-
-$components['constraints']['propertys'] = [];
-
-
-// ToDo move to extsenion config
-$components['authors']['componentName'] = 'authors';
-$components['authors']['title'] = 'Authors';
-$components['authors']['disable'] = true;
-$components['authors']['fieldsTabs'] = $standardFieldsTabs;
-unset($components['authors']['fieldsTabs']['todo']);
-unset($components['authors']['fieldsTabs']['issue']);
-
-$components['authors']['fields'] = [];
-//$components['authors']['fields']['name'] = ['type' => 'input', 'showInList' => true, 'tab' => 'general'];
-$components['authors']['fields']['company'] = ['type' => 'input', 'tab' => 'general'];
-$components['authors']['fields']['role'] = ['type' => 'input', 'tab' => 'general'];
-$components['authors']['fields']['email'] = ['type' => 'input', 'tab' => 'general'];
-$components['authors']['fields']['homepage'] = ['type' => 'input', 'tab' => 'general'];
-$components['authors']['fields']['description'] = ['type' => 'input', 'tab' => 'general'];
-
-$components['authors']['propertys'] = [];
-
 $files = scandir($ControllerComponetsPath);
 $files = array_diff($files, ['.', '..']);
 foreach ($files as $fileKey => $fileValue) {
-    require_once $ControllerComponetsPath . $fileValue;
+    $extension = pathinfo($ControllerComponetsPath . $fileValue, PATHINFO_EXTENSION);
+    if (strtolower($extension) === 'php') {
+        require_once $ControllerComponetsPath . $fileValue;
+    }
 }
 
 // Remove all inactive elements from the array and set lllPath
 $componentsReturn = [];
-foreach ($components ?? [] as $componentName => $componentData) {
-    if (!($componentData['disable'] ?? false)) {
-        foreach ($componentData['fields'] ?? [] as $key => $value) {
+$sortComponents = [];
+foreach ($components ?? [] as $componentKey => $componentValue) {
+    if (!($componentValue['disable'] ?? false)) {
+
+        foreach ($componentValue['fields'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
-                $componentData['fields'][$key]['lllPath'] = $lllComponent;
+                $componentValue['fields'][$key]['lllPath'] = $lllComponent;
 		    }
         }
-        foreach ($componentData['fieldsTabs'] ?? [] as $key => $value) {
+        foreach ($componentValue['fieldsTabs'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
-                $componentData['fieldsTabs'][$key]['lllPath'] = $lllPath;
+                $componentValue['fieldsTabs'][$key]['lllPath'] = $lllPath;
 		    }
         }
-        foreach ($componentData['propertyFields'] ?? [] as $key => $value) {
+        foreach ($componentValue['propertyFields'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
-                $componentData['propertyFields'][$key]['lllPath'] = $lllPath;
+                $componentValue['propertyFields'][$key]['lllPath'] = $lllPath;
 		    }
         }
-        foreach ($componentData['propertyFieldsTabs'] ?? [] as $key => $value) {
+        foreach ($componentValue['propertyFieldsTabs'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
-                $componentData['propertyFieldsTabs'][$key]['lllPath'] = $lllProperty;
+                $componentValue['propertyFieldsTabs'][$key]['lllPath'] = $lllProperty;
 		    }
         }
-        foreach ($componentData['propertys'] ?? [] as $propertyName => $propertyData) {
-            if ($propertyData['disable'] ?? false) {
-                unset($componentData['propertys'][$propertyName]);
+        foreach ($componentValue['propertys'] ?? [] as $propertyKey => $propertyValue) {
+            if ($propertyValue['disable'] ?? false) {
+                unset($componentValue['propertys'][$propertyKey]);
             }
         }
-        $componentsReturn[$componentName] = $componentData;
+
+        $group = $componentValue['group'] ?? 'general';
+        if (!($sortComponents[$group] ?? false)) {
+            $sortComponents[$group] = [];
+        }
+        $sortComponents[$group][$componentKey] = $componentValue;
     }
+}
+
+$componentsReturn  = [];
+if ($sortComponents['models'] ?? false) {
+    $componentsReturn = array_merge_recursive($componentsReturn ,$sortComponents['models']);
+}
+if ($sortComponents['backend'] ?? false) {
+    $componentsReturn = array_merge_recursive($componentsReturn ,$sortComponents['backend']);
+}
+if ($sortComponents['extension'] ?? false) {
+    $componentsReturn = array_merge_recursive($componentsReturn ,$sortComponents['extension']);
+}
+if ($sortComponents['general'] ?? false) {
+    $componentsReturn = array_merge_recursive($componentsReturn ,$sortComponents['general']);
 }
 
 return $componentsReturn;

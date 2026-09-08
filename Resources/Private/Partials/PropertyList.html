@@ -23,7 +23,7 @@
                         <f:if condition="!{componentData.propertys.{propertysDevAs.propertysName}}">
                             <f:link.action
                                 action="add"
-                                controller="{propertysDevAs.controller}"
+                                controller="Property"
                                 arguments="{
                                     'vendorName': '{vendorName}',
                                     'extensionName': '{extensionName}',
@@ -73,7 +73,7 @@
 
                 <f:link.action
                     action="add"
-                    controller="{propertysDev.{propertysKey}.controller}"
+                    controller="Property"
                     arguments="{
                         'vendorName': '{vendorName}',
                         'extensionName': '{extensionName}',
@@ -148,7 +148,7 @@
                                         <div class="name">
                                             <f:link.action
                                                 action="edit"
-                                                controller="{propertysDev.{propertysKey}.controller}"
+                                                controller="Property"
                                                 arguments="{
                                                     'vendorName': '{vendorName}',
                                                     'extensionName': '{extensionName}',
@@ -201,7 +201,7 @@
                                             <f:comment>Edit</f:comment>
                                             <f:link.action
                                                 action="edit"
-                                                controller="{propertysDev.{propertysKey}.controller}"
+                                                controller="Property"
                                                 arguments="{
                                                     'vendorName': '{vendorName}',
                                                     'extensionName': '{extensionName}',
@@ -224,7 +224,7 @@
                                             <f:comment>Delete</f:comment>
                                              <f:link.action
                                                 action="delete"
-                                                controller="{propertysDev.{propertysKey}.controller}"
+                                                controller="Property"
                                                 arguments="{
                                                     'vendorName': '{vendorName}',
                                                     'extensionName': '{extensionName}',

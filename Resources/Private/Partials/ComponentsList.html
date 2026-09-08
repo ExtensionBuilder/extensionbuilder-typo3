@@ -24,11 +24,11 @@
                        <f:if condition="!{extensionData.components.{componentsDevAs.componentName}}">
                            <f:link.action
                                 action="add"
-                                controller="{componentsDevAs.controller}"
+                                controller="Component"
                                 arguments="{
-                                    'vendorName': '{vendorName}',
-                                    'extensionName': '{extensionName}',
-                                    'componentsName': '{componentsDevKey}'
+                                    'vendorName': vendorName,
+                                    'extensionName': extensionName,
+                                    'componentsName': componentsDevKey
                                 }"
                                 class="btn btn-default"
                                 data="{bs-toggle: 'tooltip'}"
@@ -81,11 +81,11 @@
                             <f:if condition="!{componentsDevAs.max} || {componentsAsCount} < {componentsDevAs.max}">
                                 <f:link.action
                                     action="add"
-                                    controller="{componentsDevAs.controller}"
+                                    controller="Component"
                                     arguments="{
-                                        'vendorName': '{vendorName}',
-                                        'extensionName': '{extensionName}',
-                                        'componentsName': '{componentsDevKey}'
+                                        'vendorName': vendorName,
+                                        'extensionName': extensionName,
+                                        'componentsName': componentsDevKey
                                     }"
                                     class="btn btn-default"
                                     data="{bs-toggle: 'tooltip'}"
@@ -167,12 +167,12 @@
                                                     <div class="name">
                                                         <f:link.action
                                                             action="edit"
-                                                            controller="{componentsDevAs.controller}"
+                                                            controller="Component"
                                                             arguments="{
-                                                                'vendorName': '{vendorName}',
-                                                                'extensionName': '{extensionName}',
-                                                                'componentName': '{componentKey}',
-                                                                'componentsName': '{componentsDevKey}'
+                                                                'vendorName': vendorName,
+                                                                'extensionName': extensionName,
+                                                                'componentName': componentKey,
+                                                                'componentsName': componentsDevKey
                                                             }"
                                                         >
                                                             <strong>{componentKey -> f:format.case(mode: 'capital')}</strong>
@@ -215,12 +215,12 @@
                                                         <f:comment>Edit</f:comment>
                                                         <f:link.action
                                                             action="edit"
-                                                            controller="{componentsDevAs.controller}"
+                                                            controller="Component"
                                                             arguments="{
-                                                                'vendorName': '{vendorName}',
-                                                                'extensionName': '{extensionName}',
-                                                                'componentName': '{componentName}',
-                                                                'componentsName': '{componentsDevKey}'
+                                                                'vendorName': vendorName,
+                                                                'extensionName': extensionName,
+                                                                'componentName': componentKey,
+                                                                'componentsName': componentsDevKey
                                                             }"
                                                             class="btn btn-default"
                                                             data="{bs-toggle: 'tooltip'}"
@@ -236,12 +236,12 @@
                                                         <f:comment>Delete</f:comment>
                                                         <f:link.action
                                                             action="delete"
-                                                            controller="{componentsDevAs.controller}"
+                                                            controller="Component"
                                                             arguments="{
-                                                                'vendorName': '{vendorName}',
-                                                                'extensionName': '{extensionName}',
-                                                                'componentName': '{componentKey}',
-                                                                'componentsName': '{componentsDevKey}'
+                                                                'vendorName': vendorName,
+                                                                'extensionName': extensionName,
+                                                                'componentName': componentKey,
+                                                                'componentsName': componentsDevKey
                                                             }"
                                                             class="btn btn-default t3js-modal-trigger eb-margin-left-5"
                                                             data="{

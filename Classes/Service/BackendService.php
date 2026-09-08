@@ -1091,21 +1091,26 @@ class BackendService extends BuildService
             self::writeExtensionComponents(
                 $vendorName,
                 $extensionName,
-                $componentsName
+                $componentsName,
             );
         } else {
             // The component no longer contains any elements and can be deleted.
             switch ($componentsName) {
+                case 'beModels':
+                    $unlinkFile = 'beModels.' . $componentName;
+                    break;
+                case 'feModels':
+                    $unlinkFile = 'feModels.' . $componentName;
+                    break;
                 case 'models':
-                    $unlinkFile = 'model.';
+                    $unlinkFile = 'model.' . $componentName;
                     break;
                 case 'enums':
-                    $unlinkFile = 'enum.';
+                    $unlinkFile = 'enum.'. $componentName;
                     break;
                 default:
-                    $unlinkFile = '';
+                    $unlinkFile = $componentsName;
             }
-            $unlinkFile .= $componentsName;
 
             $unlinkFile
                 = $this->repositoryPath

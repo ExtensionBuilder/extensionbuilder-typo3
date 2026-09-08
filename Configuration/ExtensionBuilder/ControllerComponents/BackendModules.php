@@ -11,6 +11,7 @@
 $components['beModules'] = [];
 $components['beModules']['componentName'] = 'beModules';
 $components['beModules']['title'] = 'Backend module';
+$components['beModules']['group'] = 'backend';
 $components['beModules']['disable'] = false;
 $components['beModules']['docUrl'] = 
     'https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ExtensionArchitecture/HowTo/BackendModule/Index.html';

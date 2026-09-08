@@ -361,6 +361,8 @@ final class ExtensionBuilderAjaxController
                 'success' => false,
                 'status' => 'error',
                 'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
             ], 500, $initialOutputBufferLevel);
         }
     }
