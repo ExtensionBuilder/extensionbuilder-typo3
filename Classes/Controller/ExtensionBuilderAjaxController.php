@@ -32,11 +32,16 @@ final class ExtensionBuilderAjaxController
      */
     public function getFieldsValuesAction(ServerRequestInterface $request): JsonResponse
     {
-        $name = (string)($request['name'] ?? '');
-        $config = (string)($request['config'] ?? '');
-        $key = (string)($request['key'] ?? '');
-        $base = (string)($request['base'] ?? '');
-        $fields = (string)($request['fields'] ?? '');
+        $bodyParams = array_merge(
+            $request->getQueryParams(),
+            is_array($request->getParsedBody()) ? $request->getParsedBody() : []
+        );
+
+        $name = (string)($bodyParams['name'] ?? '');
+        $config = (string)($bodyParams['config'] ?? '');
+        $key = (string)($bodyParams['key'] ?? '');
+        $base = (string)($bodyParams['base'] ?? '');
+        $fields = (string)($bodyParams['fields'] ?? '');
 
         $value = [];
 
@@ -70,7 +75,10 @@ final class ExtensionBuilderAjaxController
      */
     public function checkNameAction(ServerRequestInterface $request): JsonResponse
     {
-        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $request->getQueryParams(),
+            is_array($request->getParsedBody()) ? $request->getParsedBody() : []
+        );
 
         $name = trim((string)($bodyParams['name'] ?? ''));
 
@@ -86,7 +94,10 @@ final class ExtensionBuilderAjaxController
      */
     public function readDevCodeAction(ServerRequestInterface $request): JsonResponse
     {
-        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $request->getQueryParams(),
+            is_array($request->getParsedBody()) ? $request->getParsedBody() : []
+        );
 
         $vendorName = trim((string)($bodyParams['vendorName'] ?? ''));
         $extensionName = trim((string)($bodyParams['extensionName'] ?? ''));
@@ -197,7 +208,10 @@ final class ExtensionBuilderAjaxController
             ], 405);
         }
 
-        $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
+        $bodyParams = array_merge(
+            $request->getQueryParams(),
+            is_array($request->getParsedBody()) ? $request->getParsedBody() : []
+        );
 
         $vendorName = trim((string)($bodyParams['vendorName'] ?? ''));
         $extensionName = trim((string)($bodyParams['extensionName'] ?? ''));
@@ -311,7 +325,10 @@ final class ExtensionBuilderAjaxController
 // Error code from Core
 
         try {
-            $bodyParams = array_merge($request->getQueryParams(), is_array($request->getParsedBody()) ? $request->getParsedBody() : []);
+            $bodyParams = array_merge(
+                $request->getQueryParams(),
+                is_array($request->getParsedBody()) ? $request->getParsedBody() : []
+            );
 
             $vendorName = trim((string)($bodyParams['vendorName'] ?? ''));
             $extensionName = trim((string)($bodyParams['extensionName'] ?? ''));
