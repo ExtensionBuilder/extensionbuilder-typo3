@@ -2,11 +2,11 @@
 	<f:render 
         partial="ExtensionList"
         arguments="{
-            lllBase: '{lllBase}',
-            extensions: '{project.extensions}',
+            lllBase: lllBase,
+            extensions: project.extensions,
             headline: 'Current Project:',
-            headlineData: '{project.name}',
-            name: '{currentProject.name}',
+            headlineData: project.name,
+            name: currentProject.name,
             groupId: 'project'
         }"
     />
@@ -15,11 +15,11 @@
         <f:render
             partial="ExtensionList"
             arguments="{
-                lllBase: '{lllBase}',
-                extensions: '{projects.dependencies}',
+                lllBase: lllBase,
+                extensions: projects.dependencies,
                 extensionOnOff: true,
                 headline: 'Project dependencies',
-                name: '{currentProject.name}',
+                name: currentProject.name,
                 groupId: 'dependencies',
                 collapsed: true
             }"

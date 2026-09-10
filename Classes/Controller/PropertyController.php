@@ -178,15 +178,25 @@ final class PropertyController extends ExtensionBuilderController
                 break;
         }
 
+        // Allow only characters and numbers for the collapse ID.
+        $vendorNameId = preg_replace('/[^A-Za-z0-9_-]/', '', $vendorName);
+        $extensionNameId = preg_replace('/[^A-Za-z0-9_-]/', '', $extensionName);
+        $componentNameId = preg_replace('/[^A-Za-z0-9_-]/', '', $componentName);
+        $propertyNameId = preg_replace('/[^A-Za-z0-9_-]/', '', $propertyName);
+
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
             'configuration' => $this->ebBackendService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
-            'componentsTitle' => $componentsDev['title'] ,
             'componentName' => $componentName,
-            'propertysTitle' => $propertysDev['title'] ,
             'propertyName' => $propertyName,
+            'vendorNameId' => $vendorNameId,
+            'extensionNameId' => $extensionNameId,
+            'componentNameId' => $componentNameId,
+            'propertyNameId' => $propertyNameId,
+            'componentsTitle' => $componentsDev['title'] ,
+            'propertysTitle' => $propertysDev['title'] ,
             'fields' => $fields,
             'fieldsTabs' => $fieldsTabs,
             'fieldsData' => $fieldsData,

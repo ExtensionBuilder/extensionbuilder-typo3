@@ -53,6 +53,7 @@ class BuildService
         public array $vendorsAndExtensions = [],
         public string $buildResult = '',
         public string $buildMessage = '',
+        public array|string|null $buildDebug = null,
 
         // Cache Test
         private array $extensionCache = [],
@@ -333,6 +334,10 @@ class BuildService
     ): void {
         $buildOk = false;
 
+        $this->buildResult = '';
+        $this->buildMessage = '';
+        $this->buildDebug = null;
+
         $this->beUserId = $beUserId;
         $this->vendorName = $vendorName;
         $this->extensionName = $extensionName;
@@ -367,6 +372,7 @@ class BuildService
         }
 
         $this->buildResult = $result['status'] ?? '';
+        $this->buildDebug = $result['debug'] ?? null;
 
         switch ($result['status'] ?? 'error') {
             case 'Build OK': //'200 OK'

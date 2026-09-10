@@ -372,6 +372,7 @@ final class ExtensionBuilderAjaxController
                     ? 'Build completed successfully.'
                     : 'Build finished with status: ' . $this->ebBackendService->buildResult,
                 'lastBuild' => $lastBuild,
+                'debug' => $this->ebBackendService->buildDebug ?? null,
             ], 200, $initialOutputBufferLevel);
         } catch (\Throwable $exception) {
             return $this->jsonResponseAndDiscardOutput([
@@ -380,6 +381,7 @@ final class ExtensionBuilderAjaxController
                 'message' => $exception->getMessage(),
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),
+                'debug' => $this->ebBackendService->buildDebug ?? null,
             ], 500, $initialOutputBufferLevel);
         }
     }

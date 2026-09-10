@@ -27,5 +27,6 @@ $components['dependencies']['fields']['constraint']['selects'] = [
 ];
 $components['dependencies']['fields']['version'] = ['type' => 'input', 'showInList' => true, 'tab' => 'general'];
 $components['dependencies']['fields']['description'] = ['type' => 'textarea', 'showInList' => true, 'tab' => 'description'];
+
 // No properties available
 $components['dependencies']['propertys'] = [];

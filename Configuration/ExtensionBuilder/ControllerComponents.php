@@ -116,27 +116,30 @@ $componentsReturn = [];
 $sortComponents = [];
 foreach ($components ?? [] as $componentKey => $componentValue) {
     if (!($componentValue['disable'] ?? false)) {
-
         foreach ($componentValue['fields'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
-                $componentValue['fields'][$key]['lllPath'] = $lllComponent;
+                $componentValue['fields'][$key]['lllPath'] = $lllComponent . '.' . $componentValue['componentName'];
 		    }
         }
+
         foreach ($componentValue['fieldsTabs'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
-                $componentValue['fieldsTabs'][$key]['lllPath'] = $lllPath;
+                $componentValue['fieldsTabs'][$key]['lllPath'] = $lllPath . '.' . $componentValue['componentName'];
 		    }
         }
+
         foreach ($componentValue['propertyFields'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
                 $componentValue['propertyFields'][$key]['lllPath'] = $lllPath;
 		    }
         }
+
         foreach ($componentValue['propertyFieldsTabs'] ?? [] as $key => $value) {
             if (!($value['lllPath'] ?? false)) {
                 $componentValue['propertyFieldsTabs'][$key]['lllPath'] = $lllProperty;
 		    }
         }
+
         foreach ($componentValue['propertys'] ?? [] as $propertyKey => $propertyValue) {
             if ($propertyValue['disable'] ?? false) {
                 unset($componentValue['propertys'][$propertyKey]);

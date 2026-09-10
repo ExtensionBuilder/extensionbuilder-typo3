@@ -19,7 +19,7 @@ class ConfigArray
         array &$bodyParams,
     ): void {
         foreach ($fields as $fieldKey => $fieldValue) {
-            if ($fieldValue['type'] ?? '' == 'check') {
+            if (($fieldValue['type'] ?? '') === 'check') {
                 if ($fieldValue['array'] ?? false) {
                     // ToDo multi array
                     $bodyParams[$fieldValue['array'][0]][$fieldKey] = !empty($bodyParams[$fieldValue['array'][0]][$fieldKey]);

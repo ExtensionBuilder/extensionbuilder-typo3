@@ -19,12 +19,12 @@
             <f:render
                 partial="BuildFields"
                 arguments="{
-                    lllBase: '{lllBase}',
-                    fields: '{extensionConfiguration.fieldsAdd}',
-                    fieldsTabs: '{extensionConfiguration.fieldsAddTabs}',
-                    fieldsData: '{extensionData}',
+                    lllBase: lllBase,
+                    fields: extensionConfiguration.fieldsAdd,
+                    fieldsTabs: extensionConfiguration.fieldsAddTabs,
+                    fieldsData: extensionData,
                     fieldsDataName: 'extensionData',
-                    selectFields: '{extensionSelects}'
+                    selectFields: extensionSelects
                 }"
             />
         </f:form>

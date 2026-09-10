@@ -25,11 +25,11 @@
                                 action="add"
                                 controller="Property"
                                 arguments="{
-                                    'vendorName': '{vendorName}',
-                                    'extensionName': '{extensionName}',
-                                    'componentsName': '{componentsName}',
-                                    'componentName': '{componentName}',
-                                    'propertysName': '{propertysDevAs.propertysName}'
+                                    'vendorName': vendorName,
+                                    'extensionName': extensionName,
+                                    'componentsName': componentsName,
+                                    'componentName': componentName,
+                                    'propertysName': propertysDevAs.propertysName
                                 }"
                                 class="btn btn-default"
                                 data="{bs-toggle: 'tooltip'}"
@@ -75,10 +75,10 @@
                     action="add"
                     controller="Property"
                     arguments="{
-                        'vendorName': '{vendorName}',
-                        'extensionName': '{extensionName}',
-                        'componentsName': '{componentsName}',
-                        'componentName': '{componentName}',
+                        'vendorName': vendorName,
+                        'extensionName': extensionName,
+                        'componentsName': componentsName,
+                        'componentName': componentName,
                         'propertysName': '{propertysDev.{propertysKey}.propertysName}'
                     }"
                     class="btn btn-default"
@@ -150,12 +150,12 @@
                                                 action="edit"
                                                 controller="Property"
                                                 arguments="{
-                                                    'vendorName': '{vendorName}',
-                                                    'extensionName': '{extensionName}',
-                                                    'componentsName': '{componentsName}',
-                                                    'componentName': '{componentName}',
+                                                    'vendorName': vendorName,
+                                                    'extensionName': extensionName,
+                                                    'componentsName': componentsName,
+                                                    'componentName': componentName,
                                                     'propertysName': '{propertysDev.{propertysKey}.propertysName}',
-                                                    'propertyName': '{propertyKey}'
+                                                    'propertyName': propertyKey
                                                 }"
                                             >
                                                 <strong>{propertyKey -> f:format.case(mode: 'capital')}</strong>
@@ -203,12 +203,12 @@
                                                 action="edit"
                                                 controller="Property"
                                                 arguments="{
-                                                    'vendorName': '{vendorName}',
-                                                    'extensionName': '{extensionName}',
-                                                    'componentsName': '{componentsName}',
-                                                    'componentName': '{componentName}',
+                                                    'vendorName': vendorName,
+                                                    'extensionName': extensionName,
+                                                    'componentsName': componentsName,
+                                                    'componentName': componentName,
                                                     'propertysName': '{propertysDev.{propertysKey}.propertysName}',
-                                                    'propertyName': '{propertyKey}'
+                                                    'propertyName': propertyKey
                                                 }"
                                                 class="btn btn-default"
                                                 data="{bs-toggle: 'tooltip'}"
@@ -226,12 +226,12 @@
                                                 action="delete"
                                                 controller="Property"
                                                 arguments="{
-                                                    'vendorName': '{vendorName}',
-                                                    'extensionName': '{extensionName}',
-                                                    'componentsName': '{componentsName}',
-                                                    'componentName': '{componentName}',
+                                                    'vendorName': vendorName,
+                                                    'extensionName': extensionName,
+                                                    'componentsName': componentsName,
+                                                    'componentName': componentName,
                                                     'propertysName': '{propertysDev.{propertysKey}.propertysName}',
-                                                    'propertyName': '{propertyKey}'
+                                                    'propertyName': propertyKey
                                                 }"
                                                 class="btn btn-default t3js-modal-trigger eb-margin-left-5"
                                                 data="{

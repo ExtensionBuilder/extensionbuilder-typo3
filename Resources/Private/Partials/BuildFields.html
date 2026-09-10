@@ -14,12 +14,12 @@ This Fluid template does the following:
     <f:render
         partial="BuildFields"
         arguments="{
-            lllBase: '{lllBase}',
-            action: '{action}',
-            fields: '{fields}',
-            fieldsTabs: '{fieldsTabs}',
-            fieldsData: '{fieldsData}',
-            fieldsDataName: '{fieldsDataName}',
+            lllBase: lllBase,
+            action: action,
+            fields: fields,
+            fieldsTabs: fieldsTabs,
+            fieldsData: fieldsData,
+            fieldsDataName: fieldsDataName,
             selectFields:  'selectFields'
         }"
     />
@@ -298,10 +298,10 @@ Array<br />
             <f:render
                 partial="MonacoEditor"
                 arguments="{
-                    vendorName: '{vendorName}',
-                    extensionName: '{extensionName}',
-                    fileName: '{fileName}',
-                    language: '{language}'
+                    vendorName: vendorName,
+                    extensionName: extensionName,
+                    fileName: fileName,
+                    language: language
                 }"
             />
 
@@ -412,9 +412,9 @@ Array<br />
                         options="{options}"
                         value="{value}"
                         additionalAttributes="{
-                            data-config: '{fieldsAs.copy.config}',
-                            data-key: '{fieldsAs.copy.key}',
-                            data-base: '{fieldsDataName}',
+                            data-config: fieldsAs.copy.config,
+                            data-key: fieldsAs.copy.key,
+                            data-base: fieldsDataName,
                             data-fields: '{fieldsAs.copy.fields -> f:format.json()}',
                             data-other-value: '__other__',
                             data-other-wrapper: '#{fieldsDataName}-{fieldsKey}-other-wrapper'

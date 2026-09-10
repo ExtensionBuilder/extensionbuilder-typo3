@@ -1,4 +1,9 @@
+<f:comment>
+    ToDo
+    <div class="tx_extensionbuilder_mod1_configuration"></div>
+</f:comment>
 
+<f:comment>Show available components; hide those already in use.</f:comment>
 <f:if condition="{componentsDev -> f:count()} > 0">
     <f:for
         each="{componentsDev}"
@@ -44,6 +49,7 @@
     </f:if>
 </f:if>
 
+<f:comment>View and manage components.</f:comment>
 <f:for
     each="{extensionData.components}"
     as="componentsAs"
@@ -56,7 +62,6 @@
     >
         <f:if condition="{componentsDevAs.componentName} == {componentsKey}">
 			<f:if condition="{componentsAs -> f:count()} > 0">
-
                 <f:variable name="{componentsKey}Collapsed">false</f:variable>
 
                 <div class="tx_extensionbuilder_mod1_configuration">
@@ -127,10 +132,10 @@
                             id="group-{componentsKey}-{vendorName}-{extensionName}"
                             data-table="group-{componentsKey}-{vendorName}-{extensionName}"
                         >
-
                             <div class="table-fit mb-0">
                                 <table class="table table-striped table-hover">
                                     <thead>
+
                                         <tr>
                                             <th><f:translate key="{lllBase}.component.xlf:label.componentName" /></th>
                                             <f:for
@@ -140,12 +145,15 @@
                                             >
                                                 <f:if condition="{fieldAs.showInList}">
                                                     <th>
-                                                        <f:if condition="{f:translate(key: '{lllBase}.component.xlf:label.{fieldKey}')} != ''">
+                                                        <f:if condition=
+                                                            "{f:translate(key: '{lllBase}{fieldAs.lllPath}.xlf:label.{fieldKey}')} != ''"
+                                                        >
                                                             <f:then>
-                                                                {f:translate(key: '{lllBase}.component.xlf:label.{fieldKey}')}
+                                                                {f:translate(key: '{lllBase}{fieldAs.lllPath}.xlf:label.{fieldKey}')}
                                                             </f:then>
                                                             <f:else>
-                                                                {fieldsKey -> f:format.case(mode: 'capital')} <code>(No LLL - label.{fieldKey})</code>
+                                                                {fieldsKey -> f:format.case(mode: 'capital')}
+                                                                <code>(No LLL - label.{fieldKey})</code>
                                                             </f:else>
                                                         </f:if>
                                                     </th>

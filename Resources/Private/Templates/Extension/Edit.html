@@ -74,14 +74,14 @@
                                 <f:render
                                     partial="BuildFields"
                                     arguments="{
-                                        lllBase: '{lllBase}',
-                                        vendorName: '{vendorName}',
-                                        extensionName: '{extensionName}',
-                                        fields: '{extensionConfiguration.fieldsEdit}',
-                                        fieldsTabs: '{extensionConfiguration.fieldsEditTabs}',
-                                        fieldsData: '{extensionData.extension}',
+                                        lllBase: lllBase,
+                                        vendorName: vendorName,
+                                        extensionName: extensionName,
+                                        fields: extensionConfiguration.fieldsEdit,
+                                        fieldsTabs: extensionConfiguration.fieldsEditTabs,
+                                        fieldsData: extensionData.extension,
                                         fieldsDataName: 'extensionData',
-                                        selectFields: '{extensionConfiguration.selects}'
+                                        selectFields: extensionConfiguration.selects
                                     }"
                                 />
                             </div>
@@ -94,22 +94,22 @@
                                 <f:render
                                     partial="SitePackage"
                                     arguments="{
-                                        lllBase: '{lllBase}',
-                                        fields: '{sitePackageFields}',
-                                        fieldsTabs: '{sitePackageTabs}',
-                                        fieldsData: '{sitePackageData}',
-                                        fieldsDataName: '{sitePackageDataName}'
+                                        lllBase: lllBase,
+                                        fields: sitePackageFields,
+                                        fieldsTabs: sitePackageTabs,
+                                        fieldsData: sitePackageData,
+                                        fieldsDataName: sitePackageDataName
                                     }"
                                 />
 							</div>
                             <f:render
                                 partial="ComponentsList"
                                 arguments="{
-                                    lllBase: '{lllBase}',
-                                    vendorName: '{vendorName}',
-                                    extensionName: '{extensionName}',
-                                    extensionData: '{extensionData}',
-                                    componentsDev: '{componentsDev}'
+                                    lllBase: lllBase,
+                                    vendorName: vendorName,
+                                    extensionName: extensionName,
+                                    extensionData: extensionData,
+                                    componentsDev: componentsDev
                                 }"
                             />
                         </f:case>
@@ -118,11 +118,11 @@
                             <f:render
                                 partial="ComponentsList"
                                 arguments="{
-                                    lllBase: '{lllBase}',
-                                    vendorName: '{vendorName}',
-                                    extensionName: '{extensionName}',
-                                    extensionData: '{extensionData}',
-                                    componentsDev: '{componentsDev}'
+                                    lllBase: lllBase,
+                                    vendorName: vendorName,
+                                    extensionName: extensionName,
+                                    extensionData: extensionData,
+                                    componentsDev: componentsDev
                                 }"
                             />
                         </f:defaultCase>

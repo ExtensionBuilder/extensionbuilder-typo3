@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:extensionbuilder_typo3/Resources/Private/Language/locallang.component.authors.xlf"
+		date="2026-09-09T12:00:00Z"
+		product-name="extensionbuilder_typo3"
+	>
+		<header />
+		<body>
+			<trans-unit id="label.company" resname="label.company">
+				<source>Company</source>
+			</trans-unit>
+
+			<trans-unit id="label.role" resname="label.role">
+				<source>Role</source>
+			</trans-unit>
+
+			<trans-unit id="label.email" resname="label.email">
+				<source>E-Mail</source>
+			</trans-unit>
+
+			<trans-unit id="label.homepage" resname="label.homepage">
+				<source>Homepage</source>
+			</trans-unit>
+
+			<trans-unit id="label.shortDescription" resname="label.shortDescription">
+				<source>Short description</source>
+			</trans-unit>
+
+			<trans-unit id="label.description" resname="label.description">
+				<source>Description</source>
+			</trans-unit>
+
+			<trans-unit id="" resname="">
+				<source>"</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

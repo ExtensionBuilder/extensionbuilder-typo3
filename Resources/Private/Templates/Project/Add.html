@@ -21,12 +21,12 @@
             <f:render
                 partial="BuildFields"
                 arguments="{
-                    lllBase: '{lllBase}',
-                    fields: '{projectConfiguration.fieldsAdd}',
-                    fieldsTabs: '{projectConfiguration.fieldsAddTabs}',
-                    fieldsData: '{projectData}',
+                    lllBase: lllBase,
+                    fields: projectConfiguration.fieldsAdd,
+                    fieldsTabs: projectConfiguration.fieldsAddTabs,
+                    fieldsData: projectData,
                     fieldsDataName: 'project',
-                    selectFields: '{projectSelects}'
+                    selectFields: projectSelects
                 }"
             />
         </f:form>

@@ -11,6 +11,10 @@ DocumentService.ready().then(() => {
 
     saveCurrentModule(moduleKey);
     restoreCollapseStates(moduleKey);
+
+    // Configuration must stay open if the component has no properties.
+    enforceConfigurationState(moduleKey);
+
     initializeCollapseIcons();
 
     new RegularEvent('shown.bs.collapse', (event) => {
@@ -60,7 +64,10 @@ function getState() {
 
 function saveState(state) {
     try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeState(state)));
+        window.localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(normalizeState(state))
+        );
     } catch (error) {
         // localStorage can be disabled. Collapse must still work.
     }
@@ -95,14 +102,20 @@ function normalizeState(state) {
 }
 
 function getModuleState(state, moduleKey) {
-    if (!state.modules[moduleKey] || typeof state.modules[moduleKey] !== 'object') {
+    if (
+        !state.modules[moduleKey]
+        || typeof state.modules[moduleKey] !== 'object'
+    ) {
         state.modules[moduleKey] = {
             url: '',
             collapses: {},
         };
     }
 
-    if (!state.modules[moduleKey].collapses || typeof state.modules[moduleKey].collapses !== 'object') {
+    if (
+        !state.modules[moduleKey].collapses
+        || typeof state.modules[moduleKey].collapses !== 'object'
+    ) {
         state.modules[moduleKey].collapses = {};
     }
 
@@ -132,6 +145,7 @@ function restoreCollapseStates(moduleKey) {
                 collapseElement,
                 collapseElement.classList.contains('show')
             );
+
             return;
         }
 
@@ -149,6 +163,22 @@ function handleCollapseChanged(event, moduleKey, isOpen) {
         return;
     }
 
+    /*
+     * Configuration must always remain open if there are no properties.
+     */
+    if (!isOpen && isConfigurationForcedOpen(collapseElement)) {
+        setCollapseDomState(collapseElement, true);
+        saveCollapseState(collapseElement, moduleKey, true);
+
+        return;
+    }
+
+    saveCollapseState(collapseElement, moduleKey, isOpen);
+
+    updateCollapseControls(collapseElement, isOpen);
+}
+
+function saveCollapseState(collapseElement, moduleKey, isOpen) {
     const collapseKey = getCollapseKey(collapseElement);
 
     const state = getState();
@@ -156,12 +186,11 @@ function handleCollapseChanged(event, moduleKey, isOpen) {
 
     state.currentModule = moduleKey;
     state.currentUrl = window.location.href;
+
     moduleState.url = window.location.href;
     moduleState.collapses[collapseKey] = isOpen;
 
     saveState(state);
-
-    updateCollapseControls(collapseElement, isOpen);
 }
 
 function initializeCollapseIcons() {
@@ -170,6 +199,47 @@ function initializeCollapseIcons() {
 
         updateCollapseControls(collapseElement, isOpen);
     });
+}
+
+/**
+ * Keep the component configuration open if no properties exist.
+ */
+function enforceConfigurationState(moduleKey) {
+    const configurationElement = getConfigurationElement();
+
+    if (!configurationElement) {
+        return;
+    }
+
+    if (hasProperties()) {
+        return;
+    }
+
+    setCollapseDomState(configurationElement, true);
+    saveCollapseState(configurationElement, moduleKey, true);
+
+    configurationElement.dataset.ebForceOpen = '1';
+}
+
+function getConfigurationElement() {
+    return document.querySelector(
+        '.eb-component-edit-collapse.collapse[id]'
+    );
+}
+
+/**
+ * Check whether the current component contains at least one property.
+ */
+function hasProperties() {
+    const propertyRows = document.querySelectorAll(
+        '.tx_extensionbuilder_mod1_configuration table tbody tr'
+    );
+
+    return propertyRows.length > 0;
+}
+
+function isConfigurationForcedOpen(collapseElement) {
+    return collapseElement.dataset.ebForceOpen === '1';
 }
 
 function setCollapseDomState(collapseElement, isOpen) {
@@ -184,7 +254,11 @@ function updateCollapseControls(collapseElement, isOpen) {
     const controls = getCollapseControls(collapseElement.id);
 
     controls.forEach((control) => {
-        control.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        control.setAttribute(
+            'aria-expanded',
+            isOpen ? 'true' : 'false'
+        );
+
         control.classList.toggle('collapsed', !isOpen);
 
         updateCollapseIcon(control, isOpen);
@@ -199,10 +273,13 @@ function updateCollapseIcon(control, isOpen) {
     }
 
     Icons.getIcon(
-        isOpen ? 'actions-view-list-collapse' : 'actions-view-list-expand',
+        isOpen
+            ? 'actions-view-list-collapse'
+            : 'actions-view-list-expand',
         Icons.sizes.small
     ).then((markup) => {
         iconContainer.innerHTML = '';
+
         iconContainer.appendChild(
             document.createRange().createContextualFragment(markup)
         );
@@ -250,9 +327,15 @@ function openLastModule() {
 }
 
 function escapeSelector(value) {
-    if (window.CSS && typeof window.CSS.escape === 'function') {
+    if (
+        window.CSS
+        && typeof window.CSS.escape === 'function'
+    ) {
         return window.CSS.escape(value);
     }
 
-    return value.replace(/([ #;?%&,.+*~':"!^$[\]()=>|/@])/g, '\\$1');
+    return value.replace(
+        /([ #;?%&,.+*~':"!^$[\]()=>|/@])/g,
+        '\\$1'
+    );
 }

@@ -193,12 +193,20 @@ final class ComponentController extends ExtensionBuilderController
                 break;
         }
 
+        // Allow only characters and numbers for the collapse ID.
+        $vendorNameId = preg_replace('/[^A-Za-z0-9_-]/', '', $vendorName);
+        $extensionNameId = preg_replace('/[^A-Za-z0-9_-]/', '', $extensionName);
+        $componentNameId = preg_replace('/[^A-Za-z0-9_-]/', '', $componentName);
+
         $this->moduleTemplate->assignMultiple([
             'lllBase' => $this->ebBackendService->lll,
             'configuration' => $this->ebBackendService->configuration,
             'vendorName' => $vendorName,
             'extensionName' => $extensionName,
             'componentName' => $componentName,
+            'vendorNameId' => $vendorNameId,
+            'extensionNameId' => $extensionNameId,
+            'componentNameId' => $componentNameId,
             'extensionData' => $extensionData,
             'componentsName' => $componentsName,
             'action' => 'edit',
